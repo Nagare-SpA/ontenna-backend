@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      billing_events: {
+        Row: {
+          created_at: string | null
+          event_data: Json
+          event_type: string
+          id: string
+          stripe_event_id: string | null
+          subscription_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json
+          event_type: string
+          id?: string
+          stripe_event_id?: string | null
+          subscription_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json
+          event_type?: string
+          id?: string
+          stripe_event_id?: string | null
+          subscription_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_events_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plans: {
+        Row: {
+          created_at: string | null
+          features: Json
+          id: string
+          is_active: boolean
+          name: string
+          price_monthly: number
+          price_yearly: number
+          stripe_price_id_monthly: string | null
+          stripe_price_id_yearly: string | null
+          tier: Database["public"]["Enums"]["plan_tier"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          name: string
+          price_monthly?: number
+          price_yearly?: number
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
+          tier: Database["public"]["Enums"]["plan_tier"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_monthly?: number
+          price_yearly?: number
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
+          tier?: Database["public"]["Enums"]["plan_tier"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_type: Database["public"]["Enums"]["account_type"]
@@ -58,6 +138,65 @@ export type Database = {
           verification_status?: Database["public"]["Enums"]["verification_status"]
         }
         Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          canceled_at: string | null
+          created_at: string | null
+          current_period_end: string
+          current_period_start: string
+          id: string
+          plan_id: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          trial_end: string | null
+          trial_start: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          created_at?: string | null
+          current_period_end?: string
+          current_period_start?: string
+          id?: string
+          plan_id: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          created_at?: string | null
+          current_period_end?: string
+          current_period_start?: string
+          id?: string
+          plan_id?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -123,6 +262,16 @@ export type Database = {
     Enums: {
       account_type: "end_user" | "team_supervisor" | "super_admin"
       app_role: "super_admin" | "team_supervisor" | "end_user"
+      plan_tier: "free" | "basic" | "pro" | "enterprise"
+      subscription_status:
+        | "trialing"
+        | "active"
+        | "past_due"
+        | "canceled"
+        | "incomplete"
+        | "incomplete_expired"
+        | "paused"
+        | "unpaid"
       verification_status: "pending" | "verified" | "rejected"
     }
     CompositeTypes: {
@@ -253,6 +402,17 @@ export const Constants = {
     Enums: {
       account_type: ["end_user", "team_supervisor", "super_admin"],
       app_role: ["super_admin", "team_supervisor", "end_user"],
+      plan_tier: ["free", "basic", "pro", "enterprise"],
+      subscription_status: [
+        "trialing",
+        "active",
+        "past_due",
+        "canceled",
+        "incomplete",
+        "incomplete_expired",
+        "paused",
+        "unpaid",
+      ],
       verification_status: ["pending", "verified", "rejected"],
     },
   },
