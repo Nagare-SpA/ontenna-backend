@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Mail, User, Shield, CheckCircle, CreditCard, Activity } from "lucide-react";
+import { LogOut, Mail, Shield, CheckCircle, CreditCard, Activity } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LanguageSelector } from "@/components/LanguageSelector";
 
@@ -61,11 +61,7 @@ export default function Dashboard() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* Profile Card */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><User className="h-5 w-5" />{t("profile.title")}</CardTitle>
-              <CardDescription>{t("profile.subtitle")}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="pt-6 space-y-4">
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16">
                   <AvatarImage src={profile?.avatar_url || undefined} />
@@ -80,11 +76,6 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <span>{user?.email}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-muted-foreground" />
-                  <span>{t("profile.accountType")}:</span>
-                  <Badge variant="secondary">{t(`profile.accountTypes.${profile?.account_type || "end_user"}` as any, { defaultValue: profile?.account_type || "end_user" })}</Badge>
                 </div>
                 {/* Verification Status */}
                 <div className="flex items-center gap-2">
