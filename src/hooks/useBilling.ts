@@ -186,8 +186,8 @@ export function useBilling() {
     }
   }, [user?.id]);
 
-  // Get current plan tier
-  const currentTier: PlanTier = subscription?.plan?.tier || 'free';
+  // Get current plan tier - null means no subscription
+  const currentTier: PlanTier | null = subscription?.plan?.tier || null;
 
   return {
     plans,
