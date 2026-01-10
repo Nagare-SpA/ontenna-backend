@@ -29,6 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -84,11 +85,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             ]);
             setProfile(profileData);
             setRoles(rolesData);
+            setIsProfileLoaded(true);
             setIsLoading(false);
           }, 0);
         } else {
           setProfile(null);
           setRoles([]);
+          setIsProfileLoaded(true);
           setIsLoading(false);
         }
       }
@@ -105,9 +108,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ]).then(([profileData, rolesData]) => {
           setProfile(profileData);
           setRoles(rolesData);
+          setIsProfileLoaded(true);
           setIsLoading(false);
         });
       } else {
+        setIsProfileLoaded(true);
         setIsLoading(false);
       }
     });
