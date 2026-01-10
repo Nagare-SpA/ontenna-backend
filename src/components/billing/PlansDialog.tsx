@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PlanCard } from './PlanCard';
-import { MockBillingBadge } from './MockBillingBadge';
 import { useBilling } from '@/hooks/useBilling';
 
 interface PlansDialogProps {
@@ -25,10 +24,7 @@ export function PlansDialog({ open, onOpenChange }: PlansDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl">Choose Your Plan</DialogTitle>
-            <MockBillingBadge />
-          </div>
+          <DialogTitle className="text-2xl">Choose Your Plan</DialogTitle>
           <DialogDescription>
             Select the plan that best fits your needs. Upgrade or downgrade anytime.
           </DialogDescription>
