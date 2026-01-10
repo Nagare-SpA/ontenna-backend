@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Mail, User, Shield, CheckCircle, CreditCard, BarChart3, TrendingUp, Activity } from "lucide-react";
+import { LogOut, Mail, User, Shield, CheckCircle, CreditCard, Activity } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LanguageSelector } from "@/components/LanguageSelector";
 
@@ -76,55 +76,26 @@ export default function Dashboard() {
                   <p className="text-sm text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <span>{user?.email}</span>
-                  {profile?.is_verified && <CheckCircle className="h-4 w-4 text-green-500" />}
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield className="h-4 w-4 text-muted-foreground" />
                   <span>{t("profile.accountType")}:</span>
-                  <Badge variant="secondary">{profile?.account_type || "end_user"}</Badge>
+                  <Badge variant="secondary">{t(`profile.accountTypes.${profile?.account_type || "end_user"}` as any, { defaultValue: profile?.account_type || "end_user" })}</Badge>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Roles Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Shield className="h-5 w-5" />{t("roles.title")}</CardTitle>
-              <CardDescription>{t("roles.subtitle")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {roles.length > 0 ? roles.map((role) => (
-                  <Badge key={role.id} variant="outline">{t(`roles.${role.role}` as any, { defaultValue: role.role })}</Badge>
-                )) : <p className="text-sm text-muted-foreground">{t("roles.noRoles")}</p>}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Verification Status Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><CheckCircle className="h-5 w-5" />{t("verification.title")}</CardTitle>
-              <CardDescription>{t("verification.subtitle")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-3">
-                {profile?.is_verified ? (
-                  <>
-                    <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center"><CheckCircle className="h-5 w-5 text-green-500" /></div>
-                    <div><p className="font-medium">{t("verification.verified")}</p><p className="text-sm text-muted-foreground">{t("verification.verifiedMessage")}</p></div>
-                  </>
-                ) : (
-                  <>
-                    <div className="h-10 w-10 rounded-full bg-yellow-500/10 flex items-center justify-center"><Mail className="h-5 w-5 text-yellow-500" /></div>
-                    <div><p className="font-medium">{t("verification.pending")}</p><p className="text-sm text-muted-foreground">{t("verification.pendingMessage")}</p></div>
-                  </>
-                )}
+                {/* Verification Status */}
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                  <span>{t("verification.title")}:</span>
+                  {profile?.is_verified ? (
+                    <Badge variant="default" className="bg-green-500 hover:bg-green-600">{t("verification.verified")}</Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-yellow-600 border-yellow-500">{t("verification.pending")}</Badge>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -141,7 +112,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Reporting Cards */}
+          {/* Activity Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Activity className="h-5 w-5" />{t("reporting.activity")}</CardTitle>
@@ -149,16 +120,6 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">{t("reporting.comingSoon")}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5" />{t("reporting.insights")}</CardTitle>
-              <CardDescription>{t("reporting.insightsDescription")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{t("reporting.moreAnalyticsDescription")}</p>
             </CardContent>
           </Card>
         </div>
