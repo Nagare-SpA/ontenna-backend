@@ -47,9 +47,9 @@ export default function Dashboard() {
           <div className="flex items-center gap-2">
             <MockBillingBadge />
             {isSuperAdmin && (
-              <Button variant="outline" size="sm" onClick={() => navigate("/admin/home")}>
-                <Shield className="h-4 w-4 mr-2" />{t("nav.admin")}
-              </Button>
+            <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+              <Shield className="h-4 w-4 mr-2" />{t("nav.admin")}
+            </Button>
             )}
             <DevBillingControls />
             <LanguageSelector />

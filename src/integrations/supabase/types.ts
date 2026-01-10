@@ -141,11 +141,15 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          admin_notes: string | null
           cancel_at_period_end: boolean
           canceled_at: string | null
           created_at: string | null
           current_period_end: string
           current_period_start: string
+          discount_percent: number | null
+          free_until: string | null
+          granted_by: string | null
           id: string
           plan_id: string
           status: Database["public"]["Enums"]["subscription_status"]
@@ -157,11 +161,15 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          admin_notes?: string | null
           cancel_at_period_end?: boolean
           canceled_at?: string | null
           created_at?: string | null
           current_period_end?: string
           current_period_start?: string
+          discount_percent?: number | null
+          free_until?: string | null
+          granted_by?: string | null
           id?: string
           plan_id: string
           status?: Database["public"]["Enums"]["subscription_status"]
@@ -173,11 +181,15 @@ export type Database = {
           user_id: string
         }
         Update: {
+          admin_notes?: string | null
           cancel_at_period_end?: boolean
           canceled_at?: string | null
           created_at?: string | null
           current_period_end?: string
           current_period_start?: string
+          discount_percent?: number | null
+          free_until?: string | null
+          granted_by?: string | null
           id?: string
           plan_id?: string
           status?: Database["public"]["Enums"]["subscription_status"]
