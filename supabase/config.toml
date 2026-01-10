@@ -20,3 +20,22 @@ verify_jwt = false
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+# Mobile API endpoints
+[functions.mobile-login]
+verify_jwt = false
+
+[functions.mobile-signup]
+verify_jwt = false
+
+[functions.mobile-verify-email]
+verify_jwt = false
+
+[functions.mobile-resend-code]
+verify_jwt = false
+
+[functions.mobile-me]
+verify_jwt = false
+
+[functions.mobile-subscription]
+verify_jwt = false
