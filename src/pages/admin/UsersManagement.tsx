@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, MoreHorizontal, UserCog, Gift, Percent, Trash2 } from "lucide-react";
+import { Search, MoreHorizontal, UserCog, Gift, Percent, Trash2, XCircle } from "lucide-react";
 import { Database } from "@/integrations/supabase/types";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
@@ -58,7 +58,7 @@ export default function UsersManagement() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserWithSubscription | null>(null);
-  const [dialogType, setDialogType] = useState<"edit" | "free" | "discount" | "delete" | null>(null);
+  const [dialogType, setDialogType] = useState<"edit" | "free" | "discount" | "delete" | "cancelSub" | null>(null);
   
   // Form states
   const [freeMonths, setFreeMonths] = useState("1");
@@ -249,11 +249,34 @@ export default function UsersManagement() {
     user.last_name?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const openDialog = (user: UserWithSubscription, type: "edit" | "free" | "discount" | "delete") => {
+  const openDialog = (user: UserWithSubscription, type: "edit" | "free" | "discount" | "delete" | "cancelSub") => {
     setSelectedUser(user);
     setDialogType(type);
     setAdminNotes("");
   };
+
+  const cancelSubscription = useMutation({
+    mutationFn: async (userId: string) => {
+      const { error } = await supabase
+        .from("subscriptions")
+        .delete()
+        .eq("user_id", userId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      toast({ title: t("admin.users.subscriptionCanceled") });
+      setDialogType(null);
+      setSelectedUser(null);
+    },
+    onError: (error) => {
+      toast({ 
+        title: t("common.error"), 
+        description: error.message,
+        variant: "destructive" 
+      });
+    },
+  });
 
   return (
     <AdminLayout>
@@ -365,6 +388,14 @@ export default function UsersManagement() {
                             >
                               <Percent className="h-4 w-4 mr-2" />
                               {t("admin.users.applyDiscount")}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => openDialog(user, "cancelSub")}
+                              disabled={!user.subscription}
+                              className="text-destructive"
+                            >
+                              <XCircle className="h-4 w-4 mr-2" />
+                              {t("admin.users.cancelSubscription")}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem 
@@ -535,6 +566,34 @@ export default function UsersManagement() {
                 disabled={deleteUser.isPending}
               >
                 {t("admin.users.confirmDelete")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Cancel Subscription Dialog */}
+        <Dialog open={dialogType === "cancelSub"} onOpenChange={() => setDialogType(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t("admin.users.cancelSubscriptionTitle")}</DialogTitle>
+              <DialogDescription>
+                {t("admin.users.cancelSubscriptionDesc", { email: selectedUser?.email })}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDialogType(null)}>
+                {t("common.cancel")}
+              </Button>
+              <Button 
+                variant="destructive"
+                onClick={() => {
+                  if (selectedUser) {
+                    cancelSubscription.mutate(selectedUser.id);
+                  }
+                }}
+                disabled={cancelSubscription.isPending}
+              >
+                {t("admin.users.confirmCancelSubscription")}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -270,7 +270,12 @@
       "deleteTitle": "Delete User",
       "deleteDesc": "Are you sure you want to delete {{email}}? This action cannot be undone.",
       "confirmDelete": "Delete User",
-      "deleted": "User deleted successfully"
+      "deleted": "User deleted successfully",
+      "cancelSubscription": "Cancel subscription",
+      "cancelSubscriptionTitle": "Cancel Subscription",
+      "cancelSubscriptionDesc": "This will immediately remove the subscription for {{email}}. This action cannot be undone.",
+      "confirmCancelSubscription": "Cancel Subscription",
+      "subscriptionCanceled": "Subscription canceled successfully"
     },
     "plans": {
       "title": "Plan Management",
