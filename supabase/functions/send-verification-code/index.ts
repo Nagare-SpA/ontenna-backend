@@ -101,8 +101,8 @@ const handler = async (req: Request): Promise<Response> => {
                         Hi${firstName ? ` <strong>${firstName}</strong>` : ""}! Enter this code to complete your verification:
                       </p>
                       <!-- Code Box -->
-                      <div style="background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
-                        <span style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #1e293b; font-family: 'Courier New', monospace;">${code}</span>
+                      <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px; border: 2px solid #6366f1;">
+                        <span style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #ffffff; font-family: 'Courier New', monospace;">${code}</span>
                       </div>
                       <p style="margin: 0; font-size: 14px; line-height: 20px; color: #94a3b8; text-align: center;">
                         ⏱️ This code expires in <strong>15 minutes</strong>
