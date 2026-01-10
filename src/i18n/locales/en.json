@@ -83,10 +83,13 @@
       "didntReceive": "Didn't receive the code?",
       "invalidCode": "Please enter a 6-digit verification code",
       "success": "Email verified!",
-      "successMessage": "Your account has been verified successfully.",
+      "successMessage": "Your account has been verified. You can now log in.",
       "codeSent": "Code sent",
       "codeSentMessage": "A new verification code has been sent to your email.",
-      "resendFailed": "Failed to resend"
+      "resendFailed": "Failed to resend",
+      "noUser": "No user information available",
+      "sendError": "Failed to send verification code",
+      "backToLogin": "Back to login"
     },
     "forgotPassword": {
       "title": "Forgot password?",

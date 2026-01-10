@@ -83,10 +83,13 @@
       "didntReceive": "Code nicht erhalten?",
       "invalidCode": "Bitte geben Sie einen 6-stelligen Bestätigungscode ein",
       "success": "E-Mail bestätigt!",
-      "successMessage": "Ihr Konto wurde erfolgreich bestätigt.",
+      "successMessage": "Ihr Konto wurde bestätigt. Sie können sich jetzt anmelden.",
       "codeSent": "Code gesendet",
       "codeSentMessage": "Ein neuer Bestätigungscode wurde an Ihre E-Mail gesendet.",
-      "resendFailed": "Erneutes Senden fehlgeschlagen"
+      "resendFailed": "Erneutes Senden fehlgeschlagen",
+      "noUser": "Keine Benutzerinformationen verfügbar",
+      "sendError": "Bestätigungscode konnte nicht gesendet werden",
+      "backToLogin": "Zurück zur Anmeldung"
     },
     "forgotPassword": {
       "title": "Passwort vergessen?",

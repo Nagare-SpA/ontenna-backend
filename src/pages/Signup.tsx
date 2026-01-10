@@ -18,9 +18,41 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signUp, sendVerificationCode } = useAuth();
+  const { signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const sendVerificationCodeDirect = async (userId: string, userEmail: string, userFirstName: string) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-verification-code`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({
+            userId,
+            email: userEmail,
+            firstName: userFirstName,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Error sending verification code:", data.error);
+        return { error: new Error(data.error || "Failed to send code") };
+      }
+
+      return { error: null };
+    } catch (error: any) {
+      console.error("Error sending verification code:", error);
+      return { error };
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,14 +90,27 @@ export default function Signup() {
     }
 
     if (user) {
-      const { error: codeError } = await sendVerificationCode();
-      if (codeError) console.error("Error sending verification code:", codeError);
+      // Send verification code directly with user data from signup response
+      const { error: codeError } = await sendVerificationCodeDirect(user.id, email, firstName);
+      
+      if (codeError) {
+        console.error("Error sending verification code:", codeError);
+        toast({
+          title: t("common.error"),
+          description: t("auth.verify.sendError"),
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: t("auth.signup.success"),
+          description: t("auth.signup.successMessage"),
+        });
+      }
 
-      toast({
-        title: t("auth.signup.success"),
-        description: t("auth.signup.successMessage"),
-      });
-
+      // Store email in sessionStorage for verification page
+      sessionStorage.setItem("pendingVerificationEmail", email);
+      sessionStorage.setItem("pendingVerificationUserId", user.id);
+      
       navigate("/verify");
     }
 

@@ -83,10 +83,13 @@
       "didntReceive": "没有收到验证码？",
       "invalidCode": "请输入6位验证码",
       "success": "邮箱已验证！",
-      "successMessage": "您的账户已成功验证。",
+      "successMessage": "您的账户已验证。现在可以登录。",
       "codeSent": "验证码已发送",
       "codeSentMessage": "新的验证码已发送到您的邮箱。",
-      "resendFailed": "重新发送失败"
+      "resendFailed": "重新发送失败",
+      "noUser": "没有用户信息",
+      "sendError": "发送验证码失败",
+      "backToLogin": "返回登录"
     },
     "forgotPassword": {
       "title": "忘记密码？",

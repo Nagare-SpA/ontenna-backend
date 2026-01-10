@@ -83,10 +83,13 @@
       "didntReceive": "コードが届きませんでしたか？",
       "invalidCode": "6桁の確認コードを入力してください",
       "success": "メールが確認されました！",
-      "successMessage": "アカウントが正常に確認されました。",
+      "successMessage": "アカウントが確認されました。ログインできます。",
       "codeSent": "コードを送信しました",
       "codeSentMessage": "新しい確認コードをメールで送信しました。",
-      "resendFailed": "再送信に失敗しました"
+      "resendFailed": "再送信に失敗しました",
+      "noUser": "ユーザー情報がありません",
+      "sendError": "確認コードの送信に失敗しました",
+      "backToLogin": "ログインに戻る"
     },
     "forgotPassword": {
       "title": "パスワードをお忘れですか？",
