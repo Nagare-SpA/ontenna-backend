@@ -11,8 +11,6 @@ import { useToast } from "@/hooks/use-toast";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { SubscriptionCard } from "@/components/billing/SubscriptionCard";
 import { PlansDialog } from "@/components/billing/PlansDialog";
-import { DevBillingControls } from "@/components/billing/DevBillingControls";
-import { MockBillingBadge } from "@/components/billing/MockBillingBadge";
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -45,13 +43,11 @@ export default function Dashboard() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-xl font-bold">{t("dashboard.title")}</h1>
           <div className="flex items-center gap-2">
-            <MockBillingBadge />
             {isSuperAdmin && (
             <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
               <Shield className="h-4 w-4 mr-2" />{t("nav.admin")}
             </Button>
             )}
-            <DevBillingControls />
             <LanguageSelector />
             <Button variant="outline" onClick={handleLogout} className="gap-2">
               <LogOut className="h-4 w-4" />{t("account.logout")}
