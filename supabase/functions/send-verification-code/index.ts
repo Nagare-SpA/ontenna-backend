@@ -70,7 +70,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email
     const emailResponse = await resend.emails.send({
-      from: "Ontenna <no-reply@ontenna.org>",
+      from: "Ontenna <no-reply@app.ontenna.org>",
       to: [email],
       subject: "Your verification code",
       html: `
