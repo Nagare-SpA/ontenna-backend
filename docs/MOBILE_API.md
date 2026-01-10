@@ -17,6 +17,7 @@ This API provides mobile application access to the Ontenna platform. It reuses t
 3. User verifies email → `POST /mobile-verify-email`
 4. User logs in → `POST /mobile-login`
 5. Use access token for authenticated requests
+6. When token expires → `POST /mobile-refresh-token`
 
 ---
 
@@ -257,7 +258,54 @@ apikey: <SUPABASE_ANON_KEY>
 
 ---
 
-### 5. Get User Profile & Subscription
+### 5. Refresh Token
+
+**POST** `/mobile-refresh-token`
+
+Refreshes an expired access token using a valid refresh token.
+
+#### Request
+
+```json
+{
+  "refresh_token": "v1.xxx..."
+}
+```
+
+#### Headers
+
+```
+Content-Type: application/json
+apikey: <SUPABASE_ANON_KEY>
+```
+
+#### Success Response (200)
+
+```json
+{
+  "ok": true,
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "v1.new-refresh-token...",
+  "expires_in": 3600,
+  "token_type": "Bearer"
+}
+```
+
+#### Error Response (401)
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "invalid_refresh_token",
+    "message": "Failed to refresh token"
+  }
+}
+```
+
+---
+
+### 6. Get User Profile & Subscription
 
 **GET** `/mobile-me`
 
@@ -334,7 +382,7 @@ When user has no active subscription:
 
 ---
 
-### 6. Get Subscription Only
+### 7. Get Subscription Only
 
 **GET** `/mobile-subscription`
 
