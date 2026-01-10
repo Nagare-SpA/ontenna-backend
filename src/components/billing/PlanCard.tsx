@@ -7,7 +7,7 @@ import type { Plan, PlanTier } from '@/services/billing';
 
 interface PlanCardProps {
   plan: Plan;
-  currentTier: PlanTier;
+  currentTier: PlanTier | null;
   isProcessing: boolean;
   billingPeriod: 'monthly' | 'yearly';
   onSubscribe: (planId: string) => void;
@@ -20,7 +20,8 @@ export function PlanCard({
   billingPeriod,
   onSubscribe 
 }: PlanCardProps) {
-  const isCurrentPlan = plan.tier === currentTier;
+  // currentTier is null when user has no subscription
+  const isCurrentPlan = currentTier !== null && plan.tier === currentTier;
   const price = billingPeriod === 'yearly' ? plan.priceYearly : plan.priceMonthly;
   const monthlyEquivalent = billingPeriod === 'yearly' ? Math.round(price / 12) : price;
   const isPopular = plan.tier === 'pro';
@@ -84,7 +85,7 @@ export function PlanCard({
           disabled={isCurrentPlan || isProcessing}
           onClick={() => onSubscribe(plan.id)}
         >
-          {isCurrentPlan ? 'Current Plan' : plan.tier === 'free' ? 'Downgrade' : 'Subscribe'}
+          {isCurrentPlan ? 'Current Plan' : 'Subscribe'}
         </Button>
       </CardFooter>
     </Card>

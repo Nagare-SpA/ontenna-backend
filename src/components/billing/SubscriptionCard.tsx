@@ -147,7 +147,7 @@ export function SubscriptionCard({ onManageClick }: SubscriptionCardProps) {
           ) : (
             <>
               <div className="flex items-center gap-2">
-                <Badge variant="secondary">Free Plan</Badge>
+                <Badge variant="outline">No Plan</Badge>
               </div>
               <p className="text-sm text-muted-foreground">
                 {t("subscription.noSubscription")}
