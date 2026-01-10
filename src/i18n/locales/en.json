@@ -326,6 +326,10 @@
     "serverErrorMessage": "Something went wrong. Please try again later."
   },
   "subscription": {
+    "title": "Subscription",
+    "subtitle": "Manage your subscription plan",
+    "noSubscription": "You don't have an active subscription. Choose a plan to get started.",
+    "manageSubscription": "Manage Plan",
     "successTitle": "Subscription Activated!",
     "successDescription": "Your subscription is now active. Welcome aboard!",
     "canceledTitle": "Checkout Canceled",

@@ -281,6 +281,10 @@
     "serverErrorMessage": "Algo salió mal. Por favor intenta más tarde."
   },
   "subscription": {
+    "title": "Suscripción",
+    "subtitle": "Administra tu plan de suscripción",
+    "noSubscription": "No tienes una suscripción activa. Elige un plan para comenzar.",
+    "manageSubscription": "Administrar Plan",
     "successTitle": "¡Suscripción Activada!",
     "successDescription": "Tu suscripción está activa. ¡Bienvenido!",
     "canceledTitle": "Pago Cancelado",
