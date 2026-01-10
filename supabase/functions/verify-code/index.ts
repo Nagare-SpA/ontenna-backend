@@ -57,6 +57,17 @@ const handler = async (req: Request): Promise<Response> => {
       .update({ used: true })
       .eq("id", verificationCode.id);
 
+    // Confirm email in Supabase Auth (this allows login without Supabase's email confirmation)
+    const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
+      userId,
+      { email_confirm: true }
+    );
+
+    if (authError) {
+      console.error("Error confirming email in auth:", authError);
+      // Continue anyway - we'll still update the profile
+    }
+
     // Update user profile to verified
     const { error: updateError } = await supabaseAdmin
       .from("profiles")
