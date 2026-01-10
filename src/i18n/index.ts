@@ -13,8 +13,8 @@ import zh from "./locales/zh.json";
 import ko from "./locales/ko.json";
 
 export const languages = [
-  { code: "en", name: "English", flag: "🇺🇸" },
-  { code: "es", name: "Español", flag: "🇪🇸" },
+  { code: "en", name: "English", flag: "🇬🇧" },
+  { code: "es", name: "Español", flag: "🇨🇱" },
   { code: "ja", name: "日本語", flag: "🇯🇵" },
   { code: "fr", name: "Français", flag: "🇫🇷" },
   { code: "pt", name: "Português", flag: "🇧🇷" },
