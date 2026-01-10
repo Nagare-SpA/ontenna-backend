@@ -207,13 +207,26 @@ export default function UsersManagement() {
 
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
-      // Delete subscription first
-      await supabase.from("subscriptions").delete().eq("user_id", userId);
-      // Delete user roles
-      await supabase.from("user_roles").delete().eq("user_id", userId);
-      // Delete profile (cascade should handle the rest)
-      const { error } = await supabase.from("profiles").delete().eq("id", userId);
-      if (error) throw error;
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) throw new Error("Not authenticated");
+
+      const response = await fetch(
+        `https://ycfrjvnuepfkeffsqxgm.supabase.co/functions/v1/delete-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.session.access_token}`,
+          },
+          body: JSON.stringify({ userId }),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to delete user");
+      }
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
@@ -221,8 +234,12 @@ export default function UsersManagement() {
       setDialogType(null);
       setSelectedUser(null);
     },
-    onError: () => {
-      toast({ title: t("common.error"), variant: "destructive" });
+    onError: (error) => {
+      toast({ 
+        title: t("common.error"), 
+        description: error.message,
+        variant: "destructive" 
+      });
     },
   });
 
