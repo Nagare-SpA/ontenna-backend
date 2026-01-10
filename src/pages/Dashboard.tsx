@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,29 @@ export default function Dashboard() {
   const { t } = useTranslation();
   const { user, profile, roles, signOut } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const [plansDialogOpen, setPlansDialogOpen] = useState(false);
+
+  // Handle checkout return
+  useEffect(() => {
+    const checkoutStatus = searchParams.get("checkout");
+    if (checkoutStatus === "success") {
+      toast({
+        title: "🎉 " + t("subscription.successTitle", "Subscription Activated!"),
+        description: t("subscription.successDescription", "Your subscription is now active. Welcome aboard!"),
+      });
+      // Clear the query param
+      setSearchParams({});
+    } else if (checkoutStatus === "canceled") {
+      toast({
+        title: t("subscription.canceledTitle", "Checkout Canceled"),
+        description: t("subscription.canceledDescription", "You can subscribe anytime from your dashboard."),
+        variant: "destructive",
+      });
+      setSearchParams({});
+    }
+  }, [searchParams, setSearchParams, toast, t]);
 
   const handleLogout = async () => {
     await signOut();

@@ -324,5 +324,11 @@
     "unauthorizedMessage": "You don't have permission to access this page.",
     "serverError": "Server error",
     "serverErrorMessage": "Something went wrong. Please try again later."
+  },
+  "subscription": {
+    "successTitle": "Subscription Activated!",
+    "successDescription": "Your subscription is now active. Welcome aboard!",
+    "canceledTitle": "Checkout Canceled",
+    "canceledDescription": "You can subscribe anytime from your dashboard."
   }
 }

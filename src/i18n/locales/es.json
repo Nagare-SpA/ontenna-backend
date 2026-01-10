@@ -279,5 +279,11 @@
     "unauthorizedMessage": "No tienes permiso para acceder a esta página.",
     "serverError": "Error del servidor",
     "serverErrorMessage": "Algo salió mal. Por favor intenta más tarde."
+  },
+  "subscription": {
+    "successTitle": "¡Suscripción Activada!",
+    "successDescription": "Tu suscripción está activa. ¡Bienvenido!",
+    "canceledTitle": "Pago Cancelado",
+    "canceledDescription": "Puedes suscribirte en cualquier momento desde tu dashboard."
   }
 }
