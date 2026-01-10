@@ -1,0 +1,1 @@
+UPDATE plans SET stripe_price_id_yearly = 'price_1So5Rf5EJKKhWAGtsGmntRkR' WHERE id = '69cddddd-2738-4e39-89ba-0f29e8872818';
