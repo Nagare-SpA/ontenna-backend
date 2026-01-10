@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -19,10 +19,26 @@ export default function Verify() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Get pending verification data from sessionStorage (for users who just signed up)
+  const pendingEmail = sessionStorage.getItem("pendingVerificationEmail");
+  const pendingUserId = sessionStorage.getItem("pendingVerificationUserId");
+
+  // Use user data if logged in, otherwise use pending data
+  const displayEmail = user?.email || pendingEmail;
+  const currentUserId = user?.id || pendingUserId;
+
   useEffect(() => {
-    if (!user) navigate("/login");
-    else if (isVerified) navigate("/dashboard");
-  }, [user, isVerified, navigate]);
+    // If user is logged in and verified, redirect to dashboard
+    if (user && isVerified) {
+      sessionStorage.removeItem("pendingVerificationEmail");
+      sessionStorage.removeItem("pendingVerificationUserId");
+      navigate("/dashboard");
+    }
+    // If no user and no pending verification data, redirect to login
+    if (!user && !pendingUserId) {
+      navigate("/login");
+    }
+  }, [user, isVerified, pendingUserId, navigate]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -37,33 +53,106 @@ export default function Verify() {
       return;
     }
 
-    setIsVerifying(true);
-    const { error } = await verifyCode(code);
-
-    if (error) {
-      toast({ title: t("auth.errors.verificationFailed"), description: error.message, variant: "destructive" });
-      setIsVerifying(false);
+    if (!currentUserId) {
+      toast({ title: t("common.error"), description: t("auth.verify.noUser"), variant: "destructive" });
       return;
     }
 
-    toast({ title: t("auth.verify.success"), description: t("auth.verify.successMessage") });
-    navigate("/dashboard");
+    setIsVerifying(true);
+
+    try {
+      // Call verify-code edge function directly
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/verify-code`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": supabaseKey,
+          },
+          body: JSON.stringify({
+            userId: currentUserId,
+            code,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast({ 
+          title: t("auth.errors.verificationFailed"), 
+          description: data.error || t("auth.verify.invalidCode"), 
+          variant: "destructive" 
+        });
+        setIsVerifying(false);
+        return;
+      }
+
+      // Clear pending verification data
+      sessionStorage.removeItem("pendingVerificationEmail");
+      sessionStorage.removeItem("pendingVerificationUserId");
+
+      toast({ title: t("auth.verify.success"), description: t("auth.verify.successMessage") });
+      
+      // Redirect to login so user can sign in with their verified account
+      navigate("/login");
+    } catch (error: any) {
+      toast({ 
+        title: t("auth.errors.verificationFailed"), 
+        description: error.message, 
+        variant: "destructive" 
+      });
+      setIsVerifying(false);
+    }
   };
 
   const handleResend = async () => {
-    setIsResending(true);
-    const { error } = await sendVerificationCode();
-
-    if (error) {
-      toast({ title: t("auth.verify.resendFailed"), description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: t("auth.verify.codeSent"), description: t("auth.verify.codeSentMessage") });
-      setCountdown(60);
+    if (!currentUserId || !displayEmail) {
+      toast({ title: t("auth.verify.resendFailed"), description: t("auth.verify.noUser"), variant: "destructive" });
+      return;
     }
+
+    setIsResending(true);
+
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/send-verification-code`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": supabaseKey,
+          },
+          body: JSON.stringify({
+            userId: currentUserId,
+            email: displayEmail,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast({ title: t("auth.verify.resendFailed"), description: data.error, variant: "destructive" });
+      } else {
+        toast({ title: t("auth.verify.codeSent"), description: t("auth.verify.codeSentMessage") });
+        setCountdown(60);
+      }
+    } catch (error: any) {
+      toast({ title: t("auth.verify.resendFailed"), description: error.message, variant: "destructive" });
+    }
+    
     setIsResending(false);
   };
 
-  if (!user) return null;
+  if (!displayEmail && !currentUserId) return null;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -79,7 +168,7 @@ export default function Verify() {
             <CardTitle className="text-2xl font-bold">{t("auth.verify.title")}</CardTitle>
             <CardDescription>
               {t("auth.verify.subtitle")}<br />
-              <span className="font-medium text-foreground">{user.email}</span>
+              <span className="font-medium text-foreground">{displayEmail}</span>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -96,14 +185,36 @@ export default function Verify() {
               </InputOTP>
             </div>
             <Button onClick={handleVerify} className="w-full" disabled={isVerifying || code.length !== 6}>
-              {isVerifying ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t("auth.verify.submitting")}</> : t("auth.verify.submit")}
+              {isVerifying ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("auth.verify.submitting")}
+                </>
+              ) : (
+                t("auth.verify.submit")
+              )}
             </Button>
           </CardContent>
           <CardFooter className="flex flex-col gap-2">
             <p className="text-sm text-muted-foreground text-center">{t("auth.verify.didntReceive")}</p>
             <Button variant="ghost" onClick={handleResend} disabled={isResending || countdown > 0} className="gap-2">
-              {isResending ? <><Loader2 className="h-4 w-4 animate-spin" />{t("auth.verify.resending")}</> : countdown > 0 ? t("auth.verify.resendIn", { seconds: countdown }) : <><RefreshCw className="h-4 w-4" />{t("auth.verify.resend")}</>}
+              {isResending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("auth.verify.resending")}
+                </>
+              ) : countdown > 0 ? (
+                t("auth.verify.resendIn", { seconds: countdown })
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4" />
+                  {t("auth.verify.resend")}
+                </>
+              )}
             </Button>
+            <Link to="/login" className="text-sm text-primary hover:underline">
+              {t("auth.verify.backToLogin")}
+            </Link>
           </CardFooter>
         </Card>
       </main>

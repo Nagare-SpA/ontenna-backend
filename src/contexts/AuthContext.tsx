@@ -153,24 +153,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setRoles([]);
   };
 
-  const sendVerificationCode = async () => {
-    if (!user) {
-      return { error: new Error("No user logged in") };
+  const sendVerificationCode = async (overrideUserId?: string, overrideEmail?: string, overrideFirstName?: string) => {
+    const userId = overrideUserId || user?.id;
+    const email = overrideEmail || user?.email;
+    const firstName = overrideFirstName || profile?.first_name;
+
+    if (!userId || !email) {
+      return { error: new Error("No user data available") };
     }
 
     try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        "apikey": supabaseKey,
+      };
+
+      // Add auth token if available
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+
       const response = await fetch(
-        "https://ycfrjvnuepfkeffsqxgm.supabase.co/functions/v1/send-verification-code",
+        `${supabaseUrl}/functions/v1/send-verification-code`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.access_token}`,
-          },
+          headers,
           body: JSON.stringify({
-            userId: user.id,
-            email: user.email,
-            firstName: profile?.first_name,
+            userId,
+            email,
+            firstName,
           }),
         }
       );

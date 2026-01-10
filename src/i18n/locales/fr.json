@@ -83,10 +83,13 @@
       "didntReceive": "Vous n'avez pas reçu le code ?",
       "invalidCode": "Veuillez entrer un code de vérification à 6 chiffres",
       "success": "Email vérifié !",
-      "successMessage": "Votre compte a été vérifié avec succès.",
+      "successMessage": "Votre compte a été vérifié. Vous pouvez maintenant vous connecter.",
       "codeSent": "Code envoyé",
       "codeSentMessage": "Un nouveau code de vérification a été envoyé à votre email.",
-      "resendFailed": "Échec du renvoi"
+      "resendFailed": "Échec du renvoi",
+      "noUser": "Aucune information utilisateur disponible",
+      "sendError": "Échec de l'envoi du code de vérification",
+      "backToLogin": "Retour à la connexion"
     },
     "forgotPassword": {
       "title": "Mot de passe oublié ?",

@@ -83,10 +83,13 @@
       "didntReceive": "¿No recibiste el código?",
       "invalidCode": "Por favor ingresa un código de verificación de 6 dígitos",
       "success": "¡Correo verificado!",
-      "successMessage": "Tu cuenta ha sido verificada exitosamente.",
+      "successMessage": "Tu cuenta ha sido verificada. Ya puedes iniciar sesión.",
       "codeSent": "Código enviado",
       "codeSentMessage": "Un nuevo código de verificación ha sido enviado a tu correo.",
-      "resendFailed": "Error al reenviar"
+      "resendFailed": "Error al reenviar",
+      "noUser": "No hay información de usuario disponible",
+      "sendError": "Error al enviar el código de verificación",
+      "backToLogin": "Volver a iniciar sesión"
     },
     "forgotPassword": {
       "title": "¿Olvidaste tu contraseña?",
