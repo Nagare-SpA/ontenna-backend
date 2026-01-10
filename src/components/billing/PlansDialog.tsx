@@ -46,7 +46,7 @@ export function PlansDialog({ open, onOpenChange }: PlansDialogProps) {
           </Tabs>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
           {plans.map((plan) => (
             <PlanCard
               key={plan.id}
