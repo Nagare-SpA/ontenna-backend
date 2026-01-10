@@ -52,7 +52,7 @@ serve(async (req) => {
     // Get user's subscription
     const { data: subscription } = await supabase
       .from("subscriptions")
-      .select("stripe_subscription_id, stripe_customer_id")
+      .select("id, stripe_subscription_id, stripe_customer_id")
       .eq("user_id", user.id)
       .maybeSingle();
 
@@ -63,7 +63,9 @@ serve(async (req) => {
       );
     }
 
-    const stripeSubId = subscriptionId || subscription.stripe_subscription_id;
+    // Always use the Stripe subscription ID, not the database ID
+    const stripeSubId = subscription.stripe_subscription_id;
+    console.log("[Stripe] Using Stripe subscription ID:", stripeSubId);
 
     switch (action) {
       case "cancel": {
