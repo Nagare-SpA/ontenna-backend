@@ -8,6 +8,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Mail, RefreshCw } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Verify() {
   const { t } = useTranslation();
@@ -62,16 +63,13 @@ export default function Verify() {
 
     try {
       // Call verify-code edge function directly
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
       const response = await fetch(
-        `${supabaseUrl}/functions/v1/verify-code`,
+        `https://ycfrjvnuepfkeffsqxgm.supabase.co/functions/v1/verify-code`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "apikey": supabaseKey,
+            "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnJqdm51ZXBma2VmZnNxeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMzAwNDEsImV4cCI6MjA4MzYwNjA0MX0.6wEnk2OSRaCxHLQ-iUabA2_n-klE2HTl5niMwiptLnA",
           },
           body: JSON.stringify({
             userId: currentUserId,
@@ -98,7 +96,22 @@ export default function Verify() {
 
       toast({ title: t("auth.verify.success"), description: t("auth.verify.successMessage") });
       
-      // Redirect to login so user can sign in with their verified account
+      // Get stored credentials and auto-login
+      const pendingPassword = sessionStorage.getItem("pendingVerificationPassword");
+      if (pendingEmail && pendingPassword) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: pendingEmail,
+          password: pendingPassword,
+        });
+        sessionStorage.removeItem("pendingVerificationPassword");
+        
+        if (!signInError) {
+          navigate("/dashboard");
+          return;
+        }
+      }
+      
+      // Fallback: redirect to login if auto-login fails
       navigate("/login");
     } catch (error: any) {
       toast({ 
@@ -119,16 +132,13 @@ export default function Verify() {
     setIsResending(true);
 
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
       const response = await fetch(
-        `${supabaseUrl}/functions/v1/send-verification-code`,
+        `https://ycfrjvnuepfkeffsqxgm.supabase.co/functions/v1/send-verification-code`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "apikey": supabaseKey,
+            "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnJqdm51ZXBma2VmZnNxeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMzAwNDEsImV4cCI6MjA4MzYwNjA0MX0.6wEnk2OSRaCxHLQ-iUabA2_n-klE2HTl5niMwiptLnA",
           },
           body: JSON.stringify({
             userId: currentUserId,

@@ -25,12 +25,12 @@ export default function Signup() {
   const sendVerificationCodeDirect = async (userId: string, userEmail: string, userFirstName: string) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-verification-code`,
+        `https://ycfrjvnuepfkeffsqxgm.supabase.co/functions/v1/send-verification-code`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnJqdm51ZXBma2VmZnNxeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMzAwNDEsImV4cCI6MjA4MzYwNjA0MX0.6wEnk2OSRaCxHLQ-iUabA2_n-klE2HTl5niMwiptLnA",
           },
           body: JSON.stringify({
             userId,
@@ -107,9 +107,10 @@ export default function Signup() {
         });
       }
 
-      // Store email in sessionStorage for verification page
+      // Store data in sessionStorage for verification page (including password for auto-login)
       sessionStorage.setItem("pendingVerificationEmail", email);
       sessionStorage.setItem("pendingVerificationUserId", user.id);
+      sessionStorage.setItem("pendingVerificationPassword", password);
       
       navigate("/verify");
     }

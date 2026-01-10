@@ -72,19 +72,60 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "Ontenna <no-reply@app.ontenna.org>",
       to: [email],
-      subject: "Your verification code",
+      subject: "🔐 Your Ontenna Verification Code",
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #333;">Verify your email</h1>
-          <p>Hello${firstName ? ` ${firstName}` : ""},</p>
-          <p>Your verification code is:</p>
-          <div style="background: #f4f4f4; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
-            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #333;">${code}</span>
-          </div>
-          <p>This code will expire in 15 minutes.</p>
-          <p>If you didn't request this code, please ignore this email.</p>
-          <p>Best regards,<br>The Ontenna Team</p>
-        </div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc;">
+            <tr>
+              <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 480px; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+                  <!-- Header -->
+                  <tr>
+                    <td style="padding: 40px 40px 24px; text-align: center;">
+                      <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 16px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 28px;">🔐</span>
+                      </div>
+                      <h1 style="margin: 0; font-size: 24px; font-weight: 700; color: #1e293b;">Verify Your Email</h1>
+                    </td>
+                  </tr>
+                  <!-- Content -->
+                  <tr>
+                    <td style="padding: 0 40px 32px;">
+                      <p style="margin: 0 0 24px; font-size: 16px; line-height: 24px; color: #475569; text-align: center;">
+                        Hi${firstName ? ` <strong>${firstName}</strong>` : ""}! Enter this code to complete your verification:
+                      </p>
+                      <!-- Code Box -->
+                      <div style="background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+                        <span style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #1e293b; font-family: 'Courier New', monospace;">${code}</span>
+                      </div>
+                      <p style="margin: 0; font-size: 14px; line-height: 20px; color: #94a3b8; text-align: center;">
+                        ⏱️ This code expires in <strong>15 minutes</strong>
+                      </p>
+                    </td>
+                  </tr>
+                  <!-- Footer -->
+                  <tr>
+                    <td style="padding: 24px 40px 40px; border-top: 1px solid #e2e8f0;">
+                      <p style="margin: 0 0 8px; font-size: 13px; line-height: 20px; color: #94a3b8; text-align: center;">
+                        Didn't request this? You can safely ignore this email.
+                      </p>
+                      <p style="margin: 0; font-size: 13px; line-height: 20px; color: #94a3b8; text-align: center;">
+                        — The Ontenna Team
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
       `,
     });
 

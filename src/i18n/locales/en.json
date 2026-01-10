@@ -143,6 +143,12 @@
     "verified": "Verified",
     "pending": "Pending",
     "accountType": "Account Type",
+    "accountTypes": {
+      "end_user": "End User",
+      "paid_user": "Paid User",
+      "team_supervisor": "Team Supervisor",
+      "super_admin": "Super Admin"
+    },
     "verifyEmail": "Please verify your email",
     "editProfile": "Edit Profile",
     "changeAvatar": "Change avatar",
