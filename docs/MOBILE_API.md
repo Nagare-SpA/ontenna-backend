@@ -258,7 +258,41 @@ apikey: <SUPABASE_ANON_KEY>
 
 ---
 
-### 5. Refresh Token
+### 5. Forgot Password
+
+**POST** `/mobile-forgot-password`
+
+Triggers the existing password reset email flow.
+
+#### Request
+
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+#### Headers
+
+```
+Content-Type: application/json
+apikey: <SUPABASE_ANON_KEY>
+```
+
+#### Success Response (200)
+
+```json
+{
+  "ok": true,
+  "message": "password_reset_sent"
+}
+```
+
+**Note:** For security, this endpoint always returns success even if the email doesn't exist.
+
+---
+
+### 6. Refresh Token
 
 **POST** `/mobile-refresh-token`
 
@@ -305,7 +339,7 @@ apikey: <SUPABASE_ANON_KEY>
 
 ---
 
-### 6. Get User Profile & Subscription
+### 7. Get User Profile & Subscription
 
 **GET** `/mobile-me`
 
@@ -382,7 +416,7 @@ When user has no active subscription:
 
 ---
 
-### 7. Get Subscription Only
+### 8. Get Subscription Only
 
 **GET** `/mobile-subscription`
 

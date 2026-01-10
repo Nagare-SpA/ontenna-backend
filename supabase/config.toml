@@ -42,3 +42,6 @@ verify_jwt = false
 
 [functions.mobile-refresh-token]
 verify_jwt = false
+
+[functions.mobile-forgot-password]
+verify_jwt = false
