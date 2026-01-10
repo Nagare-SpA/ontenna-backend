@@ -46,7 +46,7 @@ serve(async (req) => {
       );
     }
 
-    const { planId, billingPeriod, successUrl, cancelUrl } = await req.json();
+    const { planId, billingPeriod, successUrl, cancelUrl, embedded } = await req.json();
 
     if (!planId || !billingPeriod) {
       return new Response(
@@ -107,26 +107,50 @@ serve(async (req) => {
       }
     }
 
-    // Create checkout session
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      line_items: [{ price: stripePriceId, quantity: 1 }],
-      mode: "subscription",
-      success_url: successUrl || `${req.headers.get("origin")}/dashboard?checkout=success`,
-      cancel_url: cancelUrl || `${req.headers.get("origin")}/dashboard?checkout=canceled`,
-      metadata: {
-        supabase_user_id: user.id,
-        plan_id: planId,
-        billing_period: billingPeriod
-      }
-    });
+    // Create checkout session - embedded or redirect mode
+    if (embedded) {
+      // Embedded checkout mode
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        line_items: [{ price: stripePriceId, quantity: 1 }],
+        mode: "subscription",
+        ui_mode: "embedded",
+        return_url: successUrl || `${req.headers.get("origin")}/dashboard?checkout=success`,
+        metadata: {
+          supabase_user_id: user.id,
+          plan_id: planId,
+          billing_period: billingPeriod
+        }
+      });
 
-    console.log("[Stripe] Checkout session created:", session.id);
+      console.log("[Stripe] Embedded checkout session created:", session.id);
 
-    return new Response(
-      JSON.stringify({ sessionId: session.id, sessionUrl: session.url }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+      return new Response(
+        JSON.stringify({ clientSecret: session.client_secret }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    } else {
+      // Redirect checkout mode (legacy)
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        line_items: [{ price: stripePriceId, quantity: 1 }],
+        mode: "subscription",
+        success_url: successUrl || `${req.headers.get("origin")}/dashboard?checkout=success`,
+        cancel_url: cancelUrl || `${req.headers.get("origin")}/dashboard?checkout=canceled`,
+        metadata: {
+          supabase_user_id: user.id,
+          plan_id: planId,
+          billing_period: billingPeriod
+        }
+      });
+
+      console.log("[Stripe] Redirect checkout session created:", session.id);
+
+      return new Response(
+        JSON.stringify({ sessionId: session.id, sessionUrl: session.url }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
   } catch (error) {
     console.error("[Stripe] Checkout error:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
