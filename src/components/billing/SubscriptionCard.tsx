@@ -116,14 +116,22 @@ export function SubscriptionCard({ onManageClick }: SubscriptionCardProps) {
 
               <div className="flex gap-2">
                 {subscription.cancelAtPeriodEnd ? (
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={resumeSubscription}
-                    disabled={isProcessing}
-                  >
-                    Resume Subscription
-                  </Button>
+                  // Only show Resume if there's a real Stripe subscription
+                  subscription.stripeSubscriptionId ? (
+                    <Button 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={resumeSubscription}
+                      disabled={isProcessing}
+                    >
+                      Resume Subscription
+                    </Button>
+                  ) : (
+                    // No Stripe subscription - show message that it will expire
+                    <div className="flex-1 text-sm text-muted-foreground">
+                      Your subscription will end on the date shown above.
+                    </div>
+                  )
                 ) : (
                   <Button 
                     variant="outline" 
