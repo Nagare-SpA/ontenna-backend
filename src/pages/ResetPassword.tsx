@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Lock, CheckCircle } from "lucide-react";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 export default function ResetPassword() {
+  const { t } = useTranslation();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -19,24 +22,16 @@ export default function ResetPassword() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user has a valid recovery session
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsValidSession(!!session);
       setIsChecking(false);
     };
-
     checkSession();
 
-    // Listen for auth state changes (recovery link click)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === "PASSWORD_RECOVERY") {
-          setIsValidSession(true);
-        }
-      }
-    );
-
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setIsValidSession(true);
+    });
     return () => subscription.unsubscribe();
   }, []);
 
@@ -44,35 +39,19 @@ export default function ResetPassword() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive",
-      });
+      toast({ title: t("common.error"), description: t("auth.resetPassword.passwordMismatch"), variant: "destructive" });
       return;
     }
-
     if (password.length < 6) {
-      toast({
-        title: "Error",
-        description: "Password must be at least 6 characters",
-        variant: "destructive",
-      });
+      toast({ title: t("common.error"), description: t("auth.resetPassword.passwordTooShort"), variant: "destructive" });
       return;
     }
 
     setIsLoading(true);
-
-    const { error } = await supabase.auth.updateUser({
-      password,
-    });
+    const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
       setIsLoading(false);
       return;
     }
@@ -82,107 +61,73 @@ export default function ResetPassword() {
   };
 
   if (isChecking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
   if (!isValidSession) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold">Invalid or expired link</CardTitle>
-            <CardDescription>
-              This password reset link is invalid or has expired.
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button className="w-full" onClick={() => navigate("/forgot-password")}>
-              Request a new link
-            </Button>
-          </CardFooter>
-        </Card>
+      <div className="min-h-screen flex flex-col bg-background">
+        <header className="p-4 flex justify-end"><LanguageSelector /></header>
+        <main className="flex-1 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader className="space-y-1 text-center">
+              <CardTitle className="text-2xl font-bold">{t("auth.resetPassword.invalidLink")}</CardTitle>
+              <CardDescription>{t("auth.resetPassword.invalidLinkMessage")}</CardDescription>
+            </CardHeader>
+            <CardFooter><Button className="w-full" onClick={() => navigate("/forgot-password")}>{t("auth.resetPassword.requestNewLink")}</Button></CardFooter>
+          </Card>
+        </main>
       </div>
     );
   }
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1 text-center">
-            <div className="mx-auto mb-4 w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-500" />
-            </div>
-            <CardTitle className="text-2xl font-bold">Password updated!</CardTitle>
-            <CardDescription>
-              Your password has been successfully reset.
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button className="w-full" onClick={() => navigate("/dashboard")}>
-              Continue to dashboard
-            </Button>
-          </CardFooter>
-        </Card>
+      <div className="min-h-screen flex flex-col bg-background">
+        <header className="p-4 flex justify-end"><LanguageSelector /></header>
+        <main className="flex-1 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader className="space-y-1 text-center">
+              <div className="mx-auto mb-4 w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center"><CheckCircle className="w-6 h-6 text-green-500" /></div>
+              <CardTitle className="text-2xl font-bold">{t("auth.resetPassword.success")}</CardTitle>
+              <CardDescription>{t("auth.resetPassword.successMessage")}</CardDescription>
+            </CardHeader>
+            <CardFooter><Button className="w-full" onClick={() => navigate("/dashboard")}>{t("auth.resetPassword.continueToApp")}</Button></CardFooter>
+          </Card>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-            <Lock className="w-6 h-6 text-primary" />
-          </div>
-          <CardTitle className="text-2xl font-bold">Reset your password</CardTitle>
-          <CardDescription>
-            Enter your new password below
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password">New password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm new password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Updating...
-                </>
-              ) : (
-                "Update password"
-              )}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="p-4 flex justify-end"><LanguageSelector /></header>
+      <main className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1 text-center">
+            <div className="mx-auto mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center"><Lock className="w-6 h-6 text-primary" /></div>
+            <CardTitle className="text-2xl font-bold">{t("auth.resetPassword.title")}</CardTitle>
+            <CardDescription>{t("auth.resetPassword.subtitle")}</CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="password">{t("auth.resetPassword.newPassword")}</Label>
+                <Input id="password" type="password" placeholder={t("auth.resetPassword.passwordPlaceholder")} value={password} onChange={(e) => setPassword(e.target.value)} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">{t("auth.resetPassword.confirmPassword")}</Label>
+                <Input id="confirmPassword" type="password" placeholder={t("auth.resetPassword.passwordPlaceholder")} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t("auth.resetPassword.submitting")}</> : t("auth.resetPassword.submit")}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
+      </main>
     </div>
   );
 }
