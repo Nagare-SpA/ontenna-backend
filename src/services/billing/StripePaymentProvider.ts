@@ -9,9 +9,15 @@ import type {
   SubscriptionStatus
 } from './types';
 
-const SUPABASE_URL = "https://ycfrjvnuepfkeffsqxgm.supabase.co";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
 
-// Transform database row to Plan type
+function getFunctionsBaseUrl(): string {
+  if (!SUPABASE_URL) {
+    throw new Error('Missing VITE_SUPABASE_URL');
+  }
+  return `${SUPABASE_URL}/functions/v1`;
+}
 function transformPlan(row: {
   id: string;
   name: string;
@@ -73,10 +79,15 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
   if (!session?.access_token) {
     throw new Error('Not authenticated');
   }
+
+  if (!SUPABASE_ANON_KEY) {
+    throw new Error('Missing VITE_SUPABASE_PUBLISHABLE_KEY');
+  }
+
   return {
-    'Authorization': `Bearer ${session.access_token}`,
+    Authorization: `Bearer ${session.access_token}`,
     'Content-Type': 'application/json',
-    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnJqdm51ZXBma2VmZnNxeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMzAwNDEsImV4cCI6MjA4MzYwNjA0MX0.6wEnk2OSRaCxHLQ-iUabA2_n-klE2HTl5niMwiptLnA'
+    apikey: SUPABASE_ANON_KEY,
   };
 }
 
@@ -122,7 +133,7 @@ export class StripePaymentProvider implements PaymentProvider {
 
     try {
       const headers = await getAuthHeaders();
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/stripe-checkout`, {
+      const response = await fetch(`${getFunctionsBaseUrl()}/stripe-checkout`, {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -187,7 +198,7 @@ export class StripePaymentProvider implements PaymentProvider {
 
     try {
       const headers = await getAuthHeaders();
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/stripe-subscription`, {
+      const response = await fetch(`${getFunctionsBaseUrl()}/stripe-subscription`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ action: 'cancel', subscriptionId })
@@ -211,7 +222,7 @@ export class StripePaymentProvider implements PaymentProvider {
 
     try {
       const headers = await getAuthHeaders();
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/stripe-portal`, {
+      const response = await fetch(`${getFunctionsBaseUrl()}/stripe-portal`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ returnUrl: `${window.location.origin}/dashboard` })
@@ -251,7 +262,7 @@ export class StripePaymentProvider implements PaymentProvider {
 
     try {
       const headers = await getAuthHeaders();
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/stripe-subscription`, {
+      const response = await fetch(`${getFunctionsBaseUrl()}/stripe-subscription`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ action: 'resume', subscriptionId })
