@@ -194,8 +194,31 @@ export class StripePaymentProvider implements PaymentProvider {
   }
 
   async cancelSubscription(subscriptionId: string): Promise<{ success: boolean; error?: string }> {
-    console.log('[Billing] Canceling Stripe subscription:', subscriptionId);
+    console.log('[Billing] Canceling subscription:', subscriptionId);
 
+    // First check if this subscription has a Stripe subscription ID
+    const { data: subData } = await supabase
+      .from('subscriptions')
+      .select('stripe_subscription_id')
+      .eq('id', subscriptionId)
+      .single();
+
+    // If no Stripe subscription ID, just delete from database (legacy mock subscription)
+    if (!subData?.stripe_subscription_id) {
+      console.log('[Billing] No Stripe subscription ID, deleting from database directly');
+      const { error } = await supabase
+        .from('subscriptions')
+        .delete()
+        .eq('id', subscriptionId);
+      
+      if (error) {
+        console.error('[Billing] Error deleting subscription:', error);
+        return { success: false, error: 'Failed to cancel subscription' };
+      }
+      return { success: true };
+    }
+
+    // Has Stripe subscription - cancel through Stripe
     try {
       const headers = await getAuthHeaders();
       const response = await fetch(`${getFunctionsBaseUrl()}/stripe-subscription`, {
