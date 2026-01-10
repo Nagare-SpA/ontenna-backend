@@ -126,6 +126,74 @@ serve(async (req) => {
         break;
       }
 
+      case "customer.subscription.created": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customerId = subscription.customer as string;
+        const userId = subscription.metadata?.supabase_user_id;
+
+        if (!userId) {
+          console.log("[Stripe Webhook] No user ID in subscription metadata for created event");
+          break;
+        }
+
+        // Get plan from price ID
+        const priceId = subscription.items.data[0]?.price.id;
+        const plan = priceId ? await getPlanByPriceId(priceId) : null;
+
+        if (!plan) {
+          console.error("[Stripe Webhook] No plan found for price:", priceId);
+          break;
+        }
+
+        const periodStart = new Date(subscription.current_period_start * 1000);
+        const periodEnd = new Date(subscription.current_period_end * 1000);
+
+        // Check if subscription already exists
+        const { data: existingSubForCreate } = await supabase
+          .from("subscriptions")
+          .select("id")
+          .eq("user_id", userId)
+          .maybeSingle();
+
+        if (!existingSubForCreate) {
+          const { error } = await supabase
+            .from("subscriptions")
+            .insert({
+              user_id: userId,
+              plan_id: plan.id,
+              status: mapStripeStatus(subscription.status),
+              stripe_customer_id: customerId,
+              stripe_subscription_id: subscription.id,
+              current_period_start: periodStart.toISOString(),
+              current_period_end: periodEnd.toISOString(),
+              cancel_at_period_end: subscription.cancel_at_period_end,
+              trial_start: subscription.trial_start 
+                ? new Date(subscription.trial_start * 1000).toISOString() 
+                : null,
+              trial_end: subscription.trial_end 
+                ? new Date(subscription.trial_end * 1000).toISOString() 
+                : null
+            });
+
+          if (error) {
+            console.error("[Stripe Webhook] Error creating subscription:", error);
+          }
+
+          // Log billing event
+          await supabase.from("billing_events").insert({
+            user_id: userId,
+            event_type: "customer.subscription.created",
+            event_data: {
+              subscription_id: subscription.id,
+              plan_id: plan.id,
+              status: subscription.status
+            },
+            stripe_event_id: event.id
+          });
+        }
+        break;
+      }
+
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
@@ -218,6 +286,7 @@ serve(async (req) => {
         break;
       }
 
+      case "invoice.paid":
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
         const customerId = invoice.customer as string;
@@ -232,7 +301,7 @@ serve(async (req) => {
           await supabase.from("billing_events").insert({
             user_id: existingSub.user_id,
             subscription_id: existingSub.id,
-            event_type: "invoice.payment_succeeded",
+            event_type: event.type,
             event_data: {
               invoice_id: invoice.id,
               amount_paid: invoice.amount_paid,
