@@ -14,11 +14,15 @@ export function useBilling() {
 
   const isMockMode = isMockBillingMode();
 
-  // Fetch plans
+  // Fetch plans (only show basic and pro tiers)
   const fetchPlans = useCallback(async () => {
     try {
       const fetchedPlans = await paymentProvider.getPlans();
-      setPlans(fetchedPlans);
+      // Filter to show only Standard (basic) and Premium (pro) plans
+      const filteredPlans = fetchedPlans.filter(plan => 
+        plan.tier === 'basic' || plan.tier === 'pro'
+      );
+      setPlans(filteredPlans);
     } catch (error) {
       console.error('[Billing] Error fetching plans:', error);
     }
