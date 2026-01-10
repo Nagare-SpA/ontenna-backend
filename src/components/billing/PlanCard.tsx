@@ -1,4 +1,5 @@
-import { Check } from 'lucide-react';
+import { useState } from 'react';
+import { Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,11 +21,24 @@ export function PlanCard({
   billingPeriod,
   onSubscribe 
 }: PlanCardProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  
   // currentTier is null when user has no subscription
   const isCurrentPlan = currentTier !== null && plan.tier === currentTier;
   const price = billingPeriod === 'yearly' ? plan.priceYearly : plan.priceMonthly;
   const monthlyEquivalent = billingPeriod === 'yearly' ? Math.round(price / 12) : price;
   const isPopular = plan.tier === 'pro';
+
+  const handleSubscribe = async () => {
+    setIsLoading(true);
+    try {
+      await onSubscribe(plan.id);
+    } finally {
+      // Keep loading until redirect happens or error
+      // Reset after 10 seconds as fallback
+      setTimeout(() => setIsLoading(false), 10000);
+    }
+  };
 
   const formatPrice = (cents: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -82,10 +96,19 @@ export function PlanCard({
         <Button
           className="w-full"
           variant={isCurrentPlan ? 'outline' : (isPopular ? 'default' : 'secondary')}
-          disabled={isCurrentPlan || isProcessing}
-          onClick={() => onSubscribe(plan.id)}
+          disabled={isCurrentPlan || isProcessing || isLoading}
+          onClick={handleSubscribe}
         >
-          {isCurrentPlan ? 'Current Plan' : 'Subscribe'}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Connecting to Stripe...
+            </>
+          ) : isCurrentPlan ? (
+            'Current Plan'
+          ) : (
+            'Subscribe'
+          )}
         </Button>
       </CardFooter>
     </Card>
