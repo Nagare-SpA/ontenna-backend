@@ -12,6 +12,9 @@ verify_jwt = false
 [functions.stripe-checkout]
 verify_jwt = false
 
+[functions.start-trial]
+verify_jwt = false
+
 [functions.stripe-portal]
 verify_jwt = false
 
