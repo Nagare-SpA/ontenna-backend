@@ -12,6 +12,7 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Verify from "./pages/Verify";
 import Dashboard from "./pages/Dashboard";
+import FeatureDetail from "./pages/FeatureDetail";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -92,6 +93,7 @@ const App = () => (
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/feature/:id" element={<ProtectedRoute><FeatureDetail /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><AdminRoute><AdminDashboard /></AdminRoute></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute><AdminRoute><UsersManagement /></AdminRoute></ProtectedRoute>} />
               <Route path="/admin/plans" element={<ProtectedRoute><AdminRoute><PlansManagement /></AdminRoute></ProtectedRoute>} />

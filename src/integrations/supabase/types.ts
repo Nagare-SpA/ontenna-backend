@@ -101,6 +101,7 @@ export type Database = {
           created_at: string | null
           email: string
           first_name: string | null
+          has_used_trial: boolean
           id: string
           is_active: boolean
           is_verified: boolean
@@ -115,6 +116,7 @@ export type Database = {
           created_at?: string | null
           email: string
           first_name?: string | null
+          has_used_trial?: boolean
           id: string
           is_active?: boolean
           is_verified?: boolean
@@ -129,6 +131,7 @@ export type Database = {
           created_at?: string | null
           email?: string
           first_name?: string | null
+          has_used_trial?: boolean
           id?: string
           is_active?: boolean
           is_verified?: boolean

@@ -122,7 +122,7 @@ export default function Home() {
           <article className="rounded-[--radius] hairline bg-[hsl(var(--card))] p-8">
             <p className="text-xs uppercase tracking-[0.14em] text-primary">For everyone</p>
             <h3 className="mt-3 text-2xl font-semibold">Ontenna app · iPhone</h3>
-            <p className="mt-3 text-sm text-muted-foreground">One Ontenna paired to your iPhone. Alerts, live transcription, lessons, music, sports.</p>
+            <p className="mt-3 text-sm text-muted-foreground">One Ontenna paired to your iPhone. Alerts, Symphony, Sports, live Transcription, and Train.</p>
           </article>
           <article className="rounded-[--radius] hairline bg-[hsl(var(--card))] p-8">
             <p className="text-xs uppercase tracking-[0.14em]" style={{ color: "hsl(160 64% 52%)" }}>For teachers & performers</p>
@@ -133,8 +133,11 @@ export default function Home() {
       </section>
 
       <section className="container-site py-24">
-        <p className="text-xs uppercase tracking-[0.18em] text-[hsl(var(--tertiary-foreground))]">25 alerts · 5 categories</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-[hsl(var(--tertiary-foreground))]">50+ sounds · ~10 categories</p>
         <h2 className="mt-4 h-section font-bold">Listening 24/7, on your terms.</h2>
+        <p className="mt-5 max-w-2xl text-muted-foreground">
+          Alerts run on the Ontenna's own microphone — never your iPhone's — recognizing 50+ sounds across about 10 categories. Each one fires its own vibration pattern and color.
+        </p>
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-5">
           {Object.entries(SOUNDS).map(([key, cat]) => (
             <article key={key} className="rounded-[--radius] hairline bg-[hsl(var(--card))] p-5">
@@ -150,10 +153,10 @@ export default function Home() {
 
       <section className="container-site py-24">
         <div className="rounded-[--radius] bg-gradient-brand p-10 sm:p-16">
-          <p className="text-xs uppercase tracking-[0.18em] text-white/70">Music</p>
-          <h2 className="mt-4 h-section font-bold text-white">Feel the music. Feel the beat.</h2>
+          <p className="text-xs uppercase tracking-[0.18em] text-white/70">Symphony</p>
+          <h2 className="mt-4 h-section font-bold text-white">Feel the music, one instrument at a time.</h2>
           <p className="mt-5 max-w-2xl text-white/80">
-            FEEL mode follows the bass envelope continuously. BEAT mode locks onto kick and snare onsets. Seven styles: Auto, Electronic, Reggaeton, Pop, Rock, Latin, Reggae.
+            Symphony splits a song into stems — drums, bass, vocals, piano, guitar — each with its own vibration, synced to Spotify or Apple Music. Eight modes, and with Suit mode up to 7 Ontennas spread the music across your whole body.
           </p>
           <div className="mt-8 flex h-16 items-end gap-1">
             {Array.from({ length: 64 }).map((_, i) => (

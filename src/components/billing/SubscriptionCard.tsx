@@ -35,12 +35,14 @@ const STATUS_CONFIG: Record<SubscriptionStatus, { icon: React.ElementType; label
 export function SubscriptionCard({ onManageClick }: SubscriptionCardProps) {
   const { t } = useTranslation();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  const { 
-    subscription, 
-    isLoading, 
+  const {
+    subscription,
+    isLoading,
     cancelSubscription,
     resumeSubscription,
-    isProcessing
+    isProcessing,
+    trialEligible,
+    startTrial
   } = useBilling();
 
   if (isLoading) {
@@ -157,17 +159,38 @@ export function SubscriptionCard({ onManageClick }: SubscriptionCardProps) {
               <div className="flex items-center gap-2">
                 <Badge variant="outline">No Plan</Badge>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {t("subscription.noSubscription")}
-              </p>
-              {onManageClick && (
-                <Button 
-                  variant="default" 
-                  className="w-full"
-                  onClick={onManageClick}
-                >
-                  View Plans
-                </Button>
+              {trialEligible ? (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    Start your <span className="font-medium text-foreground">1 month free trial</span> — full access, no card required.
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      variant="default"
+                      className="w-full"
+                      onClick={startTrial}
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? 'Starting…' : 'Start free trial'}
+                    </Button>
+                    {onManageClick && (
+                      <Button variant="outline" className="w-full" onClick={onManageClick}>
+                        View Plans
+                      </Button>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    {t("subscription.noSubscription")}
+                  </p>
+                  {onManageClick && (
+                    <Button variant="default" className="w-full" onClick={onManageClick}>
+                      View Plans
+                    </Button>
+                  )}
+                </>
               )}
             </>
           )}

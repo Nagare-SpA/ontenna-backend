@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { SubscriptionCard } from "@/components/billing/SubscriptionCard";
 import { PlansDialog } from "@/components/billing/PlansDialog";
+import { AppFeaturesSection } from "@/components/dashboard/AppFeaturesSection";
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -130,6 +131,9 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Discover Ontenna — feature columns + FAQ */}
+        <AppFeaturesSection />
 
         {/* Plans Dialog */}
         <PlansDialog open={plansDialogOpen} onOpenChange={setPlansDialogOpen} />

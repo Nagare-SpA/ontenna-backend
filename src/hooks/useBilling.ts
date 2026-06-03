@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { paymentProvider, isMockBillingMode } from '@/services/billing';
 import type { Plan, Subscription, PlanTier } from '@/services/billing';
 import { useToast } from '@/hooks/use-toast';
 
 export function useBilling() {
-  const { user } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const { toast } = useToast();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -104,6 +105,54 @@ export function useBilling() {
     }
   }, [user?.id, toast, fetchSubscription]);
 
+  // Start the one-time, no-card free trial
+  const startTrial = useCallback(async () => {
+    if (!user?.id) {
+      toast({ title: 'Error', description: 'You must be logged in', variant: 'destructive' });
+      return { success: false };
+    }
+
+    setIsProcessing(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error('Not authenticated');
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const response = await fetch(`${supabaseUrl}/functions/v1/start-trial`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast({
+          title: 'Error',
+          description: data.message || data.error || 'Could not start your free trial',
+          variant: 'destructive',
+        });
+        return { success: false, error: data.error };
+      }
+
+      toast({
+        title: '🎉 Free trial started',
+        description: 'You now have 1 month of full access. Enjoy Ontenna!',
+      });
+      await Promise.all([fetchSubscription(), refreshProfile()]);
+      return { success: true };
+    } catch (error) {
+      console.error('[Billing] Error starting trial:', error);
+      toast({ title: 'Error', description: 'An unexpected error occurred', variant: 'destructive' });
+      return { success: false, error: 'Unexpected error' };
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [user?.id, toast, fetchSubscription, refreshProfile]);
+
   // Cancel subscription
   const cancelSubscription = useCallback(async () => {
     if (!subscription?.id) {
@@ -193,6 +242,10 @@ export function useBilling() {
   // Get current plan tier - null means no subscription
   const currentTier: PlanTier | null = subscription?.plan?.tier || null;
 
+  // Trial eligibility: account hasn't used it and has no subscription yet
+  const isTrialing = subscription?.status === 'trialing';
+  const trialEligible = !!user?.id && !profile?.has_used_trial && !subscription;
+
   return {
     plans,
     subscription,
@@ -200,7 +253,10 @@ export function useBilling() {
     isLoading,
     isProcessing,
     isMockMode,
+    isTrialing,
+    trialEligible,
     subscribe,
+    startTrial,
     cancelSubscription,
     resumeSubscription,
     openCustomerPortal,
