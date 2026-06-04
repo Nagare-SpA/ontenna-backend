@@ -54,6 +54,7 @@ function transformSubscription(row: {
   canceled_at: string | null;
   trial_start: string | null;
   trial_end: string | null;
+  free_until?: string | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
 }, plan?: Plan): Subscription {
@@ -69,6 +70,7 @@ function transformSubscription(row: {
     canceledAt: row.canceled_at ? new Date(row.canceled_at) : undefined,
     trialStart: row.trial_start ? new Date(row.trial_start) : undefined,
     trialEnd: row.trial_end ? new Date(row.trial_end) : undefined,
+    freeUntil: row.free_until ? new Date(row.free_until) : undefined,
     stripeCustomerId: row.stripe_customer_id || undefined,
     stripeSubscriptionId: row.stripe_subscription_id || undefined
   };

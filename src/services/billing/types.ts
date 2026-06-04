@@ -27,6 +27,7 @@ export interface Subscription {
   canceledAt?: Date;
   trialStart?: Date;
   trialEnd?: Date;
+  freeUntil?: Date;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
 }

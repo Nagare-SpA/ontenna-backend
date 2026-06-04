@@ -68,6 +68,14 @@ export function SubscriptionCard({ onManageClick }: SubscriptionCardProps) {
   const statusConfig = subscription ? STATUS_CONFIG[subscription.status] : null;
   const StatusIcon = statusConfig?.icon || CreditCard;
 
+  // Entitlement, computed exactly like the iOS app: access if any of
+  // trial / current period / complimentary (free_until) is in the future.
+  const entitlementDates = [subscription?.trialEnd, subscription?.currentPeriodEnd, subscription?.freeUntil]
+    .filter((d): d is Date => d instanceof Date && d.getTime() > Date.now())
+    .sort((a, b) => b.getTime() - a.getTime());
+  const accessUntil = entitlementDates[0];
+  const isComplimentary = !!subscription?.freeUntil && subscription.freeUntil.getTime() > Date.now();
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
@@ -98,6 +106,25 @@ export function SubscriptionCard({ onManageClick }: SubscriptionCardProps) {
           <CardDescription>{t("subscription.subtitle")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {subscription && (
+            <div className="rounded-lg border border-border p-3">
+              {accessUntil ? (
+                <p className="flex items-center gap-2 text-sm font-medium">
+                  <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
+                  Access until {formatDate(accessUntil)}
+                </p>
+              ) : (
+                <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <XCircle className="h-4 w-4 shrink-0" />
+                  No active access
+                </p>
+              )}
+              <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-muted-foreground">
+                {subscription.status === 'trialing' && <span>Free trial</span>}
+                {isComplimentary && <span>Includes complimentary access</span>}
+              </div>
+            </div>
+          )}
           {hasActiveSubscription && subscription ? (
             <>
               <div className="flex items-center justify-between">
