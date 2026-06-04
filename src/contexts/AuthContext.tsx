@@ -13,7 +13,7 @@ interface AuthContextType {
   roles: UserRole[];
   isLoading: boolean;
   isVerified: boolean;
-  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{ user: User | null; error: Error | null }>;
+  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{ user: User | null; error: Error | null; alreadyExists: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   sendVerificationCode: () => Promise<{ error: Error | null }>;
@@ -135,10 +135,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (error) {
-      return { user: null, error };
+      const alreadyExists = /already registered|already exists|user already/i.test(error.message);
+      return { user: null, error, alreadyExists };
     }
 
-    return { user: data.user, error: null };
+    // When email confirmations are enabled, Supabase returns an obfuscated user
+    // with an empty `identities` array if the email already exists (anti-enumeration).
+    const identities = (data.user as { identities?: unknown[] } | null)?.identities;
+    const alreadyExists = !!data.user && Array.isArray(identities) && identities.length === 0;
+    if (alreadyExists) {
+      return { user: null, error: null, alreadyExists: true };
+    }
+
+    return { user: data.user, error: null, alreadyExists: false };
   };
 
   const signIn = async (email: string, password: string) => {

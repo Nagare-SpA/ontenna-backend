@@ -57,6 +57,9 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Guard against double submission (was a source of false "account exists" errors).
+    if (isLoading) return;
+
     if (password !== confirmPassword) {
       toast({
         title: t("common.error"),
@@ -66,10 +69,10 @@ export default function Signup() {
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       toast({
         title: t("common.error"),
-        description: t("auth.signup.passwordTooShort"),
+        description: t("auth.signup.passwordTooShort", "Password must be at least 8 characters."),
         variant: "destructive",
       });
       return;
@@ -77,7 +80,18 @@ export default function Signup() {
 
     setIsLoading(true);
 
-    const { user, error } = await signUp(email, password, firstName, lastName);
+    const { user, error, alreadyExists } = await signUp(email, password, firstName, lastName);
+
+    // Email already registered — guide to login instead of showing a scary failure.
+    if (alreadyExists) {
+      toast({
+        title: t("auth.signup.emailExistsTitle", "This email already has an account"),
+        description: t("auth.signup.emailExistsBody", "Try signing in instead. Redirecting you to log in…"),
+      });
+      setIsLoading(false);
+      navigate("/login", { state: { email } });
+      return;
+    }
 
     if (error) {
       toast({
@@ -174,6 +188,16 @@ export default function Signup() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                {password.length > 0 && (
+                  <ul className="space-y-1 pt-1 text-xs">
+                    <li className={password.length >= 8 ? "text-green-600" : "text-muted-foreground"}>
+                      {password.length >= 8 ? "✓" : "•"} {t("auth.signup.req8chars", "At least 8 characters")}
+                    </li>
+                    <li className="text-muted-foreground">
+                      • {t("auth.signup.reqBreach", "Common, leaked passwords are not allowed")}
+                    </li>
+                  </ul>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">{t("auth.signup.confirmPassword")}</Label>

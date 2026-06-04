@@ -55,7 +55,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email with reset link
     const emailResponse = await resend.emails.send({
-      from: "Ontenna <no-reply@app.ontenna.org>",
+      from: "Ontenna <no-reply@ontenna.org>",
       to: [email],
       subject: "Reset your password",
       html: `
