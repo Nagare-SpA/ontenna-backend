@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, AudioLines } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { OntennaLogo } from "./OntennaLogo";
@@ -40,6 +40,21 @@ export function SiteNav() {
         </Link>
 
         <ul className="hidden items-center gap-1 lg:flex">
+          <li>
+            <NavLink
+              to="/symphony"
+              className={({ isActive }) =>
+                `inline-flex h-10 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-colors ${
+                  isActive
+                    ? "border-primary/60 bg-gradient-brand-soft text-foreground"
+                    : "border-[hsl(0_0%_100%/0.12)] text-foreground hover:border-primary/60"
+                }`
+              }
+            >
+              <AudioLines className="h-4 w-4 text-primary" />
+              <span className="text-gradient">Symphony</span>
+            </NavLink>
+          </li>
           {links.map((l) => (
             <li key={l.to}>
               <NavLink
@@ -86,6 +101,16 @@ export function SiteNav() {
         <div className="lg:hidden">
           <div className="container-site hairline-t py-6">
             <ul className="flex flex-col gap-1">
+              <li>
+                <NavLink
+                  to="/symphony"
+                  onClick={() => setOpen(false)}
+                  className="flex h-12 items-center gap-2 rounded-xl border border-primary/40 bg-gradient-brand-soft px-4 text-base font-semibold"
+                >
+                  <AudioLines className="h-5 w-5 text-primary" />
+                  <span className="text-gradient">Symphony</span>
+                </NavLink>
+              </li>
               {links.map((l) => (
                 <li key={l.to}>
                   <NavLink

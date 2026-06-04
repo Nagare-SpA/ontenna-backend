@@ -33,6 +33,7 @@ import Reserve from "./pages/site/Reserve";
 import Schools from "./pages/site/Schools";
 import Science from "./pages/site/Science";
 import Story from "./pages/site/Story";
+import Symphony from "./pages/site/Symphony";
 import Support from "./pages/site/Support";
 import Teachers from "./pages/site/Teachers";
 import Terms from "./pages/site/Terms";
@@ -73,6 +74,7 @@ const App = () => (
               <Route path="/schools" element={<Schools />} />
               <Route path="/science" element={<Science />} />
               <Route path="/story" element={<Story />} />
+              <Route path="/symphony" element={<Symphony />} />
               <Route path="/support" element={<Support />} />
               <Route path="/teachers" element={<Teachers />} />
               <Route path="/terms" element={<Terms />} />
