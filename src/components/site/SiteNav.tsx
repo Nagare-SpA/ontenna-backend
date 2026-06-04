@@ -65,9 +65,11 @@ export function SiteNav() {
             <User className="h-4 w-4" />
             {authed ? t("nav.account", "Account") : t("nav.signIn", "Sign in")}
           </Link>
-          <div className="hidden lg:block">
-            <GradientButton to="/reserve" size="md">{t("nav.getOntenna", "Get Ontenna")}</GradientButton>
-          </div>
+          {!authed && (
+            <div className="hidden sm:block">
+              <GradientButton to="/signup" size="md">{t("nav.signUp", "Sign up")}</GradientButton>
+            </div>
+          )}
           <button
             type="button"
             className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-full text-foreground hover:bg-[hsl(0_0%_100%/0.06)] lg:hidden"
@@ -101,9 +103,11 @@ export function SiteNav() {
               ))}
             </ul>
             <div className="mt-6 flex flex-col gap-3">
-              <GradientButton to="/reserve" size="lg" className="w-full" onClick={() => setOpen(false)}>
-                {t("nav.getOntenna", "Get Ontenna")}
-              </GradientButton>
+              {!authed && (
+                <GradientButton to="/signup" size="lg" className="w-full" onClick={() => setOpen(false)}>
+                  {t("nav.signUp", "Sign up")}
+                </GradientButton>
+              )}
               <GradientButton
                 to={authed ? "/dashboard" : "/login"}
                 variant="outline"
