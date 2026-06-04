@@ -15,6 +15,9 @@ verify_jwt = false
 [functions.start-trial]
 verify_jwt = false
 
+[functions.web-signup]
+verify_jwt = false
+
 [functions.stripe-portal]
 verify_jwt = false
 

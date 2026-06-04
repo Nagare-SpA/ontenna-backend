@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,41 +17,8 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  const sendVerificationCodeDirect = async (userId: string, userEmail: string, userFirstName: string) => {
-    try {
-      const response = await fetch(
-        `https://ycfrjvnuepfkeffsqxgm.supabase.co/functions/v1/send-verification-code`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnJqdm51ZXBma2VmZnNxeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMzAwNDEsImV4cCI6MjA4MzYwNjA0MX0.6wEnk2OSRaCxHLQ-iUabA2_n-klE2HTl5niMwiptLnA",
-          },
-          body: JSON.stringify({
-            userId,
-            email: userEmail,
-            firstName: userFirstName,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error("Error sending verification code:", data.error);
-        return { error: new Error(data.error || "Failed to send code") };
-      }
-
-      return { error: null };
-    } catch (error: any) {
-      console.error("Error sending verification code:", error);
-      return { error };
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,56 +46,75 @@ export default function Signup() {
 
     setIsLoading(true);
 
-    const { user, error, alreadyExists } = await signUp(email, password, firstName, lastName);
+    try {
+      // Single idempotent server call: creates the account (enforcing the
+      // password policy + HIBP) and sends the verification code in one step.
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/web-signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            first_name: firstName,
+            last_name: lastName,
+          }),
+        }
+      );
+      const data = await res.json();
 
-    // Email already registered — guide to login instead of showing a scary failure.
-    if (alreadyExists) {
-      toast({
-        title: t("auth.signup.emailExistsTitle", "This email already has an account"),
-        description: t("auth.signup.emailExistsBody", "Try signing in instead. Redirecting you to log in…"),
-      });
-      setIsLoading(false);
-      navigate("/login", { state: { email } });
-      return;
-    }
-
-    if (error) {
-      toast({
-        title: t("auth.errors.signupFailed"),
-        description: error.message,
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    if (user) {
-      // Send verification code directly with user data from signup response
-      const { error: codeError } = await sendVerificationCodeDirect(user.id, email, firstName);
-      
-      if (codeError) {
-        console.error("Error sending verification code:", codeError);
+      if (!res.ok || !data.ok) {
+        if (data.code === "already_exists") {
+          toast({
+            title: t("auth.signup.emailExistsTitle", "This email already has an account"),
+            description: t("auth.signup.emailExistsBody", "Try signing in instead. Redirecting you to log in…"),
+          });
+          navigate("/login", { state: { email } });
+          return;
+        }
+        if (data.code === "weak_password") {
+          toast({
+            title: t("common.error"),
+            description: data.message || t("auth.signup.passwordTooShort", "Please choose a stronger password."),
+            variant: "destructive",
+          });
+          return;
+        }
         toast({
-          title: t("common.error"),
-          description: t("auth.verify.sendError"),
+          title: t("auth.errors.signupFailed"),
+          description: data.message || "Sign up failed",
           variant: "destructive",
         });
-      } else {
-        toast({
-          title: t("auth.signup.success"),
-          description: t("auth.signup.successMessage"),
-        });
+        return;
       }
 
-      // Store data in sessionStorage for verification page (including password for auto-login)
+      // Success — store data for the verification page (incl. password for auto-login).
       sessionStorage.setItem("pendingVerificationEmail", email);
-      sessionStorage.setItem("pendingVerificationUserId", user.id);
+      sessionStorage.setItem("pendingVerificationUserId", data.user_id);
       sessionStorage.setItem("pendingVerificationPassword", password);
-      
-      navigate("/verify");
-    }
 
-    setIsLoading(false);
+      toast({
+        title: data.code_sent ? t("auth.signup.success", "Account created") : t("common.error"),
+        description: data.code_sent
+          ? t("auth.signup.successMessage", "We sent a verification code to your email.")
+          : t("auth.verify.sendError", "We couldn't send the code — you can resend it on the next screen."),
+        variant: data.code_sent ? undefined : "destructive",
+      });
+
+      navigate("/verify");
+    } catch (err) {
+      toast({
+        title: t("auth.errors.signupFailed"),
+        description: err instanceof Error ? err.message : "Unexpected error",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

@@ -7,8 +7,33 @@ import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
 import { GradientButton } from "@/components/site/GradientButton";
 import { fetchCatalogCount, fetchTopArtists, searchCatalog } from "@/services/symphonyCatalog";
-import appMusic from "@/assets/app-music.jpg";
-import appModes from "@/assets/app-modes.jpg";
+import shotPlayer from "@/assets/symphony-player.jpg";
+import shotCatalog from "@/assets/symphony-catalog.jpg";
+import shotSearch from "@/assets/symphony-search.jpg";
+
+const APP_ROWS = [
+  {
+    image: shotPlayer,
+    alt: "Symphony player showing the stems of Bohemian Rhapsody",
+    eyebrow: "The player",
+    title: "Feel every instrument, live.",
+    body: "Hit play and the stems light up as they sound — Drums, Groove, Voice, Harmony, Piano, Guitar. Tap one to focus on a single layer, or switch on “Symphony — full experience” to feel the whole band at once. The tempo locks to the song, beat for beat.",
+  },
+  {
+    image: shotCatalog,
+    alt: "Symphony catalog with Popular on Spotify and browse by genre",
+    eyebrow: "Discover",
+    title: "A catalog built for haptics.",
+    body: "Browse what's popular on Spotify and dig in by genre or decade — Rock, Pop, Hip-Hop, Latin, the 80s through the 2010s, and more. Every song shown already has a pre-computed haptic score ready to feel.",
+  },
+  {
+    image: shotSearch,
+    alt: "Searching the Symphony catalog for Adele",
+    eyebrow: "Search",
+    title: "Find any song or artist in seconds.",
+    body: "Type an artist and jump straight to their catalog — 46 Adele songs, a tap away. Pick a track and Symphony pairs the music with your Ontenna instantly.",
+  },
+];
 
 const STEMS = [
   { name: "Drums", color: "hsl(0 84% 56%)", body: "The pulse — kick and snare onsets you feel in your chest." },
@@ -151,24 +176,35 @@ export default function Symphony() {
         </div>
       </Section>
 
-      {/* App visuals */}
+      {/* App visuals — alternating rows */}
       <Section eyebrow="In the app" title="Built to be played with.">
-        <div className="grid items-center gap-10 lg:grid-cols-2">
-          <div className="space-y-5">
-            <p className="text-muted-foreground">
-              Search any song, hit play, and watch the live equalizer light up the stems that are sounding.
-              Pick a mode to focus on one layer — or turn on the full experience and feel everything at once.
-            </p>
-            <p className="text-muted-foreground">
-              Playback syncs invisibly with Spotify or Apple Music, so the vibration lands at the exact moment
-              the sound does.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <img src={appMusic} alt="Symphony player in the Ontenna app" loading="lazy" className="rounded-2xl hairline" />
-            <img src={appModes} alt="Symphony modes in the Ontenna app" loading="lazy" className="mt-8 rounded-2xl hairline" />
-          </div>
+        <div className="space-y-16 sm:space-y-24">
+          {APP_ROWS.map((row, i) => (
+            <div key={row.title} className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
+              {/* Image — alternates side on lg; always first on mobile */}
+              <div className={`flex justify-center ${i % 2 === 1 ? "lg:order-2" : ""}`}>
+                <div className="relative">
+                  <div className="absolute -inset-6 rounded-[40px] bg-gradient-brand-soft blur-2xl" aria-hidden="true" />
+                  <img
+                    src={row.image}
+                    alt={row.alt}
+                    loading="lazy"
+                    className="relative w-full max-w-[260px] rounded-[28px] hairline shadow-card"
+                  />
+                </div>
+              </div>
+              {/* Text */}
+              <div className={i % 2 === 1 ? "lg:order-1" : ""}>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{row.eyebrow}</p>
+                <h3 className="mt-3 text-2xl font-semibold text-foreground sm:text-3xl">{row.title}</h3>
+                <p className="mt-4 leading-relaxed text-muted-foreground">{row.body}</p>
+              </div>
+            </div>
+          ))}
         </div>
+        <p className="mt-12 max-w-2xl text-sm text-muted-foreground">
+          Playback syncs invisibly with Spotify or Apple Music, so the vibration lands at the exact moment the sound does.
+        </p>
       </Section>
 
       {/* Modes */}
