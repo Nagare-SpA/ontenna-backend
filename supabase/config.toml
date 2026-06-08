@@ -18,6 +18,9 @@ verify_jwt = false
 [functions.web-signup]
 verify_jwt = false
 
+[functions.learn-publish]
+verify_jwt = false
+
 [functions.stripe-portal]
 verify_jwt = false
 
