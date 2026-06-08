@@ -3,9 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import { 
-  Shield, Users, CreditCard, LayoutDashboard, 
-  ArrowLeft, Menu, X 
+import {
+  Shield, Users, CreditCard, LayoutDashboard, GraduationCap,
+  ArrowLeft, Menu, X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -14,9 +14,10 @@ interface AdminLayoutProps {
 }
 
 const navItems = [
-  { key: "dashboard", icon: LayoutDashboard, path: "/admin" },
-  { key: "users", icon: Users, path: "/admin/users" },
-  { key: "plans", icon: CreditCard, path: "/admin/plans" },
+  { key: "dashboard", icon: LayoutDashboard, path: "/admin", label: "Dashboard" },
+  { key: "users", icon: Users, path: "/admin/users", label: "Users" },
+  { key: "plans", icon: CreditCard, path: "/admin/plans", label: "Plans" },
+  { key: "learn", icon: GraduationCap, path: "/admin/learn", label: "Learn" },
 ];
 
 export function AdminLayout({ children }: AdminLayoutProps) {
@@ -76,7 +77,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   }}
                 >
                   <Icon className="h-4 w-4 mr-2" />
-                  {t(`admin.nav.${item.key}`)}
+                  {t(`admin.nav.${item.key}`, item.label)}
                 </Button>
               );
             })}

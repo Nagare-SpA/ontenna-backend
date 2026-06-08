@@ -36,13 +36,23 @@ async function sha256Hex(s: string): Promise<string> {
   return "sha256:" + Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+// Authorize via publish secret (CI) OR a super_admin JWT (admin dashboard).
+async function authorize(req: Request, supabase: any): Promise<boolean> {
+  const secret = Deno.env.get("LEARN_PUBLISH_SECRET");
+  if (secret && req.headers.get("x-publish-secret") === secret) return true;
+  const auth = req.headers.get("Authorization");
+  if (!auth) return false;
+  const { data: { user } } = await supabase.auth.getUser(auth.replace("Bearer ", ""));
+  if (!user) return false;
+  const { data } = await supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "super_admin").maybeSingle();
+  return !!data;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   try {
-    if (req.headers.get("x-publish-secret") !== Deno.env.get("LEARN_PUBLISH_SECRET")) {
-      return json({ ok: false, error: "unauthorized" }, 401);
-    }
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    if (!(await authorize(req, supabase))) return json({ ok: false, error: "unauthorized" }, 401);
     const body = await req.json().catch(() => ({}));
     const channel: string = body.channel || "stable";
     const dryRun: boolean = !!body.dryRun;
