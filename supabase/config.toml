@@ -21,6 +21,9 @@ verify_jwt = false
 [functions.learn-publish]
 verify_jwt = false
 
+[functions.learn-ingest]
+verify_jwt = false
+
 [functions.stripe-portal]
 verify_jwt = false
 
