@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronRight, Pencil, Rocket, ShieldCheck, Upload, RotateCcw } from "lucide-react";
+import { ChevronRight, Pencil, Rocket, ShieldCheck, Upload, RotateCcw, Plus } from "lucide-react";
 
 // learn_* tables aren't in the generated types; use a loose client for them.
 const db = supabase as any;
@@ -118,6 +118,11 @@ export default function LearnManagement() {
             </div>
 
             {!moduleId && (
+              <div className="mb-3 flex justify-end">
+                <NewButton type="module" ctx={{ nextNumber: (modules.data || []).reduce((mx: number, m: any) => Math.max(mx, m.number || 0), 0) + 1, contentVersion: curVersion?.content_version || "1.0.0" }} onDone={refetchAll} toast={toast} />
+              </div>
+            )}
+            {!moduleId && (
               <Card><CardContent className="pt-6"><Table>
                 <TableHeader><TableRow><TableHead>#</TableHead><TableHead>Module</TableHead><TableHead>Color</TableHead><TableHead>Version</TableHead><TableHead>Active</TableHead><TableHead className="text-right">Edit</TableHead></TableRow></TableHeader>
                 <TableBody>{(modules.data || []).map((m: any) => (
@@ -133,6 +138,11 @@ export default function LearnManagement() {
               </Table></CardContent></Card>
             )}
 
+            {moduleId && !experienceId && (
+              <div className="mb-3 flex justify-end">
+                <NewButton type="experience" ctx={{ moduleId, nextOrder: modExps.length + 1 }} onDone={refetchAll} toast={toast} />
+              </div>
+            )}
             {moduleId && !experienceId && (
               <Card><CardContent className="pt-6"><Table>
                 <TableHeader><TableRow><TableHead>Order</TableHead><TableHead>Experience</TableHead><TableHead>Mechanic</TableHead><TableHead>LED</TableHead><TableHead>Levels</TableHead><TableHead>Active</TableHead><TableHead className="text-right">Edit</TableHead></TableRow></TableHeader>
@@ -150,6 +160,11 @@ export default function LearnManagement() {
               </Table></CardContent></Card>
             )}
 
+            {experienceId && (
+              <div className="mb-3 flex justify-end">
+                <NewButton type="level" ctx={{ experienceId, nextOrder: expLevels.length + 1 }} onDone={refetchAll} toast={toast} />
+              </div>
+            )}
             {experienceId && (
               <Card><CardContent className="pt-6"><Table>
                 <TableHeader><TableRow><TableHead>Order</TableHead><TableHead>Level</TableHead><TableHead>Diff</TableHead><TableHead>Goal</TableHead><TableHead>Active</TableHead><TableHead className="text-right">Edit</TableHead></TableRow></TableHeader>
@@ -361,4 +376,91 @@ function EditRow({ type, row, onDone, toast }: any) {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <div className="space-y-1"><Label className="text-xs">{label}</Label>{children}</div>;
+}
+
+// ===== Create module / experience / level =====
+function NewButton({ type, ctx, onDone, toast }: any) {
+  const suggestId = type === "module" ? `L${ctx.nextNumber}`
+    : type === "experience" ? `${ctx.moduleId}-E${ctx.nextOrder}`
+    : `${ctx.experienceId}-lv${ctx.nextOrder}`;
+  const blank = () => {
+    if (type === "module") return { id: suggestId, number: ctx.nextNumber, name: "", icon: "", color_theme: "#7C3AED", tagline: "", description: "", audience: "12+", skill_focus: [], content_version: ctx.contentVersion, is_active: true };
+    if (type === "experience") return { id: suggestId, module_id: ctx.moduleId, order: ctx.nextOrder, name: "", icon: "", short_desc: "", skill_focus: "", response_mechanic: "tap", uses_led: false, est_seconds_per_level: 120, level_count: 0, is_active: true };
+    return { id: suggestId, experience_id: ctx.experienceId, order: ctx.nextOrder, name: "", difficulty: 1, goal: "", params: {}, vibration_pattern: { pulses: [{ durationMs: 120, intensity: 0.8, sharpness: 0, gapMs: 480 }] }, led_pattern: null, f005_level: null, success_criteria: { metric: "accuracy", pass: 0.7 }, scoring: { xp: 10, tracks: ["accuracy"] }, unlock_after: null, is_active: true };
+  };
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState<any>(blank());
+  const [busy, setBusy] = useState(false);
+
+  const create = async () => {
+    const row = { ...form };
+    if (type === "level") {
+      try {
+        ["params", "vibration_pattern", "led_pattern", "success_criteria", "scoring"].forEach((k) => {
+          if (typeof row[`__${k}_raw`] === "string") row[k] = JSON.parse(row[`__${k}_raw`]);
+          delete row[`__${k}_raw`];
+        });
+      } catch { return toast({ title: "Invalid JSON in a pattern/field", variant: "destructive" }); }
+      const errs = validatePattern(row.vibration_pattern);
+      if (errs.length) return toast({ title: "ERM validation failed", description: errs.slice(0, 3).join("; "), variant: "destructive" });
+      row.difficulty = Number(row.difficulty); row.order = Number(row.order);
+      row.f005_level = row.f005_level === "" || row.f005_level == null ? null : Number(row.f005_level);
+      row.unlock_after = row.unlock_after || null;
+    }
+    setBusy(true);
+    const table = type === "module" ? "learn_modules" : type === "experience" ? "learn_experiences" : "learn_levels";
+    const { error } = await db.from(table).insert(row);
+    setBusy(false);
+    if (error) return toast({ title: "Create failed", description: error.message, variant: "destructive" });
+    toast({ title: `${type} created`, description: "Republish to ship the change." });
+    setOpen(false); setForm(blank()); onDone();
+  };
+
+  return (
+    <>
+      <Button size="sm" onClick={() => { setForm(blank()); setOpen(true); }}><Plus className="h-4 w-4 mr-1" />New {type}</Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader><DialogTitle>New {type}</DialogTitle><DialogDescription>IDs follow the L&lt;n&gt; / L&lt;n&gt;-E&lt;k&gt; / -lv&lt;m&gt; convention.</DialogDescription></DialogHeader>
+          <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-2">
+            <Field label="id"><Input value={form.id} onChange={(e) => setForm({ ...form, id: e.target.value })} /></Field>
+            {type === "module" && (<>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Number"><Input type="number" value={form.number} onChange={(e) => setForm({ ...form, number: Number(e.target.value) })} /></Field>
+                <Field label="Name"><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
+              </div>
+              <Field label="Icon (SF Symbol)"><Input value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} /></Field>
+              <Field label="Color theme"><Input value={form.color_theme} onChange={(e) => setForm({ ...form, color_theme: e.target.value })} /></Field>
+              <Field label="Tagline"><Input value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} /></Field>
+              <Field label="Description"><Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></Field>
+            </>)}
+            {type === "experience" && (<>
+              <div className="grid grid-cols-3 gap-3">
+                <Field label="Name"><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
+                <Field label="Order"><Input type="number" value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} /></Field>
+                <Field label="Mechanic"><Input value={form.response_mechanic} onChange={(e) => setForm({ ...form, response_mechanic: e.target.value })} /></Field>
+              </div>
+              <Field label="Short description"><Textarea rows={2} value={form.short_desc} onChange={(e) => setForm({ ...form, short_desc: e.target.value })} /></Field>
+              <div className="flex items-center gap-2"><Switch checked={form.uses_led} onCheckedChange={(c) => setForm({ ...form, uses_led: c })} /><Label>Uses LED (F007)</Label></div>
+            </>)}
+            {type === "level" && (<>
+              <div className="grid grid-cols-3 gap-3">
+                <Field label="Name"><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
+                <Field label="Difficulty"><Input type="number" value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: e.target.value })} /></Field>
+                <Field label="Order"><Input type="number" value={form.order} onChange={(e) => setForm({ ...form, order: e.target.value })} /></Field>
+              </div>
+              <Field label="Goal"><Textarea rows={2} value={form.goal} onChange={(e) => setForm({ ...form, goal: e.target.value })} /></Field>
+              <Field label="unlock_after"><Input value={form.unlock_after || ""} onChange={(e) => setForm({ ...form, unlock_after: e.target.value })} placeholder="null" /></Field>
+              {["vibration_pattern", "led_pattern", "params", "success_criteria", "scoring"].map((k) => (
+                <Field key={k} label={k}>
+                  <Textarea rows={k === "vibration_pattern" ? 4 : 2} defaultValue={JSON.stringify(form[k], null, 2)} onChange={(e) => setForm((f: any) => ({ ...f, [`__${k}_raw`]: e.target.value }))} className="font-mono text-xs" />
+                </Field>
+              ))}
+            </>)}
+          </div>
+          <DialogFooter><Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button><Button onClick={create} disabled={busy}>Create</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 }
