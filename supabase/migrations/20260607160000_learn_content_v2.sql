@@ -147,6 +147,8 @@ CREATE TRIGGER trg_learn_modules_updated BEFORE UPDATE ON public.learn_modules
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 CREATE TRIGGER trg_learn_experiences_updated BEFORE UPDATE ON public.learn_experiences
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+CREATE TRIGGER trg_learn_progress_updated BEFORE UPDATE ON public.learn_user_progress
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- RLS — read-only client
 ALTER TABLE public.learn_modules ENABLE ROW LEVEL SECURITY;
