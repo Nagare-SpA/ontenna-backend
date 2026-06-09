@@ -7,7 +7,8 @@ const corsHeaders = {
 };
 
 interface VerifyCodeRequest {
-  userId: string;
+  userId?: string;
+  email?: string;
   code: string;
 }
 
@@ -23,12 +24,24 @@ const handler = async (req: Request): Promise<Response> => {
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
-    const { userId, code }: VerifyCodeRequest = await req.json();
+    let { userId, email, code }: VerifyCodeRequest = await req.json();
 
-    if (!userId || !code) {
+    if (!code || (!userId && !email)) {
       return new Response(
-        JSON.stringify({ error: "Missing userId or code" }),
+        JSON.stringify({ error: "Missing code or user identifier" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Resolve userId by email when only the email is provided.
+    if (!userId && email) {
+      const { data: prof } = await supabaseAdmin.from("profiles").select("id").eq("email", email).maybeSingle();
+      userId = prof?.id;
+    }
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ error: "user_not_found" }),
+        { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 

@@ -10,7 +10,7 @@ const corsHeaders = {
 };
 
 interface SendCodeRequest {
-  userId: string;
+  userId?: string;
   email: string;
   firstName?: string;
 }
@@ -31,12 +31,24 @@ const handler = async (req: Request): Promise<Response> => {
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
-    const { userId, email, firstName }: SendCodeRequest = await req.json();
+    let { userId, email, firstName }: SendCodeRequest = await req.json();
 
-    if (!userId || !email) {
+    if (!email) {
       return new Response(
-        JSON.stringify({ error: "Missing userId or email" }),
+        JSON.stringify({ error: "Missing email" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Allow resolving the user by email (e.g. login-time re-verification).
+    if (!userId) {
+      const { data: prof } = await supabaseAdmin.from("profiles").select("id").eq("email", email).maybeSingle();
+      userId = prof?.id;
+    }
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ error: "user_not_found" }),
+        { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
