@@ -88,7 +88,7 @@ const handler = async (req: Request): Promise<Response> => {
                   <!-- Header -->
                   <tr>
                     <td style="padding: 40px 40px 24px; text-align: center;">
-                      <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 16px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
+                      <div style="width: 64px; height: 64px; background-color: #6366f1; background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 16px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
                         <span style="font-size: 28px;">🔐</span>
                       </div>
                       <h1 style="margin: 0; font-size: 24px; font-weight: 700; color: #1e293b;">Verify Your Email</h1>
@@ -101,7 +101,7 @@ const handler = async (req: Request): Promise<Response> => {
                         Hi${firstName ? ` <strong>${firstName}</strong>` : ""}! Enter this code to complete your verification:
                       </p>
                       <!-- Code Box -->
-                      <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px; border: 2px solid #6366f1;">
+                      <div style="background-color: #1e293b; background-image: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px; border: 2px solid #6366f1;">
                         <span style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #ffffff; font-family: 'Courier New', monospace;">${code}</span>
                       </div>
                       <p style="margin: 0; font-size: 14px; line-height: 20px; color: #94a3b8; text-align: center;">
