@@ -7,7 +7,7 @@ import { WaveformDivider } from "@/components/site/WaveformDivider";
 import { AppStoreButton } from "@/components/site/AppStoreButton";
 import { PressLogos } from "@/components/site/PressLogos";
 import ontennaProSide from "@/assets/ontenna-pro-side.png";
-import ontennaProFront from "@/assets/ontenna-pro-front.png";
+import ontennaProTop from "@/assets/ontenna-pro-top.png";
 
 const SOUND_CATS = [
   { key: "emergency", color: "hsl(0 84% 56%)" },
@@ -110,9 +110,9 @@ export default function Home() {
             <div className="aspect-square rounded-[--radius] hairline bg-gradient-brand-soft p-12">
               <div className="grid h-full place-items-center rounded-[--radius] bg-[#0A0A0C] hairline p-6">
                 <img
-                  src={ontennaProFront}
-                  alt="Ontenna Pro standing, front view"
-                  className="max-h-full w-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.55)]"
+                  src={ontennaProTop}
+                  alt="Ontenna Pro top view — microphone grille"
+                  className="w-[88%] drop-shadow-[0_24px_48px_rgba(0,0,0,0.55)]"
                 />
               </div>
             </div>
