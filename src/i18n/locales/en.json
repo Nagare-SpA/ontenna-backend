@@ -464,6 +464,11 @@
     "manifesto": {
       "eyebrow": "Manifesto",
       "body": "We build hardware for the senses people already have. Ontenna is universal by design, built with the Deaf community, and made to put the world back inside your body."
+    },
+    "slider": {
+      "worn": "Clip it on. Feel your world.",
+      "device": "Ontenna Pro — clip, controls, vibration & light.",
+      "together": "Sound, shared together."
     }
   },
   "press": {

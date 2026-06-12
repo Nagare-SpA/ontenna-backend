@@ -373,6 +373,11 @@
     "manifesto": {
       "eyebrow": "Manifeste",
       "body": "Nous concevons du matériel pour les sens que les gens possèdent déjà. Ontenna est universel par conception, créé avec la communauté sourde, et fait pour remettre le monde à l'intérieur de votre corps."
+    },
+    "slider": {
+      "worn": "Clipsez-le. Ressentez votre monde.",
+      "device": "Ontenna Pro — clip, commandes, vibration et lumière.",
+      "together": "Le son, partagé ensemble."
     }
   },
   "press": {

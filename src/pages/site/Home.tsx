@@ -6,8 +6,8 @@ import { PulseDot } from "@/components/site/PulseDot";
 import { WaveformDivider } from "@/components/site/WaveformDivider";
 import { AppStoreButton } from "@/components/site/AppStoreButton";
 import { PressLogos } from "@/components/site/PressLogos";
-import ontennaProSide from "@/assets/ontenna-pro-side.png";
-import ontennaProTop from "@/assets/ontenna-pro-top.png";
+import { HeroSlider } from "@/components/site/HeroSlider";
+import devicePhoto from "@/assets/device-photo.jpg";
 
 const SOUND_CATS = [
   { key: "emergency", color: "hsl(0 84% 56%)" },
@@ -55,25 +55,9 @@ export default function Home() {
           </div>
 
           <div className="relative lg:col-span-5">
-            <div className="relative mx-auto aspect-square max-w-md">
-              <div className="absolute inset-0 rounded-[40%] bg-gradient-brand-soft blur-3xl" aria-hidden="true" />
-              <div className="absolute inset-8 grid place-items-center rounded-[36%] bg-[#0F0F14] hairline">
-                <img
-                  src={ontennaProSide}
-                  alt="Ontenna Pro — haptic wearable with clip and vibration/light switch"
-                  className="w-[78%] drop-shadow-[0_24px_48px_rgba(0,0,0,0.55)]"
-                />
-              </div>
-              <svg className="absolute -left-6 top-1/2 h-24 w-40 -translate-y-1/2 animate-wave-flow" viewBox="0 0 160 96" aria-hidden="true">
-                <path d="M0 48 Q 20 8, 40 48 T 80 48 T 120 48 T 160 48" fill="none" stroke="hsl(271 91% 65% / 0.6)" strokeWidth="2" />
-              </svg>
-              <div className="absolute -right-2 top-1/2 flex -translate-y-1/2 gap-1.5">
-                {[0,1,2,3].map((i) => (
-                  <div key={i} className="h-12 w-1.5 rounded-full bg-gradient-brand" style={{ animation: `fade-up 0.833s ease-in-out ${i * 0.12}s infinite alternate` }} />
-                ))}
-              </div>
-            </div>
-            <p className="mt-6 text-center text-xs uppercase tracking-[0.18em] text-[hsl(var(--tertiary-foreground))]">
+            <div className="absolute -inset-6 rounded-[40%] bg-gradient-brand-soft blur-3xl" aria-hidden="true" />
+            <HeroSlider />
+            <p className="relative mt-6 text-center text-xs uppercase tracking-[0.18em] text-[hsl(var(--tertiary-foreground))]">
               {t("home.hero.flow")}
             </p>
           </div>
@@ -107,15 +91,13 @@ export default function Home() {
             <div className="mt-10"><GradientButton to="/reserve">{t("home.device.cta")}</GradientButton></div>
           </div>
           <div className="relative">
-            <div className="aspect-square rounded-[--radius] hairline bg-gradient-brand-soft p-12">
-              <div className="grid h-full place-items-center rounded-[--radius] bg-[#0A0A0C] hairline p-6">
-                <img
-                  src={ontennaProTop}
-                  alt="Ontenna Pro top view — microphone grille"
-                  className="w-[88%] drop-shadow-[0_24px_48px_rgba(0,0,0,0.55)]"
-                />
-              </div>
-            </div>
+            <div className="absolute -inset-4 rounded-[--radius] bg-gradient-brand-soft blur-2xl opacity-70" aria-hidden="true" />
+            <img
+              src={devicePhoto}
+              alt="Ontenna Pro — top view with microphone grille"
+              loading="lazy"
+              className="relative aspect-[4/3] w-full rounded-[--radius] object-cover hairline shadow-card"
+            />
           </div>
         </div>
       </section>

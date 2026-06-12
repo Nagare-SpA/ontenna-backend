@@ -373,6 +373,11 @@
     "manifesto": {
       "eyebrow": "Manifest",
       "body": "Wir bauen Hardware für die Sinne, die Menschen bereits haben. Ontenna ist universell konzipiert, mit der Gehörlosengemeinschaft entwickelt und gemacht, um die Welt zurück in deinen Körper zu holen."
+    },
+    "slider": {
+      "worn": "Anclipsen. Deine Welt fühlen.",
+      "device": "Ontenna Pro — Clip, Tasten, Vibration & Licht.",
+      "together": "Klang, gemeinsam geteilt."
     }
   },
   "press": {

@@ -419,6 +419,11 @@
     "manifesto": {
       "eyebrow": "Manifiesto",
       "body": "Creamos hardware para los sentidos que las personas ya tienen. Ontenna es universal por diseño, creado con la comunidad Sorda, y hecho para devolver el mundo al interior de tu cuerpo."
+    },
+    "slider": {
+      "worn": "Póntelo. Siente tu mundo.",
+      "device": "Ontenna Pro — clip, controles, vibración y luz.",
+      "together": "El sonido, compartido."
     }
   },
   "press": {
