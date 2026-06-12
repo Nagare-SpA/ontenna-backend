@@ -86,10 +86,10 @@ const PRESS: PressItem[] = [
     className: "font-bold lowercase tracking-tight",
   },
   {
-    name: "DEAFLYMPICS",
-    sub: "Tokyo 2025 · official use",
-    href: "https://www.deaflympics.com/games/tokyo-2025",
-    className: "font-extrabold tracking-[0.18em]",
+    name: "CNN Chile",
+    sub: "Nagare acquires Ontenna",
+    href: "https://www.cnnchile.com/pais/nagare-hace-historia-es-la-primera-empresa-latinoamericana-en-comprar-una-tecnologia-completa-a-japon/",
+    className: "font-extrabold tracking-tight",
   },
   {
     name: "Design Indaba",
