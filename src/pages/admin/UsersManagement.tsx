@@ -435,7 +435,7 @@ export default function UsersManagement() {
                   <SelectContent>
                     {plans?.map((plan) => (
                       <SelectItem key={plan.id} value={plan.id}>
-                        {plan.name} - ${plan.price_monthly}/mo
+                        {plan.name} - ${(plan.price_monthly / 100).toFixed(2)}/mo
                       </SelectItem>
                     ))}
                   </SelectContent>
