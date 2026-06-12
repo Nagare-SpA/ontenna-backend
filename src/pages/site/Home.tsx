@@ -4,6 +4,7 @@ import { GradientButton } from "@/components/site/GradientButton";
 import { PulseDot } from "@/components/site/PulseDot";
 import { WaveformDivider } from "@/components/site/WaveformDivider";
 import { AppStoreButton } from "@/components/site/AppStoreButton";
+import { PressLogos } from "@/components/site/PressLogos";
 
 const SOUNDS = {
   emergency: { color: "hsl(0 84% 56%)", label: "Emergency", items: ["Fire", "Smoke", "CO", "Security", "Glass breaking"] },
@@ -165,6 +166,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <PressLogos />
 
       <section className="container-site py-24">
         <div className="container-narrow text-center">
