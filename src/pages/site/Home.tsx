@@ -6,6 +6,8 @@ import { PulseDot } from "@/components/site/PulseDot";
 import { WaveformDivider } from "@/components/site/WaveformDivider";
 import { AppStoreButton } from "@/components/site/AppStoreButton";
 import { PressLogos } from "@/components/site/PressLogos";
+import ontennaProSide from "@/assets/ontenna-pro-side.png";
+import ontennaProFront from "@/assets/ontenna-pro-front.png";
 
 const SOUND_CATS = [
   { key: "emergency", color: "hsl(0 84% 56%)" },
@@ -56,11 +58,11 @@ export default function Home() {
             <div className="relative mx-auto aspect-square max-w-md">
               <div className="absolute inset-0 rounded-[40%] bg-gradient-brand-soft blur-3xl" aria-hidden="true" />
               <div className="absolute inset-8 grid place-items-center rounded-[36%] bg-[#0F0F14] hairline">
-                <div className="relative h-40 w-40">
-                  <div className="absolute inset-0 rounded-full bg-[#1A1A22] hairline" />
-                  <div className="absolute inset-6 rounded-full bg-[#0A0A0C] hairline" />
-                  <div className="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full animate-rgb shadow-[0_0_40px_currentColor]" style={{ color: "hsl(271 91% 65%)" }} />
-                </div>
+                <img
+                  src={ontennaProSide}
+                  alt="Ontenna Pro — haptic wearable with clip and vibration/light switch"
+                  className="w-[78%] drop-shadow-[0_24px_48px_rgba(0,0,0,0.55)]"
+                />
               </div>
               <svg className="absolute -left-6 top-1/2 h-24 w-40 -translate-y-1/2 animate-wave-flow" viewBox="0 0 160 96" aria-hidden="true">
                 <path d="M0 48 Q 20 8, 40 48 T 80 48 T 120 48 T 160 48" fill="none" stroke="hsl(271 91% 65% / 0.6)" strokeWidth="2" />
@@ -106,12 +108,12 @@ export default function Home() {
           </div>
           <div className="relative">
             <div className="aspect-square rounded-[--radius] hairline bg-gradient-brand-soft p-12">
-              <div className="grid h-full place-items-center rounded-[--radius] bg-[#0A0A0C] hairline">
-                <div className="relative h-44 w-44">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#222229] to-[#0A0A0C] hairline shadow-[inset_0_0_40px_rgba(255,255,255,0.04)]" />
-                  <div className="absolute inset-8 rounded-full bg-[#0A0A0C] hairline" />
-                  <div className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full animate-rgb shadow-[0_0_30px_currentColor]" style={{ color: "hsl(160 64% 52%)" }} />
-                </div>
+              <div className="grid h-full place-items-center rounded-[--radius] bg-[#0A0A0C] hairline p-6">
+                <img
+                  src={ontennaProFront}
+                  alt="Ontenna Pro standing, front view"
+                  className="max-h-full w-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.55)]"
+                />
               </div>
             </div>
           </div>
