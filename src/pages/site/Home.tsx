@@ -7,7 +7,7 @@ import { WaveformDivider } from "@/components/site/WaveformDivider";
 import { AppStoreButton } from "@/components/site/AppStoreButton";
 import { PressLogos } from "@/components/site/PressLogos";
 import { HeroSlider } from "@/components/site/HeroSlider";
-import devicePhoto from "@/assets/device-photo.jpg";
+import ontennaProTop from "@/assets/ontenna-pro-top.png";
 
 const SOUND_CATS = [
   { key: "emergency", color: "hsl(0 84% 56%)" },
@@ -91,13 +91,15 @@ export default function Home() {
             <div className="mt-10"><GradientButton to="/reserve">{t("home.device.cta")}</GradientButton></div>
           </div>
           <div className="relative">
-            <div className="absolute -inset-4 rounded-[--radius] bg-gradient-brand-soft blur-2xl opacity-70" aria-hidden="true" />
-            <img
-              src={devicePhoto}
-              alt="Ontenna Pro — top view with microphone grille"
-              loading="lazy"
-              className="relative aspect-[4/3] w-full rounded-[--radius] object-cover hairline shadow-card"
-            />
+            <div className="absolute inset-0 rounded-[40%] bg-gradient-brand-soft blur-3xl" aria-hidden="true" />
+            <div className="relative grid aspect-[4/3] place-items-center">
+              <img
+                src={ontennaProTop}
+                alt="Ontenna Pro — top view with microphone grille"
+                loading="lazy"
+                className="w-[96%] drop-shadow-[0_30px_60px_rgba(0,0,0,0.55)]"
+              />
+            </div>
           </div>
         </div>
       </section>
