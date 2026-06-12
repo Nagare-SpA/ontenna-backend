@@ -23,7 +23,19 @@
     "subscription": "Subscription",
     "settings": "Settings",
     "logout": "Logout",
-    "admin": "Admin"
+    "admin": "Admin",
+    "device": "Device",
+    "app": "App",
+    "teachers": "Teachers",
+    "schools": "Schools",
+    "story": "Story",
+    "support": "Support",
+    "account": "Account",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "close": "Close",
+    "menu": "Menu",
+    "language": "Language"
   },
   "landing": {
     "title": "Welcome to Ontenna",
@@ -156,18 +168,13 @@
   },
   "subscription": {
     "title": "Subscription",
-    "subtitle": "Your current plan",
-    "currentPlan": "Current Plan",
-    "status": "Status",
-    "active": "Active",
-    "trial": "Trial",
-    "canceled": "Canceled",
-    "expired": "Expired",
-    "billingPeriod": "Billing Period",
-    "nextRenewal": "Next Renewal",
-    "manageSubscription": "Manage Subscription",
-    "noSubscription": "No active subscription",
-    "upgradePrompt": "Upgrade to access premium features"
+    "subtitle": "Manage your subscription plan",
+    "noSubscription": "You don't have an active subscription. Choose a plan to get started.",
+    "manageSubscription": "Manage Plan",
+    "successTitle": "Subscription Activated!",
+    "successDescription": "Your subscription is now active. Welcome aboard!",
+    "canceledTitle": "Checkout Canceled",
+    "canceledDescription": "You can subscribe anytime from your dashboard."
   },
   "roles": {
     "title": "Roles",
@@ -325,14 +332,31 @@
     "serverError": "Server error",
     "serverErrorMessage": "Something went wrong. Please try again later."
   },
-  "subscription": {
-    "title": "Subscription",
-    "subtitle": "Manage your subscription plan",
-    "noSubscription": "You don't have an active subscription. Choose a plan to get started.",
-    "manageSubscription": "Manage Plan",
-    "successTitle": "Subscription Activated!",
-    "successDescription": "Your subscription is now active. Welcome aboard!",
-    "canceledTitle": "Checkout Canceled",
-    "canceledDescription": "You can subscribe anytime from your dashboard."
+  "footer": {
+    "product": "Product",
+    "device": "Device",
+    "app": "Ontenna app (iPhone)",
+    "teachersApp": "Ontenna PA (iPad)",
+    "download": "Download",
+    "reserve": "Reserve",
+    "education": "Education",
+    "schools": "Schools",
+    "learn": "Haptic language",
+    "science": "Science & accessibility",
+    "company": "Company",
+    "story": "Our story",
+    "about": "About Nagare Japan",
+    "community": "Community",
+    "press": "Press",
+    "support": "Support",
+    "supportCenter": "Support center",
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "accessibility": "Accessibility statement",
+    "manifesto": "Made with the Deaf community. Tokyo · Worldwide.",
+    "officeJapan": "Japan",
+    "officeChile": "Chile",
+    "copyright": "© 2026 Nagare Japan Inc."
   }
 }

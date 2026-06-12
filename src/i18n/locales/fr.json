@@ -23,7 +23,19 @@
     "subscription": "Abonnement",
     "settings": "Paramètres",
     "logout": "Déconnexion",
-    "admin": "Admin"
+    "admin": "Admin",
+    "device": "Appareil",
+    "app": "App",
+    "teachers": "Enseignants",
+    "schools": "Écoles",
+    "story": "Histoire",
+    "support": "Assistance",
+    "account": "Compte",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "close": "Fermer",
+    "menu": "Menu",
+    "language": "Langue"
   },
   "landing": {
     "title": "Bienvenue sur Ontenna",
@@ -228,5 +240,32 @@
     "unauthorizedMessage": "Vous n'avez pas la permission d'accéder à cette page.",
     "serverError": "Erreur serveur",
     "serverErrorMessage": "Une erreur s'est produite. Veuillez réessayer plus tard."
+  },
+  "footer": {
+    "product": "Produit",
+    "device": "Appareil",
+    "app": "App Ontenna (iPhone)",
+    "teachersApp": "Ontenna PA (iPad)",
+    "download": "Télécharger",
+    "reserve": "Réserver",
+    "education": "Éducation",
+    "schools": "Écoles",
+    "learn": "Langage haptique",
+    "science": "Science et accessibilité",
+    "company": "Entreprise",
+    "story": "Notre histoire",
+    "about": "À propos de Nagare Japan",
+    "community": "Communauté",
+    "press": "Presse",
+    "support": "Assistance",
+    "supportCenter": "Centre d'aide",
+    "contact": "Contact",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "accessibility": "Déclaration d'accessibilité",
+    "manifesto": "Conçu avec la communauté sourde. Tokyo · Partout dans le monde.",
+    "officeJapan": "Japon",
+    "officeChile": "Chili",
+    "copyright": "© 2026 Nagare Japan Inc."
   }
 }

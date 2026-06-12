@@ -23,7 +23,19 @@
     "subscription": "Suscripción",
     "settings": "Configuración",
     "logout": "Cerrar sesión",
-    "admin": "Admin"
+    "admin": "Admin",
+    "device": "Dispositivo",
+    "app": "App",
+    "teachers": "Profesores",
+    "schools": "Escuelas",
+    "story": "Historia",
+    "support": "Soporte",
+    "account": "Cuenta",
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta",
+    "close": "Cerrar",
+    "menu": "Menú",
+    "language": "Idioma"
   },
   "landing": {
     "title": "Bienvenido a Ontenna",
@@ -150,18 +162,13 @@
   },
   "subscription": {
     "title": "Suscripción",
-    "subtitle": "Tu plan actual",
-    "currentPlan": "Plan Actual",
-    "status": "Estado",
-    "active": "Activo",
-    "trial": "Prueba",
-    "canceled": "Cancelado",
-    "expired": "Expirado",
-    "billingPeriod": "Período de facturación",
-    "nextRenewal": "Próxima renovación",
-    "manageSubscription": "Administrar Suscripción",
-    "noSubscription": "Sin suscripción activa",
-    "upgradePrompt": "Mejora para acceder a funciones premium"
+    "subtitle": "Administra tu plan de suscripción",
+    "noSubscription": "No tienes una suscripción activa. Elige un plan para comenzar.",
+    "manageSubscription": "Administrar Plan",
+    "successTitle": "¡Suscripción Activada!",
+    "successDescription": "Tu suscripción está activa. ¡Bienvenido!",
+    "canceledTitle": "Pago Cancelado",
+    "canceledDescription": "Puedes suscribirte en cualquier momento desde tu dashboard."
   },
   "roles": {
     "title": "Roles",
@@ -280,14 +287,31 @@
     "serverError": "Error del servidor",
     "serverErrorMessage": "Algo salió mal. Por favor intenta más tarde."
   },
-  "subscription": {
-    "title": "Suscripción",
-    "subtitle": "Administra tu plan de suscripción",
-    "noSubscription": "No tienes una suscripción activa. Elige un plan para comenzar.",
-    "manageSubscription": "Administrar Plan",
-    "successTitle": "¡Suscripción Activada!",
-    "successDescription": "Tu suscripción está activa. ¡Bienvenido!",
-    "canceledTitle": "Pago Cancelado",
-    "canceledDescription": "Puedes suscribirte en cualquier momento desde tu dashboard."
+  "footer": {
+    "product": "Producto",
+    "device": "Dispositivo",
+    "app": "App Ontenna (iPhone)",
+    "teachersApp": "Ontenna PA (iPad)",
+    "download": "Descargar",
+    "reserve": "Reservar",
+    "education": "Educación",
+    "schools": "Escuelas",
+    "learn": "Lenguaje háptico",
+    "science": "Ciencia y accesibilidad",
+    "company": "Empresa",
+    "story": "Nuestra historia",
+    "about": "Sobre Nagare Japan",
+    "community": "Comunidad",
+    "press": "Prensa",
+    "support": "Soporte",
+    "supportCenter": "Centro de ayuda",
+    "contact": "Contacto",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "accessibility": "Declaración de accesibilidad",
+    "manifesto": "Hecho con la comunidad Sorda. Tokio · En todo el mundo.",
+    "officeJapan": "Japón",
+    "officeChile": "Chile",
+    "copyright": "© 2026 Nagare Japan Inc."
   }
 }

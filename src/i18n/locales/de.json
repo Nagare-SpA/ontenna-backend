@@ -23,7 +23,19 @@
     "subscription": "Abonnement",
     "settings": "Einstellungen",
     "logout": "Abmelden",
-    "admin": "Admin"
+    "admin": "Admin",
+    "device": "Gerät",
+    "app": "App",
+    "teachers": "Lehrkräfte",
+    "schools": "Schulen",
+    "story": "Geschichte",
+    "support": "Support",
+    "account": "Konto",
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "close": "Schließen",
+    "menu": "Menü",
+    "language": "Sprache"
   },
   "landing": {
     "title": "Willkommen bei Ontenna",
@@ -228,5 +240,32 @@
     "unauthorizedMessage": "Sie haben keine Berechtigung, auf diese Seite zuzugreifen.",
     "serverError": "Serverfehler",
     "serverErrorMessage": "Etwas ist schief gelaufen. Bitte versuchen Sie es später erneut."
+  },
+  "footer": {
+    "product": "Produkt",
+    "device": "Gerät",
+    "app": "Ontenna-App (iPhone)",
+    "teachersApp": "Ontenna PA (iPad)",
+    "download": "Herunterladen",
+    "reserve": "Reservieren",
+    "education": "Bildung",
+    "schools": "Schulen",
+    "learn": "Haptische Sprache",
+    "science": "Wissenschaft & Barrierefreiheit",
+    "company": "Unternehmen",
+    "story": "Unsere Geschichte",
+    "about": "Über Nagare Japan",
+    "community": "Community",
+    "press": "Presse",
+    "support": "Support",
+    "supportCenter": "Hilfecenter",
+    "contact": "Kontakt",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "accessibility": "Erklärung zur Barrierefreiheit",
+    "manifesto": "Mit der Gehörlosengemeinschaft entwickelt. Tokio · Weltweit.",
+    "officeJapan": "Japan",
+    "officeChile": "Chile",
+    "copyright": "© 2026 Nagare Japan Inc."
   }
 }
