@@ -267,5 +267,117 @@
     "officeJapan": "Japan",
     "officeChile": "Chile",
     "copyright": "© 2026 Nagare Japan Inc."
+  },
+  "home": {
+    "meta": {
+      "title": "Ontenna — Klang, zum Fühlen gemacht.",
+      "description": "Ontenna ist ein tragbares haptisches Gerät, das die Klänge der Welt in Vibration und Licht übersetzt. Ein Gerät, zwei Apps und eine haptische Sprache für gehörlose und schwerhörige Menschen."
+    },
+    "hero": {
+      "titleLead": "Klang,",
+      "titleAccent": "zum Fühlen gemacht.",
+      "subtitle": "Ontenna ist ein Wearable, das die Klänge der Welt in Vibration und Licht übersetzt. Ein Gerät, zwei Apps und eine haptische Sprache für Menschen, die mit ihrem Körper hören.",
+      "cta1": "Zur Warteliste",
+      "cta2": "App herunterladen",
+      "note": "Die Ontenna-Apps benötigen das haptische Ontenna-Gerät. Separat erhältlich.",
+      "flow": "Audio rein · Vibration raus · Licht raus"
+    },
+    "steps": {
+      "eyebrow": "Was ist Ontenna",
+      "title": "Drei Schritte. Ein Sinn.",
+      "s1Title": "Trag es.",
+      "s1Body": "Befestige Ontenna an Haar, Ohr, Kragen oder Kleidung. Es wiegt fast nichts.",
+      "s2Title": "Fühl es.",
+      "s2Body": "Vibration und Licht übersetzen den Klang um dich herum in Echtzeit, auf deinem Körper.",
+      "s3Title": "Lern es.",
+      "s3Body": "Eine App für die haptische Sprache von Ontenna — fühle Rhythmus, Aufmerksamkeit, Musik."
+    },
+    "device": {
+      "eyebrow": "Das Gerät",
+      "title": "Hardware zuerst, mit Absicht.",
+      "body": "Die Ontenna-App funktioniert nicht ohne das verbundene Wearable. Das ist eine bewusste Identitätsentscheidung. Der Körper ist der Bildschirm.",
+      "cta": "Sichere dir deins"
+    },
+    "ecosystem": {
+      "eyebrow": "Ökosystem",
+      "title": "Ein Wearable, zwei Apps.",
+      "iphoneTag": "Für alle",
+      "iphoneTitle": "Ontenna-App · iPhone",
+      "iphoneBody": "Ein Ontenna gekoppelt mit deinem iPhone. Alerts, Symphony, Sport, Live-Transkription und Training.",
+      "ipadTag": "Für Lehrkräfte und Künstler",
+      "ipadTitle": "Ontenna PA · iPad",
+      "ipadBody": "Ein iPad steuert bis zu 20 Ontennas über das Ontenna Gateway, in Klassenzimmern und Live-Shows."
+    },
+    "sounds": {
+      "eyebrow": "50+ Geräusche · ~10 Kategorien",
+      "title": "Hört 24/7 zu, zu deinen Bedingungen.",
+      "body": "Alerts laufen über das Mikrofon des Ontenna — nie das deines iPhones — und erkennen über 50 Geräusche in rund 10 Kategorien. Jedes löst sein eigenes Vibrationsmuster und seine Farbe aus.",
+      "cat": {
+        "emergency": {
+          "label": "Notfall",
+          "items": [
+            "Feuer",
+            "Rauch",
+            "CO",
+            "Sicherheit",
+            "Glasbruch"
+          ]
+        },
+        "health": {
+          "label": "Gesundheit & Pflege",
+          "items": [
+            "Babyweinen",
+            "Schreien",
+            "Ersticken",
+            "Schnarchen",
+            "Husten"
+          ]
+        },
+        "home": {
+          "label": "Zuhause",
+          "items": [
+            "Türklingel",
+            "Klopfen",
+            "Türknall",
+            "Wasser",
+            "Toilette"
+          ]
+        },
+        "traffic": {
+          "label": "Verkehr",
+          "items": [
+            "Hupe",
+            "Krankenwagen",
+            "Polizei",
+            "Feuerwehr",
+            "Zug"
+          ]
+        },
+        "animals": {
+          "label": "Tiere & Sonstiges",
+          "items": [
+            "Hund",
+            "Katze",
+            "Vogel",
+            "Sprache",
+            "Musik"
+          ]
+        }
+      }
+    },
+    "symphony": {
+      "eyebrow": "Symphony",
+      "title": "Fühle die Musik, ein Instrument nach dem anderen.",
+      "body": "Symphony zerlegt einen Song in Spuren — Drums, Bass, Gesang, Klavier, Gitarre — jede mit eigener Vibration, synchron zu Spotify oder Apple Music. Acht Modi, und im Suit-Modus verteilen bis zu 7 Ontennas die Musik über deinen ganzen Körper."
+    },
+    "manifesto": {
+      "eyebrow": "Manifest",
+      "body": "Wir bauen Hardware für die Sinne, die Menschen bereits haben. Ontenna ist universell konzipiert, mit der Gehörlosengemeinschaft entwickelt und gemacht, um die Welt zurück in deinen Körper zu holen."
+    }
+  },
+  "press": {
+    "eyebrow": "Presse & Auszeichnungen",
+    "title": "Weltweit in den Medien.",
+    "intro": "Ein Jahrzehnt voller Berichte und Auszeichnungen — von der globalen Tech-Presse bis zu Japans höchsten Design-Ehren. Tippe auf ein Logo, um die Geschichte zu lesen."
   }
 }

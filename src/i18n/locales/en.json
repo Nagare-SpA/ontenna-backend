@@ -358,5 +358,117 @@
     "officeJapan": "Japan",
     "officeChile": "Chile",
     "copyright": "© 2026 Nagare Japan Inc."
+  },
+  "home": {
+    "meta": {
+      "title": "Ontenna — Sound, made to feel.",
+      "description": "Ontenna is a wearable haptic device that translates the world's sounds into vibration and light. A device, two apps, and a haptic language built for Deaf and hard-of-hearing people."
+    },
+    "hero": {
+      "titleLead": "Sound,",
+      "titleAccent": "made to feel.",
+      "subtitle": "Ontenna is a wearable that translates the world's sounds into vibration and light. A device, two apps, and a haptic language built for people who hear with their body.",
+      "cta1": "Join the waitlist",
+      "cta2": "Download the app",
+      "note": "The Ontenna apps require the Ontenna haptic device. Sold separately.",
+      "flow": "Audio in · vibration out · light out"
+    },
+    "steps": {
+      "eyebrow": "What is Ontenna",
+      "title": "Three steps. One sense.",
+      "s1Title": "Wear it.",
+      "s1Body": "Clip Ontenna to your hair, ear, collar, or clothes. It weighs almost nothing.",
+      "s2Title": "Feel it.",
+      "s2Body": "Vibration and light translate sound around you in real time, on your body.",
+      "s3Title": "Learn it.",
+      "s3Body": "An app dedicated to the haptic language of Ontenna — feel rhythm, attention, music."
+    },
+    "device": {
+      "eyebrow": "The device",
+      "title": "Hardware-first by design.",
+      "body": "The Ontenna app does not work without the wearable connected. This is a deliberate identity decision. The body is the screen.",
+      "cta": "Reserve yours"
+    },
+    "ecosystem": {
+      "eyebrow": "Ecosystem",
+      "title": "One wearable, two apps.",
+      "iphoneTag": "For everyone",
+      "iphoneTitle": "Ontenna app · iPhone",
+      "iphoneBody": "One Ontenna paired to your iPhone. Alerts, Symphony, Sports, live Transcription, and Train.",
+      "ipadTag": "For teachers & performers",
+      "ipadTitle": "Ontenna PA · iPad",
+      "ipadBody": "One iPad orchestrates up to 20 Ontennas through the Ontenna Gateway, in classrooms and live shows."
+    },
+    "sounds": {
+      "eyebrow": "50+ sounds · ~10 categories",
+      "title": "Listening 24/7, on your terms.",
+      "body": "Alerts run on the Ontenna's own microphone — never your iPhone's — recognizing 50+ sounds across about 10 categories. Each one fires its own vibration pattern and color.",
+      "cat": {
+        "emergency": {
+          "label": "Emergency",
+          "items": [
+            "Fire",
+            "Smoke",
+            "CO",
+            "Security",
+            "Glass breaking"
+          ]
+        },
+        "health": {
+          "label": "Health & Care",
+          "items": [
+            "Baby crying",
+            "Screaming",
+            "Choking",
+            "Snoring",
+            "Cough"
+          ]
+        },
+        "home": {
+          "label": "Home",
+          "items": [
+            "Doorbell",
+            "Knock",
+            "Door slam",
+            "Water",
+            "Toilet"
+          ]
+        },
+        "traffic": {
+          "label": "Traffic",
+          "items": [
+            "Car horn",
+            "Ambulance",
+            "Police",
+            "Fire truck",
+            "Train"
+          ]
+        },
+        "animals": {
+          "label": "Animals & Other",
+          "items": [
+            "Dog",
+            "Cat",
+            "Bird",
+            "Speech",
+            "Music"
+          ]
+        }
+      }
+    },
+    "symphony": {
+      "eyebrow": "Symphony",
+      "title": "Feel the music, one instrument at a time.",
+      "body": "Symphony splits a song into stems — drums, bass, vocals, piano, guitar — each with its own vibration, synced to Spotify or Apple Music. Eight modes, and with Suit mode up to 7 Ontennas spread the music across your whole body."
+    },
+    "manifesto": {
+      "eyebrow": "Manifesto",
+      "body": "We build hardware for the senses people already have. Ontenna is universal by design, built with the Deaf community, and made to put the world back inside your body."
+    }
+  },
+  "press": {
+    "eyebrow": "Press & recognition",
+    "title": "As featured around the world.",
+    "intro": "A decade of coverage and awards — from global tech press to Japan's top design honors. Tap any logo to read the story."
   }
 }

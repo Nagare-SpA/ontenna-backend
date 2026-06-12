@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 // "As featured in" logo wall for the Home page.
 // Wordmarks are rendered as styled text (monochrome, brand-evocative type) —
 // no third-party logo image assets, so no trademark clearance needed.
@@ -119,16 +121,17 @@ const PRESS: PressItem[] = [
 ];
 
 export function PressLogos() {
+  const { t } = useTranslation();
   return (
     <section className="container-site py-24" aria-labelledby="press-heading">
       <p className="text-xs uppercase tracking-[0.18em] text-[hsl(var(--tertiary-foreground))]">
-        Press &amp; recognition
+        {t("press.eyebrow")}
       </p>
       <h2 id="press-heading" className="mt-4 h-section font-bold">
-        As featured around the world.
+        {t("press.title")}
       </h2>
       <p className="mt-5 max-w-2xl text-muted-foreground">
-        A decade of coverage and awards — from global tech press to Japan's top design honors. Tap any logo to read the story.
+        {t("press.intro")}
       </p>
 
       <ul className="mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-[--radius] bg-[hsl(var(--border))] hairline sm:grid-cols-3 lg:grid-cols-4">

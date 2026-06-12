@@ -267,5 +267,117 @@
     "officeJapan": "Japão",
     "officeChile": "Chile",
     "copyright": "© 2026 Nagare Japan Inc."
+  },
+  "home": {
+    "meta": {
+      "title": "Ontenna — Som, feito para sentir.",
+      "description": "Ontenna é um dispositivo háptico vestível que traduz os sons do mundo em vibração e luz. Um dispositivo, dois apps e uma linguagem háptica feitos para pessoas surdas e com perda auditiva."
+    },
+    "hero": {
+      "titleLead": "Som,",
+      "titleAccent": "feito para sentir.",
+      "subtitle": "Ontenna é um vestível que traduz os sons do mundo em vibração e luz. Um dispositivo, dois apps e uma linguagem háptica para quem ouve com o corpo.",
+      "cta1": "Entrar na lista de espera",
+      "cta2": "Baixar o app",
+      "note": "Os apps Ontenna exigem o dispositivo háptico Ontenna. Vendido separadamente.",
+      "flow": "Áudio entra · vibração sai · luz sai"
+    },
+    "steps": {
+      "eyebrow": "O que é Ontenna",
+      "title": "Três passos. Um sentido.",
+      "s1Title": "Vista-o.",
+      "s1Body": "Prenda o Ontenna no cabelo, na orelha, na gola ou na roupa. Quase não pesa.",
+      "s2Title": "Sinta-o.",
+      "s2Body": "Vibração e luz traduzem o som ao seu redor em tempo real, no seu corpo.",
+      "s3Title": "Aprenda-o.",
+      "s3Body": "Um app dedicado à linguagem háptica do Ontenna — sinta ritmo, atenção, música."
+    },
+    "device": {
+      "eyebrow": "O dispositivo",
+      "title": "Hardware em primeiro lugar, por design.",
+      "body": "O app Ontenna não funciona sem o vestível conectado. É uma decisão de identidade deliberada. O corpo é a tela.",
+      "cta": "Reserve o seu"
+    },
+    "ecosystem": {
+      "eyebrow": "Ecossistema",
+      "title": "Um vestível, dois apps.",
+      "iphoneTag": "Para todos",
+      "iphoneTitle": "App Ontenna · iPhone",
+      "iphoneBody": "Um Ontenna pareado ao seu iPhone. Alertas, Symphony, Esportes, Transcrição ao vivo e Treino.",
+      "ipadTag": "Para professores e artistas",
+      "ipadTitle": "Ontenna PA · iPad",
+      "ipadBody": "Um iPad orquestra até 20 Ontennas pelo Ontenna Gateway, em salas de aula e shows ao vivo."
+    },
+    "sounds": {
+      "eyebrow": "50+ sons · ~10 categorias",
+      "title": "Ouvindo 24/7, do seu jeito.",
+      "body": "Os Alertas funcionam com o microfone do próprio Ontenna — nunca o do seu iPhone — reconhecendo mais de 50 sons em cerca de 10 categorias. Cada um dispara seu próprio padrão de vibração e cor.",
+      "cat": {
+        "emergency": {
+          "label": "Emergência",
+          "items": [
+            "Fogo",
+            "Fumaça",
+            "CO",
+            "Segurança",
+            "Vidro quebrando"
+          ]
+        },
+        "health": {
+          "label": "Saúde e cuidados",
+          "items": [
+            "Choro de bebê",
+            "Gritos",
+            "Engasgo",
+            "Ronco",
+            "Tosse"
+          ]
+        },
+        "home": {
+          "label": "Casa",
+          "items": [
+            "Campainha",
+            "Batida na porta",
+            "Porta batendo",
+            "Água",
+            "Vaso sanitário"
+          ]
+        },
+        "traffic": {
+          "label": "Trânsito",
+          "items": [
+            "Buzina",
+            "Ambulância",
+            "Polícia",
+            "Bombeiros",
+            "Trem"
+          ]
+        },
+        "animals": {
+          "label": "Animais e outros",
+          "items": [
+            "Cachorro",
+            "Gato",
+            "Pássaro",
+            "Voz",
+            "Música"
+          ]
+        }
+      }
+    },
+    "symphony": {
+      "eyebrow": "Symphony",
+      "title": "Sinta a música, um instrumento por vez.",
+      "body": "O Symphony separa uma música em faixas — bateria, baixo, vocais, piano, guitarra — cada uma com sua própria vibração, sincronizada com Spotify ou Apple Music. Oito modos, e com o modo Suit até 7 Ontennas espalham a música por todo o seu corpo."
+    },
+    "manifesto": {
+      "eyebrow": "Manifesto",
+      "body": "Criamos hardware para os sentidos que as pessoas já têm. O Ontenna é universal por design, criado com a comunidade surda, e feito para colocar o mundo de volta dentro do seu corpo."
+    }
+  },
+  "press": {
+    "eyebrow": "Imprensa e reconhecimento",
+    "title": "Destaque no mundo todo.",
+    "intro": "Uma década de cobertura e prêmios — da imprensa de tecnologia global às maiores honras de design do Japão. Toque em qualquer logo para ler a matéria."
   }
 }
