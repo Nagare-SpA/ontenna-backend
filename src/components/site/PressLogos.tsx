@@ -31,6 +31,12 @@ const PRESS: PressItem[] = [
     className: "font-bold",
   },
   {
+    name: "CNN Chile",
+    sub: "Nagare acquires Ontenna",
+    href: "https://www.cnnchile.com/pais/nagare-hace-historia-es-la-primera-empresa-latinoamericana-en-comprar-una-tecnologia-completa-a-japon/",
+    className: "font-extrabold tracking-tight",
+  },
+  {
     name: "MIT Technology Review",
     sub: "Innovators Under 35",
     href: "https://www.innovatorsunder35.com/the-list/tatsuya-honda/",
@@ -84,12 +90,6 @@ const PRESS: PressItem[] = [
     sub: "Feature",
     href: "https://www.wareable.com/wearable-tech/ontenna-smart-hair-clip-for-deaf-sense-sound-4524",
     className: "font-bold lowercase tracking-tight",
-  },
-  {
-    name: "CNN Chile",
-    sub: "Nagare acquires Ontenna",
-    href: "https://www.cnnchile.com/pais/nagare-hace-historia-es-la-primera-empresa-latinoamericana-en-comprar-una-tecnologia-completa-a-japon/",
-    className: "font-extrabold tracking-tight",
   },
   {
     name: "Design Indaba",
