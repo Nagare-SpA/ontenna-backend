@@ -2,13 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { useTranslation } from "react-i18next";
 import lifeWoman from "@/assets/hero-life-1.jpg";
-import productSide from "@/assets/hero-product-1.jpg";
-import family from "@/assets/hero-slide-2.jpg";
 
 const SLIDES = [
   { src: lifeWoman, captionKey: "home.slider.worn" },
-  { src: productSide, captionKey: "home.slider.device" },
-  { src: family, captionKey: "home.slider.together" },
 ];
 
 export function HeroSlider() {
@@ -26,9 +22,9 @@ export function HeroSlider() {
     onSelect();
   }, [embla, onSelect]);
 
-  // Gentle autoplay; pauses when the tab is hidden.
+  // Gentle autoplay (only meaningful with more than one slide).
   useEffect(() => {
-    if (!embla) return;
+    if (!embla || SLIDES.length <= 1) return;
     const id = window.setInterval(() => {
       if (document.visibilityState === "visible") embla.scrollNext();
     }, 4500);
@@ -56,7 +52,8 @@ export function HeroSlider() {
         </div>
       </div>
 
-      {/* Dots */}
+      {/* Dots (only with multiple slides) */}
+      {SLIDES.length > 1 && (
       <div className="mt-4 flex justify-center gap-2">
         {SLIDES.map((_, i) => (
           <button
@@ -70,6 +67,7 @@ export function HeroSlider() {
           />
         ))}
       </div>
+      )}
     </div>
   );
 }
