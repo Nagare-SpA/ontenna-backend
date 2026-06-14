@@ -97,7 +97,7 @@ export default function Home() {
                 src={ontennaProTop}
                 alt="Ontenna Pro — top view with microphone grille"
                 loading="lazy"
-                className="w-[96%] drop-shadow-[0_30px_60px_rgba(0,0,0,0.55)]"
+                className="w-[68%] max-w-[420px] drop-shadow-[0_30px_60px_rgba(0,0,0,0.55)]"
               />
             </div>
           </div>
