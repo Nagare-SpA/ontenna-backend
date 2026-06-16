@@ -36,7 +36,9 @@
     "close": "Close",
     "menu": "Menu",
     "language": "Language",
-    "school": "School"
+    "school": "School",
+    "forTeachers": "For teachers",
+    "forStudents": "For students"
   },
   "landing": {
     "title": "Welcome to Ontenna",

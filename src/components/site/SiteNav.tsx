@@ -31,10 +31,10 @@ export function SiteNav() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Teachers + Schools grouped under a "School" menu.
+  // "School" menu, separated by audience: teachers and students.
   const schoolItems = [
-    { to: "/teachers", label: t("nav.teachers", "Teachers") },
-    { to: "/schools", label: t("nav.schools", "Schools") },
+    { to: "/teachers", label: t("nav.forTeachers", "For teachers") },
+    { to: "/students", label: t("nav.forStudents", "For students") },
   ];
   const linksBefore = [
     { to: "/device", label: t("nav.device", "Device") },
