@@ -9,7 +9,7 @@ export default function Students() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Ontenna for students — feel rhythm, music, and the world</title>
+        <title>Ontenna - For students</title>
         <meta name="description" content="For Deaf, hard-of-hearing, and hearing students: feel music, rhythm, and your surroundings through gentle vibration and light. Learn, play, and belong — together." />
         <link rel="canonical" href="https://ontenna.org/students" />
       </Helmet>

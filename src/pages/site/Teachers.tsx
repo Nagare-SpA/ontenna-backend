@@ -9,7 +9,7 @@ export default function Teachers() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Ontenna PA — iPad app for teachers and live audio</title>
+        <title>Ontenna - For teachers</title>
         <meta name="description" content="Conduct a class of Ontennas from one iPad. Built for educators, therapists, and live performance." />
         <link rel="canonical" href="https://ontenna.org/teachers" />
       </Helmet>

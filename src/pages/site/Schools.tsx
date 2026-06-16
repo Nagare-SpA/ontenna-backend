@@ -41,7 +41,7 @@ export default function Schools() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Schools — Ontenna for inclusive education</title>
+        <title>Ontenna - Schools</title>
         <meta name="description" content="Equip your inclusion program with haptic learning. Bundles, training, and demos for schools." />
         <link rel="canonical" href="https://ontenna.org/schools" />
       </Helmet>

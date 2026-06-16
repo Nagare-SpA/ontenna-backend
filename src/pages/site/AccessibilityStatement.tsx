@@ -4,7 +4,7 @@ import { PageHero } from "@/components/site/PageHero";
 export default function AccessibilityStatement() {
   return (
     <SiteShell>
-      <Helmet><title>Accessibility — Ontenna</title><link rel="canonical" href="https://ontenna.org/accessibility-statement" /></Helmet>
+      <Helmet><title>Ontenna - Accessibility</title><link rel="canonical" href="https://ontenna.org/accessibility-statement" /></Helmet>
       <PageHero eyebrow="Accessibility" title="Accessibility statement" subtitle="ontenna.org and the Ontenna apps are designed to meet WCAG 2.2 AA. Accessibility is the product." />
       <section className="container-narrow space-y-8 py-20 text-base leading-relaxed text-muted-foreground">
         <ul className="space-y-2 list-disc pl-6">

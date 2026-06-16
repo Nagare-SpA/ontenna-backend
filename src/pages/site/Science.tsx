@@ -7,7 +7,7 @@ export default function Science() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Science & accessibility — Ontenna</title>
+        <title>Ontenna - Science & accessibility</title>
         <meta name="description" content="How Ontenna processes audio, why haptics work, and how we honor accessibility standards." />
         <link rel="canonical" href="https://ontenna.org/science" />
       </Helmet>

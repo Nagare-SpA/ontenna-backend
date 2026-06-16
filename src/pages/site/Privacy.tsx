@@ -20,7 +20,7 @@ export default function Privacy() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Privacy — Ontenna</title>
+        <title>Ontenna - Privacy</title>
         <meta name="description" content="The Ontenna privacy policy: what we collect, how we use it, your rights." />
         <link rel="canonical" href="https://ontenna.org/privacy" />
       </Helmet>

@@ -20,7 +20,7 @@ export default function Device() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Device — Ontenna haptic wearable</title>
+        <title>Ontenna - Device</title>
         <meta name="description" content="The Ontenna haptic wearable. Light, water-resistant, all-day battery. Made in Tokyo." />
         <link rel="canonical" href="https://ontenna.org/device" />
       </Helmet>

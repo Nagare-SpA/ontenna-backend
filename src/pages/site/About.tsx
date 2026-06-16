@@ -6,7 +6,7 @@ import { Section } from "@/components/site/Section";
 export default function About() {
   return (
     <SiteShell>
-      <Helmet><title>About Nagare Japan — the company behind Ontenna</title><link rel="canonical" href="https://ontenna.org/about" /></Helmet>
+      <Helmet><title>Ontenna - About Nagare Japan</title><link rel="canonical" href="https://ontenna.org/about" /></Helmet>
       <PageHero eyebrow="Nagare Japan Inc." title="Tokyo · Worldwide." subtitle="A small team building haptic accessibility products for a global community. Headquartered in Ginza." />
       <Section>
         <div className="grid gap-6 md:grid-cols-2">

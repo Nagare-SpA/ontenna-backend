@@ -134,7 +134,7 @@ export default function Symphony() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Symphony — feel music with Ontenna</title>
+        <title>Ontenna - Symphony</title>
         <meta
           name="description"
           content="Symphony turns any song into haptics, split by stems — drums, bass, vocals, piano, guitar — each as its own vibration on your Ontenna. Explore a catalog of 5,000+ songs."

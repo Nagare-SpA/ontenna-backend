@@ -10,7 +10,7 @@ const stories = [
 export default function Community() {
   return (
     <SiteShell>
-      <Helmet><title>Community — Ontenna</title><link rel="canonical" href="https://ontenna.org/community" /></Helmet>
+      <Helmet><title>Ontenna - Community</title><link rel="canonical" href="https://ontenna.org/community" /></Helmet>
       <PageHero eyebrow="Community" title="Voices we build with." subtitle="Real stories from people using Ontenna at home, in classrooms, and on stage." />
       <Section><div className="grid gap-6 md:grid-cols-3">{stories.map((s, i) => (<figure key={i} className="rounded-2xl glass p-7"><blockquote className="text-lg leading-snug text-foreground">"{s.quote}"</blockquote><figcaption className="mt-5 text-sm text-muted-foreground">{s.who}</figcaption></figure>))}</div></Section>
     </SiteShell>

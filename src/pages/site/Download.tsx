@@ -8,7 +8,7 @@ export default function Download() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Download — Ontenna apps</title>
+        <title>Ontenna - Download</title>
         <meta name="description" content="Ontenna for iPhone (App Store) and Ontenna PA for iPad (TestFlight public beta)." />
         <link rel="canonical" href="https://ontenna.org/download" />
       </Helmet>
