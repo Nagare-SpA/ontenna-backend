@@ -1,5 +1,8 @@
 project_id = "ycfrjvnuepfkeffsqxgm"
 
+[functions.firmware-check]
+verify_jwt = false
+
 [functions.send-verification-code]
 verify_jwt = false
 

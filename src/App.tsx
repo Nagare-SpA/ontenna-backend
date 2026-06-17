@@ -19,6 +19,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import UsersManagement from "./pages/admin/UsersManagement";
 import PlansManagement from "./pages/admin/PlansManagement";
 import LearnManagement from "./pages/admin/LearnManagement";
+import FirmwareManagement from "./pages/admin/FirmwareManagement";
 
 import Home from "./pages/site/Home";
 import About from "./pages/site/About";
@@ -103,6 +104,7 @@ const App = () => (
               <Route path="/admin/users" element={<ProtectedRoute><AdminRoute><UsersManagement /></AdminRoute></ProtectedRoute>} />
               <Route path="/admin/plans" element={<ProtectedRoute><AdminRoute><PlansManagement /></AdminRoute></ProtectedRoute>} />
               <Route path="/admin/learn" element={<ProtectedRoute><AdminRoute><LearnManagement /></AdminRoute></ProtectedRoute>} />
+              <Route path="/admin/firmware" element={<ProtectedRoute><AdminRoute><FirmwareManagement /></AdminRoute></ProtectedRoute>} />
               <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

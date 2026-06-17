@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import {
-  Shield, Users, CreditCard, LayoutDashboard, GraduationCap,
+  Shield, Users, CreditCard, LayoutDashboard, GraduationCap, Cpu,
   ArrowLeft, Menu, X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ const navItems = [
   { key: "users", icon: Users, path: "/admin/users", label: "Users" },
   { key: "plans", icon: CreditCard, path: "/admin/plans", label: "Plans" },
   { key: "learn", icon: GraduationCap, path: "/admin/learn", label: "Learn" },
+  { key: "firmware", icon: Cpu, path: "/admin/firmware", label: "Firmware" },
 ];
 
 export function AdminLayout({ children }: AdminLayoutProps) {
