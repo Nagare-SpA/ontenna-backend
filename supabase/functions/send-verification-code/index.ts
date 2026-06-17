@@ -64,13 +64,15 @@ const handler = async (req: Request): Promise<Response> => {
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     // Store code in database
-    const { error: insertError } = await supabaseAdmin
+    const { data: inserted, error: insertError } = await supabaseAdmin
       .from("verification_codes")
       .insert({
         user_id: userId,
         code,
         expires_at: expiresAt.toISOString(),
-      });
+      })
+      .select("id")
+      .single();
 
     if (insertError) {
       console.error("Error inserting verification code:", insertError);
@@ -80,8 +82,16 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    if (!Deno.env.get("RESEND_API_KEY")) {
+      console.error("RESEND_API_KEY is not configured");
+      return new Response(
+        JSON.stringify({ error: "email_not_configured" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     // Send email
-    const emailResponse = await resend.emails.send({
+    const { data: emailData, error: emailError } = await resend.emails.send({
       from: "Ontenna <no-reply@ontenna.org>",
       to: [email],
       subject: "🔐 Your Ontenna Verification Code",
@@ -141,10 +151,28 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    // The Resend SDK does NOT throw on API errors — it returns { error }.
+    // Treat that as a hard failure so we never report success without sending.
+    if (emailError) {
+      console.error("Resend send failed:", emailError);
+      return new Response(
+        JSON.stringify({ error: "email_send_failed", detail: emailError.message ?? String(emailError) }),
+        { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    console.log("Email sent successfully. Resend id:", emailData?.id);
+
+    // Audit: mark that the email actually went out (best-effort).
+    if (inserted?.id) {
+      await supabaseAdmin
+        .from("verification_codes")
+        .update({ email_sent: true, resend_id: emailData?.id ?? null })
+        .eq("id", inserted.id);
+    }
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ success: true, id: emailData?.id }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error: any) {
