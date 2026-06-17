@@ -52,8 +52,12 @@ serve(async (req) => {
       return json({ error: "lookup_failed" }, 500);
     }
 
-    if (!release || release.version_code <= currentCode) {
-      return json({ updateAvailable: false, latestVersionCode: release?.version_code ?? currentCode });
+    // No published release at all → make it explicit (0), don't echo the input.
+    if (!release) {
+      return json({ updateAvailable: false, latestVersionCode: 0 });
+    }
+    if (release.version_code <= currentCode) {
+      return json({ updateAvailable: false, latestVersionCode: release.version_code });
     }
 
     // Sign a temporary download URL for the binary.
