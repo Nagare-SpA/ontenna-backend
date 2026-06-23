@@ -41,7 +41,8 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, MoreHorizontal, UserCog, Gift, Percent, Trash2, XCircle } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Search, MoreHorizontal, UserCog, Gift, Percent, Trash2, XCircle, UserPlus } from "lucide-react";
 import { Database } from "@/integrations/supabase/types";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
@@ -58,12 +59,20 @@ export default function UsersManagement() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserWithSubscription | null>(null);
-  const [dialogType, setDialogType] = useState<"edit" | "free" | "discount" | "delete" | "cancelSub" | null>(null);
-  
+  const [dialogType, setDialogType] = useState<"edit" | "free" | "discount" | "delete" | "cancelSub" | "create" | null>(null);
+
   // Form states
   const [freeMonths, setFreeMonths] = useState("1");
   const [discountPercent, setDiscountPercent] = useState("10");
   const [adminNotes, setAdminNotes] = useState("");
+
+  // New-user form
+  const [newFirst, setNewFirst] = useState("");
+  const [newLast, setNewLast] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [grantFreeOnCreate, setGrantFreeOnCreate] = useState(false);
+  const [createFreeMonths, setCreateFreeMonths] = useState("12");
 
   const { data: users, isLoading } = useQuery({
     queryKey: ["admin-users"],
@@ -278,12 +287,60 @@ export default function UsersManagement() {
     },
   });
 
+  const createUser = useMutation({
+    mutationFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) throw new Error("Not authenticated");
+
+      const response = await fetch(
+        `https://ycfrjvnuepfkeffsqxgm.supabase.co/functions/v1/admin-create-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.session.access_token}`,
+          },
+          body: JSON.stringify({
+            email: newEmail,
+            password: newPassword,
+            first_name: newFirst,
+            last_name: newLast,
+            free_months: grantFreeOnCreate ? parseInt(createFreeMonths) : 0,
+            plan_id: grantFreeOnCreate ? plans?.[0]?.id ?? null : null,
+            admin_notes: adminNotes || null,
+          }),
+        }
+      );
+      const result = await response.json();
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || result.error || "Failed to create user");
+      }
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      toast({ title: t("admin.users.created", "User created") });
+      setDialogType(null);
+      setNewFirst(""); setNewLast(""); setNewEmail(""); setNewPassword("");
+      setGrantFreeOnCreate(false); setCreateFreeMonths("12"); setAdminNotes("");
+    },
+    onError: (error) => {
+      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
+    },
+  });
+
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold">{t("admin.users.title")}</h2>
-          <p className="text-muted-foreground">{t("admin.users.subtitle")}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold">{t("admin.users.title")}</h2>
+            <p className="text-muted-foreground">{t("admin.users.subtitle")}</p>
+          </div>
+          <Button onClick={() => { setAdminNotes(""); setDialogType("create"); }}>
+            <UserPlus className="h-4 w-4 mr-2" />
+            {t("admin.users.createUser", "Create user")}
+          </Button>
         </div>
 
         <Card>
@@ -594,6 +651,72 @@ export default function UsersManagement() {
                 disabled={cancelSubscription.isPending}
               >
                 {t("admin.users.confirmCancelSubscription")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Create User Dialog */}
+        <Dialog open={dialogType === "create"} onOpenChange={() => setDialogType(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t("admin.users.createUser", "Create user")}</DialogTitle>
+              <DialogDescription>
+                {t("admin.users.createDesc", "Creates a confirmed Ontenna account (no email verification needed).")}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>{t("auth.signup.firstName")}</Label>
+                  <Input value={newFirst} onChange={(e) => setNewFirst(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t("auth.signup.lastName")}</Label>
+                  <Input value={newLast} onChange={(e) => setNewLast(e.target.value)} />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("auth.signup.email")}</Label>
+                <Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("auth.signup.password")}</Label>
+                <Input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder={t("auth.signup.req8chars", "At least 8 characters")} />
+              </div>
+              <div className="flex items-center justify-between rounded-lg border p-3">
+                <div>
+                  <Label className="font-medium">{t("admin.users.grantFreeOnCreate", "Grant free subscription")}</Label>
+                  <p className="text-xs text-muted-foreground">{plans?.[0]?.name}</p>
+                </div>
+                <Switch checked={grantFreeOnCreate} onCheckedChange={setGrantFreeOnCreate} />
+              </div>
+              {grantFreeOnCreate && (
+                <div className="space-y-2">
+                  <Label>{t("admin.users.duration")}</Label>
+                  <Select value={createFreeMonths} onValueChange={setCreateFreeMonths}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 {t("admin.users.month")}</SelectItem>
+                      <SelectItem value="3">3 {t("admin.users.months")}</SelectItem>
+                      <SelectItem value="6">6 {t("admin.users.months")}</SelectItem>
+                      <SelectItem value="12">1 {t("admin.users.year")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label>{t("admin.users.notes")}</Label>
+                <Textarea value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} placeholder={t("admin.users.notesPlaceholder")} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDialogType(null)}>{t("common.cancel")}</Button>
+              <Button
+                onClick={() => createUser.mutate()}
+                disabled={createUser.isPending || !newEmail || newPassword.length < 8 || !newFirst}
+              >
+                {createUser.isPending ? t("auth.signup.submitting") : t("admin.users.createUser", "Create user")}
               </Button>
             </DialogFooter>
           </DialogContent>
