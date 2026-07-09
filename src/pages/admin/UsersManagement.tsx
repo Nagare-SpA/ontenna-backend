@@ -42,7 +42,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Search, MoreHorizontal, UserCog, Gift, Percent, Trash2, XCircle, UserPlus } from "lucide-react";
+import { Search, MoreHorizontal, UserCog, Gift, Percent, Trash2, XCircle, UserPlus, KeyRound } from "lucide-react";
 import { Database } from "@/integrations/supabase/types";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
@@ -287,6 +287,34 @@ export default function UsersManagement() {
     },
   });
 
+  const sendPasswordReset = useMutation({
+    mutationFn: async (email: string) => {
+      const response = await fetch(
+        `https://ycfrjvnuepfkeffsqxgm.supabase.co/functions/v1/send-password-reset`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          // Always point the emailed link at production so it works for the user.
+          body: JSON.stringify({ email, redirectUrl: "https://www.ontenna.org/reset-password" }),
+        }
+      );
+      const result = await response.json();
+      if (!response.ok || result.error) {
+        throw new Error(result.detail || result.error || "Failed to send reset email");
+      }
+      return result;
+    },
+    onSuccess: (_d, email) => {
+      toast({ title: t("admin.users.resetSent", "Reset link sent"), description: email });
+    },
+    onError: (error) => {
+      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
+    },
+  });
+
   const createUser = useMutation({
     mutationFn: async () => {
       const { data: session } = await supabase.auth.getSession();
@@ -434,6 +462,13 @@ export default function UsersManagement() {
                             >
                               <UserCog className="h-4 w-4 mr-2" />
                               {user.is_active ? t("admin.users.disable") : t("admin.users.enable")}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => sendPasswordReset.mutate(user.email)}
+                              disabled={sendPasswordReset.isPending}
+                            >
+                              <KeyRound className="h-4 w-4 mr-2" />
+                              {t("admin.users.resetPassword", "Send password reset")}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => openDialog(user, "free")}>
                               <Gift className="h-4 w-4 mr-2" />
