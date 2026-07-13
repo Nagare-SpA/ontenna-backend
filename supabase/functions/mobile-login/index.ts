@@ -48,23 +48,27 @@ serve(async (req) => {
       );
     }
 
-    // Check if email is verified using existing profile
-    const supabaseService = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    const { data: profile } = await supabaseService
-      .from("profiles")
-      .select("is_verified")
-      .eq("id", authData.user.id)
-      .single();
-
-    if (profile && !profile.is_verified) {
+    // Auth's email_confirmed_at is the source of truth for verification (the
+    // web login uses the same signal). The profiles.is_verified flag can lag
+    // behind when the email is confirmed by admin/reset paths, so don't gate on
+    // it — that was blocking valid users from the app while the web let them in.
+    if (!authData.user.email_confirmed_at) {
       return new Response(
-        JSON.stringify({ 
-          ok: false, 
-          error: { code: "email_not_verified", message: "Please verify your email before logging in" } 
+        JSON.stringify({
+          ok: false,
+          error: { code: "email_not_verified", message: "Please verify your email before logging in" }
         }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Best-effort: keep the profile flag in sync so it stops diverging.
+    const supabaseService = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    await supabaseService
+      .from("profiles")
+      .update({ is_verified: true, verification_status: "verified" })
+      .eq("id", authData.user.id)
+      .eq("is_verified", false);
 
     // Return mobile-friendly response
     return new Response(

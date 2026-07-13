@@ -35,6 +35,11 @@ serve(async (req) => {
       return json({ ok: false, error: error.message }, 500);
     }
 
+    // Keep the profile flag in sync so the mobile app never blocks the user.
+    await supabase.from("profiles")
+      .update({ is_verified: true, verification_status: "verified" })
+      .eq("id", user.id);
+
     console.log("[confirm-email] confirmed:", user.id);
     return json({ ok: true, confirmed: true });
   } catch (e) {

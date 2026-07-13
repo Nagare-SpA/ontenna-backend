@@ -64,6 +64,12 @@ serve(async (req) => {
     const userId = data.user?.id;
     if (!userId) return json({ ok: false, code: "create_failed", message: "Could not create account" }, 500);
 
+    // Admin-created accounts are confirmed — keep the profile flag consistent so
+    // the mobile app (which checks it) lets them in.
+    await supabase.from("profiles")
+      .update({ is_verified: true, verification_status: "verified" })
+      .eq("id", userId);
+
     // 5) Optional: grant a free subscription for N months.
     let grantedUntil: string | null = null;
     if (freeMonths > 0 && planId) {
