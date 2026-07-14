@@ -70,54 +70,75 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+    let cancelled = false;
 
-        if (session?.user) {
-          // Use setTimeout to avoid potential race conditions
-          setTimeout(async () => {
-            const [profileData, rolesData] = await Promise.all([
-              fetchProfile(session.user.id),
-              fetchRoles(session.user.id),
-            ]);
-            setProfile(profileData);
-            setRoles(rolesData);
-            setIsProfileLoaded(true);
-            setIsLoading(false);
-          }, 0);
-        } else {
-          setProfile(null);
-          setRoles([]);
+    const clearSession = () => {
+      setSession(null);
+      setUser(null);
+      setProfile(null);
+      setRoles([]);
+    };
+
+    const hydrate = async (session: Session | null) => {
+      try {
+        if (!session?.user) {
+          clearSession();
+          return;
+        }
+
+        const [profileData, rolesData] = await Promise.all([
+          fetchProfile(session.user.id),
+          fetchRoles(session.user.id),
+        ]);
+        if (cancelled) return;
+
+        // The account can be deleted elsewhere (e.g. from the mobile app) while
+        // this browser still holds a token: getSession() only reads
+        // localStorage, so it happily returns a session for a user that no
+        // longer exists. No profile row means the account is gone — drop the
+        // stale token instead of rendering a broken, half-loaded dashboard.
+        if (!profileData) {
+          await supabase.auth.signOut();
+          if (!cancelled) clearSession();
+          return;
+        }
+
+        setSession(session);
+        setUser(session.user);
+        setProfile(profileData);
+        setRoles(rolesData);
+      } catch (error) {
+        console.error("Auth hydration failed:", error);
+        if (!cancelled) clearSession();
+      } finally {
+        // Always resolve loading — otherwise a failed token refresh leaves the
+        // app spinning forever.
+        if (!cancelled) {
           setIsProfileLoaded(true);
           setIsLoading(false);
         }
       }
-    );
+    };
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setSession(session);
-        setUser(session.user);
-        Promise.all([
-          fetchProfile(session.user.id),
-          fetchRoles(session.user.id),
-        ]).then(([profileData, rolesData]) => {
-          setProfile(profileData);
-          setRoles(rolesData);
-          setIsProfileLoaded(true);
-          setIsLoading(false);
-        });
-      } else {
-        setIsProfileLoaded(true);
-        setIsLoading(false);
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      void hydrate(session);
     });
 
-    return () => subscription.unsubscribe();
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => hydrate(session))
+      .catch((error) => {
+        console.error("getSession failed:", error);
+        if (!cancelled) {
+          clearSession();
+          setIsProfileLoaded(true);
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
