@@ -212,7 +212,21 @@
     "logoutSuccess": "Abgemeldet",
     "logoutMessage": "Sie wurden erfolgreich abgemeldet.",
     "deleteAccount": "Konto löschen",
-    "dangerZone": "Gefahrenzone"
+    "dangerZone": "Gefahrenzone",
+    "delete": {
+      "title": "Konto löschen",
+      "description": "Löschen Sie Ihr Konto und alle Ihre Daten dauerhaft. Dies kann nicht rückgängig gemacht werden.",
+      "button": "Mein Konto löschen",
+      "confirmTitle": "Dies kann nicht rückgängig gemacht werden",
+      "confirmBody": "Ihr Profil, Ihr Abonnement und alle Ihre Daten werden dauerhaft gelöscht. Ein aktives Abonnement wird gekündigt.",
+      "typeEmail": "Geben Sie zur Bestätigung Ihre E-Mail ein:",
+      "confirmButton": "Endgültig löschen",
+      "deleting": "Wird gelöscht…",
+      "doneTitle": "Konto gelöscht",
+      "doneBody": "Ihr Konto und alle Daten wurden dauerhaft entfernt.",
+      "failed": "Ihr Konto konnte nicht gelöscht werden.",
+      "noSession": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an."
+    }
   },
   "admin": {
     "title": "Super-Administrator",

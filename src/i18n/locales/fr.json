@@ -212,7 +212,21 @@
     "logoutSuccess": "Déconnecté",
     "logoutMessage": "Vous avez été déconnecté avec succès.",
     "deleteAccount": "Supprimer le Compte",
-    "dangerZone": "Zone de Danger"
+    "dangerZone": "Zone de Danger",
+    "delete": {
+      "title": "Supprimer le compte",
+      "description": "Supprimez définitivement votre compte et toutes vos données. Cette action est irréversible.",
+      "button": "Supprimer mon compte",
+      "confirmTitle": "Cette action est irréversible",
+      "confirmBody": "Votre profil, votre abonnement et toutes vos données seront définitivement supprimés. Un abonnement actif sera annulé.",
+      "typeEmail": "Saisissez votre e-mail pour confirmer :",
+      "confirmButton": "Supprimer définitivement",
+      "deleting": "Suppression…",
+      "doneTitle": "Compte supprimé",
+      "doneBody": "Votre compte et toutes ses données ont été définitivement supprimés.",
+      "failed": "Impossible de supprimer votre compte.",
+      "noSession": "Votre session a expiré. Veuillez vous reconnecter."
+    }
   },
   "admin": {
     "title": "Super Administrateur",

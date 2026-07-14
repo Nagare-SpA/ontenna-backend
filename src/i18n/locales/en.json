@@ -213,7 +213,21 @@
     "logoutSuccess": "Logged out",
     "logoutMessage": "You have been successfully logged out.",
     "deleteAccount": "Delete Account",
-    "dangerZone": "Danger Zone"
+    "dangerZone": "Danger Zone",
+    "delete": {
+      "title": "Delete account",
+      "description": "Permanently delete your account and all of your data. This cannot be undone.",
+      "button": "Delete my account",
+      "confirmTitle": "This cannot be undone",
+      "confirmBody": "Your profile, subscription and all your data will be permanently deleted. An active subscription will be canceled.",
+      "typeEmail": "Type your email to confirm:",
+      "confirmButton": "Permanently delete",
+      "deleting": "Deleting…",
+      "doneTitle": "Account deleted",
+      "doneBody": "Your account and all its data have been permanently removed.",
+      "failed": "Could not delete your account.",
+      "noSession": "Your session expired. Please sign in again."
+    }
   },
   "admin": {
     "title": "Super Admin",

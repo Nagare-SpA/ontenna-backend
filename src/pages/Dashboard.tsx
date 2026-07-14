@@ -12,6 +12,7 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { SubscriptionCard } from "@/components/billing/SubscriptionCard";
 import { PlansDialog } from "@/components/billing/PlansDialog";
 import { AppFeaturesSection } from "@/components/dashboard/AppFeaturesSection";
+import { DeleteAccountCard } from "@/components/dashboard/DeleteAccountCard";
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -134,6 +135,11 @@ export default function Dashboard() {
 
         {/* Discover Ontenna — feature columns + FAQ */}
         <AppFeaturesSection />
+
+        {/* Danger zone — permanent account deletion */}
+        <div className="mt-10">
+          <DeleteAccountCard />
+        </div>
 
         {/* Plans Dialog */}
         <PlansDialog open={plansDialogOpen} onOpenChange={setPlansDialogOpen} />

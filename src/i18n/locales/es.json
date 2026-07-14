@@ -207,7 +207,21 @@
     "logoutSuccess": "Sesión cerrada",
     "logoutMessage": "Has cerrado sesión exitosamente.",
     "deleteAccount": "Eliminar Cuenta",
-    "dangerZone": "Zona de Peligro"
+    "dangerZone": "Zona de Peligro",
+    "delete": {
+      "title": "Eliminar cuenta",
+      "description": "Elimina permanentemente tu cuenta y todos tus datos. Esta acción no se puede deshacer.",
+      "button": "Eliminar mi cuenta",
+      "confirmTitle": "Esta acción no se puede deshacer",
+      "confirmBody": "Tu perfil, tu suscripción y todos tus datos se eliminarán permanentemente. Si tienes una suscripción activa, será cancelada.",
+      "typeEmail": "Escribe tu correo para confirmar:",
+      "confirmButton": "Eliminar definitivamente",
+      "deleting": "Eliminando…",
+      "doneTitle": "Cuenta eliminada",
+      "doneBody": "Tu cuenta y todos sus datos han sido eliminados permanentemente.",
+      "failed": "No pudimos eliminar tu cuenta.",
+      "noSession": "Tu sesión expiró. Inicia sesión nuevamente."
+    }
   },
   "admin": {
     "title": "Super Administrador",

@@ -212,7 +212,21 @@
     "logoutSuccess": "Desconectado",
     "logoutMessage": "Você saiu com sucesso.",
     "deleteAccount": "Excluir Conta",
-    "dangerZone": "Zona de Perigo"
+    "dangerZone": "Zona de Perigo",
+    "delete": {
+      "title": "Excluir conta",
+      "description": "Exclua permanentemente sua conta e todos os seus dados. Esta ação não pode ser desfeita.",
+      "button": "Excluir minha conta",
+      "confirmTitle": "Esta ação não pode ser desfeita",
+      "confirmBody": "Seu perfil, sua assinatura e todos os seus dados serão excluídos permanentemente. Uma assinatura ativa será cancelada.",
+      "typeEmail": "Digite seu e-mail para confirmar:",
+      "confirmButton": "Excluir definitivamente",
+      "deleting": "Excluindo…",
+      "doneTitle": "Conta excluída",
+      "doneBody": "Sua conta e todos os seus dados foram removidos permanentemente.",
+      "failed": "Não foi possível excluir sua conta.",
+      "noSession": "Sua sessão expirou. Faça login novamente."
+    }
   },
   "admin": {
     "title": "Super Administrador",
