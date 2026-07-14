@@ -3,6 +3,9 @@ project_id = "ycfrjvnuepfkeffsqxgm"
 [functions.delete-account]
 verify_jwt = false
 
+[functions.mobile-reset-password]
+verify_jwt = false
+
 [functions.firmware-check]
 verify_jwt = false
 
