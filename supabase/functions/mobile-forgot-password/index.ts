@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -20,7 +19,7 @@ serve(async (req) => {
   }
 
   try {
-    const { email } = await req.json();
+    const { email, redirectUrl } = await req.json();
 
     if (!email) {
       return new Response(
@@ -32,6 +31,18 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
+    // The recovery link needs a redirect target: `send-password-reset` uses it
+    // as the link's `redirectTo`, and when it is missing the emailed link is
+    // broken (this was the "reset password doesn't work" bug from mobile). The
+    // mobile client has no `window.location.origin` like the web does, so we
+    // resolve the target here: caller-provided `redirectUrl` (e.g. a future app
+    // deep link) -> `SITE_URL` env -> hardcoded production web reset page.
+    const siteUrl = Deno.env.get("SITE_URL") ?? "https://app.ontenna.org";
+    const resolvedRedirectUrl =
+      typeof redirectUrl === "string" && redirectUrl.length > 0
+        ? redirectUrl
+        : `${siteUrl.replace(/\/$/, "")}/reset-password`;
+
     // Call existing send-password-reset function
     const response = await fetch(`${supabaseUrl}/functions/v1/send-password-reset`, {
       method: "POST",
@@ -39,27 +50,27 @@ serve(async (req) => {
         "Content-Type": "application/json",
         "apikey": supabaseAnonKey,
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, redirectUrl: resolvedRedirectUrl }),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error("Password reset error:", errorData);
-      
+
       // Don't reveal if email exists or not for security
       return new Response(
-        JSON.stringify({ 
-          ok: true, 
-          message: "password_reset_sent" 
+        JSON.stringify({
+          ok: true,
+          message: "password_reset_sent"
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     return new Response(
-      JSON.stringify({ 
-        ok: true, 
-        message: "password_reset_sent" 
+      JSON.stringify({
+        ok: true,
+        message: "password_reset_sent"
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

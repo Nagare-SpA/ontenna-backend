@@ -7,6 +7,90 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, OPTIONS",
 };
 
+// Single source of truth for entitlement. The app historically read only
+// subscriptions.current_period_end, which silently ignored complimentary grants
+// held in subscriptions.free_until and personal_accounts.granted_free_until.
+// Here we compute the effective access end = the furthest-future of every date
+// that grants access, expose an explicit is_entitled, and return that effective
+// end as current_period_end so existing clients unlock correctly.
+// deno-lint-ignore no-explicit-any
+export async function buildEntitlement(supabaseService: any, userId: string) {
+  const { data: subscription } = await supabaseService
+    .from("subscriptions")
+    .select(`*, plans ( id, name, tier, stripe_price_id_monthly, stripe_price_id_yearly, features )`)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const { data: personalAccount } = await supabaseService
+    .from("personal_accounts")
+    .select("granted_free_until, plan, status")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const now = Date.now();
+  const toMs = (d: string | null | undefined) => (d ? new Date(d).getTime() : NaN);
+  const candidates = [
+    toMs(subscription?.current_period_end),
+    toMs(subscription?.free_until),
+    toMs(subscription?.trial_end),
+    toMs(personalAccount?.granted_free_until),
+  ].filter((n) => !Number.isNaN(n));
+  const effectiveEndMs = candidates.length ? Math.max(...candidates) : null;
+  const statusActive = subscription
+    ? ["active", "trialing", "past_due"].includes(subscription.status)
+    : false;
+  const suspended = personalAccount?.status === "suspended";
+  const isEntitled = !suspended && ((effectiveEndMs !== null && effectiveEndMs > now) || statusActive);
+  const effectiveEnd = effectiveEndMs !== null ? new Date(effectiveEndMs).toISOString() : null;
+
+  const plan = subscription?.plans as
+    | { id: string; name: string; tier: string; stripe_price_id_monthly: string | null; stripe_price_id_yearly: string | null; features: unknown[] }
+    | undefined;
+
+  if (isEntitled && plan) {
+    return {
+      status: statusActive ? subscription.status : "active",
+      is_entitled: true,
+      plan_key: plan.tier,
+      plan_name: plan.name,
+      price_id: plan.stripe_price_id_monthly || plan.stripe_price_id_yearly || null,
+      current_period_start: subscription?.current_period_start ?? null,
+      current_period_end: effectiveEnd,
+      cancel_at_period_end: subscription?.cancel_at_period_end ?? false,
+      features: plan.features || [],
+    };
+  }
+
+  if (isEntitled) {
+    // Entitled purely by a complimentary grant with no plan row.
+    return {
+      status: "active",
+      is_entitled: true,
+      plan_key: "complimentary",
+      plan_name: "Complimentary",
+      price_id: null,
+      current_period_start: null,
+      current_period_end: effectiveEnd,
+      cancel_at_period_end: false,
+      features: [],
+    };
+  }
+
+  return {
+    status: "none",
+    is_entitled: false,
+    plan_key: "free",
+    plan_name: null,
+    price_id: null,
+    current_period_start: null,
+    current_period_end: null,
+    cancel_at_period_end: false,
+    features: [],
+  };
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -49,69 +133,7 @@ serve(async (req) => {
 
     const supabaseService = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Fetch subscription using existing data
-    const { data: subscription } = await supabaseService
-      .from("subscriptions")
-      .select(`
-        *,
-        plans (
-          id,
-          name,
-          tier,
-          stripe_price_id_monthly,
-          stripe_price_id_yearly,
-          features
-        )
-      `)
-      .eq("user_id", user.id)
-      .in("status", ["active", "trialing", "past_due"])
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
-
-    let subscriptionResponse: {
-      status: string;
-      plan_key: string;
-      plan_name: string | null;
-      price_id: string | null;
-      current_period_start: string | null;
-      current_period_end: string | null;
-      cancel_at_period_end: boolean;
-      features: unknown[];
-    };
-
-    if (subscription && subscription.plans) {
-      const plan = subscription.plans as {
-        id: string;
-        name: string;
-        tier: string;
-        stripe_price_id_monthly: string | null;
-        stripe_price_id_yearly: string | null;
-        features: unknown[];
-      };
-      
-      subscriptionResponse = {
-        status: subscription.status,
-        plan_key: plan.tier,
-        plan_name: plan.name,
-        price_id: plan.stripe_price_id_monthly || plan.stripe_price_id_yearly || null,
-        current_period_start: subscription.current_period_start,
-        current_period_end: subscription.current_period_end,
-        cancel_at_period_end: subscription.cancel_at_period_end,
-        features: plan.features || [],
-      };
-    } else {
-      subscriptionResponse = {
-        status: "none",
-        plan_key: "free",
-        plan_name: null,
-        price_id: null,
-        current_period_start: null,
-        current_period_end: null,
-        cancel_at_period_end: false,
-        features: [],
-      };
-    }
+    const subscriptionResponse = await buildEntitlement(supabaseService, user.id);
 
     return new Response(
       JSON.stringify({

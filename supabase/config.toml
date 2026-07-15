@@ -1,5 +1,43 @@
 project_id = "ycfrjvnuepfkeffsqxgm"
 
+# =====================================================================
+# AUTH — versioned so the live project's settings are reviewable in git.
+# NOTE: config.toml governs the LOCAL stack and `supabase db push`/config
+# sync. The LIVE hosted project's Auth settings (SMTP credentials, exact
+# rate limits) are ALSO set in the dashboard — keep them in sync. The
+# "2 invitation emails" incident was the default mailer's low rate limit;
+# custom SMTP (Resend) below is the production fix.
+# =====================================================================
+[auth]
+site_url = "https://app.ontenna.org"
+additional_redirect_urls = [
+  "https://app.ontenna.org/reset-password",
+  "https://ontenna.org/reset-password",
+  "https://app.ontenna.org",
+  "https://ontenna.org",
+]
+
+[auth.rate_limit]
+# Raise well above the default handful/hour. The real lever is custom SMTP below.
+email_sent = 100
+
+[auth.email]
+# The app owns verification via the Resend 6-digit code + profiles.is_verified,
+# so Supabase's own confirmation email is redundant. Signup goes through
+# admin.createUser(email_confirm:true); keep this false so no built-in email is sent.
+enable_confirmations = false
+
+[auth.email.smtp]
+# Fill from the dashboard / secrets — do NOT commit the Resend API key here.
+enabled = true
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+# pass is provided via the SUPABASE_AUTH_SMTP_PASS env/secret, never in git.
+pass = "env(SUPABASE_AUTH_SMTP_PASS)"
+admin_email = "no-reply@app.ontenna.org"
+sender_name = "Ontenna"
+
 [functions.send-verification-code]
 verify_jwt = false
 
@@ -47,4 +85,9 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.mobile-forgot-password]
+verify_jwt = false
+
+# delete-user was unregistered (defaulting to verify_jwt=true). It authenticates
+# the caller internally; declare it explicitly so its exposure is intentional.
+[functions.delete-user]
 verify_jwt = false

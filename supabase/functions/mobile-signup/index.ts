@@ -31,26 +31,38 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    // Use the service-role client so we can create the user via the Admin API
+    // WITHOUT triggering Supabase's own confirmation email. `auth.signUp()` sends
+    // that email through the built-in (heavily rate-limited) mailer, which was
+    // causing "email rate limit exceeded" during bulk signups. The app's real
+    // verification is the 6-digit code sent via Resend (send-verification-code
+    // below), so we auto-confirm the auth email (email_confirm: true) and keep
+    // the app-level `profiles.is_verified` gate as the source of truth.
+    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
 
-    // Use existing signup logic - same as web platform
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email,
       password,
-      options: {
-        data: {
-          first_name,
-          last_name,
-          account_type: "end_user",
-          country: country || null,
-          locale: locale || null,
-        },
+      email_confirm: true,
+      user_metadata: {
+        first_name,
+        last_name,
+        account_type: "end_user",
+        country: country || null,
+        locale: locale || null,
       },
     });
 
     if (authError) {
       // Check for existing user
-      if (authError.message.includes("already registered")) {
+      if (
+        authError.message.includes("already registered") ||
+        authError.message.includes("already been registered") ||
+        authError.message.toLowerCase().includes("already exists")
+      ) {
         return new Response(
           JSON.stringify({ ok: false, error: { code: "email_exists", message: "Email already registered" } }),
           { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }

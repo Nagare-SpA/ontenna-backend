@@ -1,12 +1,23 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import Stripe from "https://esm.sh/stripe@14.21.0";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+// Restrict CORS to known first-party origins for this admin, browser-invoked function.
+const ALLOWED_ORIGINS = new Set([
+  "https://app.ontenna.org",
+  "https://ontenna.org",
+]);
+function corsFor(req: Request): Record<string, string> {
+  const origin = req.headers.get("origin") ?? "";
+  return {
+    "Access-Control-Allow-Origin": ALLOWED_ORIGINS.has(origin) ? origin : "https://app.ontenna.org",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Vary": "Origin",
+  };
+}
 
 serve(async (req) => {
+  const corsHeaders = corsFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -70,29 +81,42 @@ serve(async (req) => {
 
     console.log("[Delete User] Deleting user:", userId);
 
-    // Delete related data first (in order due to foreign keys)
-    // 1. Delete billing events
-    await supabase.from("billing_events").delete().eq("user_id", userId);
-    
-    // 2. Delete subscriptions
-    await supabase.from("subscriptions").delete().eq("user_id", userId);
-    
-    // 3. Delete user roles
-    await supabase.from("user_roles").delete().eq("user_id", userId);
-    
-    // 4. Delete verification codes
-    await supabase.from("verification_codes").delete().eq("user_id", userId);
-    
-    // 5. Delete profile
-    await supabase.from("profiles").delete().eq("id", userId);
+    // 1. Cancel + delete the Stripe customer so billing stops and PII is erased
+    //    at the processor (GDPR). Best-effort: log but don't block deletion.
+    try {
+      const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("stripe_customer_id, stripe_subscription_id")
+        .eq("user_id", userId)
+        .not("stripe_customer_id", "is", null)
+        .maybeSingle();
+      if (stripeKey && sub?.stripe_customer_id) {
+        const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
+        await stripe.customers.del(sub.stripe_customer_id); // also cancels its subscriptions
+        console.log("[Delete User] Stripe customer deleted:", sub.stripe_customer_id);
+      }
+    } catch (stripeErr) {
+      console.error("[Delete User] Stripe cleanup failed (continuing):", stripeErr instanceof Error ? stripeErr.message : stripeErr);
+    }
 
-    // 6. Finally delete from auth.users (this requires service role)
+    // 2. Delete all public-schema data in a single transaction (RPC).
+    const { error: rpcError } = await supabase.rpc("delete_user_data", { target: userId });
+    if (rpcError) {
+      console.error("[Delete User] delete_user_data RPC failed:", rpcError);
+      return new Response(
+        JSON.stringify({ error: "Failed to delete user data" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // 3. Finally delete from auth.users (requires service role)
     const { error: deleteAuthError } = await supabase.auth.admin.deleteUser(userId);
 
     if (deleteAuthError) {
       console.error("[Delete User] Auth deletion error:", deleteAuthError);
       return new Response(
-        JSON.stringify({ error: deleteAuthError.message }),
+        JSON.stringify({ error: "Failed to delete user" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -105,10 +129,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("[Delete User] Error:", error);
-    const message = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ error: message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ error: "Internal server error" }),
+      { status: 500, headers: { ...corsFor(req), "Content-Type": "application/json" } }
     );
   }
 });

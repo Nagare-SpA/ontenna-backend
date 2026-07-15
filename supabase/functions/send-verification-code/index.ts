@@ -16,8 +16,22 @@ interface SendCodeRequest {
 }
 
 function generateCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  // Cryptographically-secure 6-digit code (Math.random is not suitable for
+  // auth secrets). Rejection-sample to avoid modulo bias.
+  const max = 1000000;
+  const limit = Math.floor(0xffffffff / max) * max;
+  const buf = new Uint32Array(1);
+  let n = 0;
+  do {
+    crypto.getRandomValues(buf);
+    n = buf[0];
+  } while (n >= limit);
+  return (n % max).toString().padStart(6, "0");
 }
+
+// Anti-abuse cooldown (seconds) between code sends per user. Blocks
+// email-bomb / Resend-quota-exhaustion via the public, unauthenticated endpoint.
+const RESEND_COOLDOWN_SECONDS = 45;
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -38,6 +52,24 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({ error: "Missing userId or email" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
+    }
+
+    // Cooldown: refuse if a code was already issued to this user very recently.
+    const { data: recent } = await supabaseAdmin
+      .from("verification_codes")
+      .select("created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (recent?.created_at) {
+      const ageSeconds = (Date.now() - new Date(recent.created_at).getTime()) / 1000;
+      if (ageSeconds < RESEND_COOLDOWN_SECONDS) {
+        return new Response(
+          JSON.stringify({ error: "Please wait before requesting another code", retry_after: Math.ceil(RESEND_COOLDOWN_SECONDS - ageSeconds) }),
+          { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
     }
 
     // Invalidate any existing unused codes for this user
@@ -129,16 +161,26 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    // Inspect the Resend result: a failed send must NOT report success, or the
+    // user is stranded with no code. Log only the message id (never the full
+    // object — it carries PII).
+    if (emailResponse.error || !emailResponse.data?.id) {
+      console.error("Resend send failed:", emailResponse.error?.message ?? "no message id returned");
+      return new Response(
+        JSON.stringify({ error: "Failed to send verification code" }),
+        { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+    console.log("Verification email sent:", emailResponse.data.id);
 
     return new Response(
       JSON.stringify({ success: true }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in send-verification-code function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }

@@ -75,16 +75,24 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Password reset email sent:", emailResponse);
+    // A failed Resend send must surface as an error (log only the message id).
+    if (emailResponse.error || !emailResponse.data?.id) {
+      console.error("Resend reset send failed:", emailResponse.error?.message ?? "no message id returned");
+      return new Response(
+        JSON.stringify({ error: "Failed to send reset email" }),
+        { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+    console.log("Password reset email sent:", emailResponse.data.id);
 
     return new Response(
       JSON.stringify({ success: true }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in send-password-reset function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
