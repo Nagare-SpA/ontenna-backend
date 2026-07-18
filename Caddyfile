@@ -1,0 +1,21 @@
+# Railway terminates TLS at its edge and forwards plain HTTP to $PORT, so no
+# HTTPS here. Cloudflare sits in front for the global CDN/cache.
+{
+	admin off
+	auto_https off
+}
+
+:{$PORT:8080} {
+	root * /srv
+	encode gzip zstd
+
+	# SPA fallback: unknown paths (e.g. /dashboard, /reset-password) serve the
+	# app shell instead of 404 — replaces the Vercel rewrite rule.
+	try_files {path} /index.html
+	file_server
+
+	# Hashed build assets are immutable; the HTML shell must never be cached.
+	@assets path /assets/*
+	header @assets Cache-Control "public, max-age=31536000, immutable"
+	header Cache-Control "no-cache"
+}
