@@ -37,7 +37,9 @@ serve(async (req) => {
     // mobile client has no `window.location.origin` like the web does, so we
     // resolve the target here: caller-provided `redirectUrl` (e.g. a future app
     // deep link) -> `SITE_URL` env -> hardcoded production web reset page.
-    const siteUrl = Deno.env.get("SITE_URL") ?? "https://app.ontenna.org";
+    // Fallback must be the domain where the reset SPA actually lives
+    // (www.ontenna.org). `app.ontenna.org` returns 403 and is not deployed.
+    const siteUrl = Deno.env.get("SITE_URL") ?? "https://www.ontenna.org";
     const resolvedRedirectUrl =
       typeof redirectUrl === "string" && redirectUrl.length > 0
         ? redirectUrl
