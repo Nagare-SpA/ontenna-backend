@@ -35,7 +35,7 @@ port = 465
 user = "resend"
 # pass is provided via the SUPABASE_AUTH_SMTP_PASS env/secret, never in git.
 pass = "env(SUPABASE_AUTH_SMTP_PASS)"
-admin_email = "no-reply@app.ontenna.org"
+admin_email = "no-reply@ontenna.org"
 sender_name = "Ontenna"
 
 [functions.send-verification-code]
