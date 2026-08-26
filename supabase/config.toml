@@ -87,6 +87,10 @@ verify_jwt = false
 [functions.mobile-forgot-password]
 verify_jwt = false
 
+# Custom auth (valida el token como mobile-me y escribe con service role).
+[functions.mobile-diagnostics]
+verify_jwt = false
+
 # delete-user was unregistered (defaulting to verify_jwt=true). It authenticates
 # the caller internally; declare it explicitly so its exposure is intentional.
 [functions.delete-user]
