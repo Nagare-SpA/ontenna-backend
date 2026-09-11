@@ -53,8 +53,16 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    if (!Deno.env.get("RESEND_API_KEY")) {
+      console.error("RESEND_API_KEY is not configured");
+      return new Response(
+        JSON.stringify({ error: "email_not_configured" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     // Send email with reset link
-    const emailResponse = await resend.emails.send({
+    const { data: emailData, error: emailError } = await resend.emails.send({
       from: "Ontenna <no-reply@ontenna.org>",
       to: [email],
       subject: "Reset your password",
@@ -75,24 +83,26 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    // A failed Resend send must surface as an error (log only the message id).
-    if (emailResponse.error || !emailResponse.data?.id) {
-      console.error("Resend reset send failed:", emailResponse.error?.message ?? "no message id returned");
+    // The Resend SDK does NOT throw on API errors — it returns { error }.
+    // Treat that as a hard failure so we never report success without sending.
+    if (emailError) {
+      console.error("Resend send failed (password reset):", emailError);
       return new Response(
-        JSON.stringify({ error: "Failed to send reset email" }),
+        JSON.stringify({ error: "email_send_failed", detail: emailError.message ?? String(emailError) }),
         { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
-    console.log("Password reset email sent:", emailResponse.data.id);
+
+    console.log("Password reset email sent. Resend id:", emailData?.id);
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ success: true, id: emailData?.id }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in send-password-reset function:", error);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({ error: error.message }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }

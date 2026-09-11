@@ -14,7 +14,7 @@ export default function Learn() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Haptic language — Learn Ontenna</title>
+        <title>Ontenna - Learn</title>
         <meta name="description" content="The Ontenna haptic language: 17 lessons across Rhythm, Patterns, Attention, and Calm." />
         <link rel="canonical" href="https://ontenna.org/learn" />
       </Helmet>

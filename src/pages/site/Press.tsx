@@ -8,7 +8,7 @@ export default function Press() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Press — Ontenna</title>
+        <title>Ontenna - Press</title>
         <meta name="description" content="Press kit, logo pack, executive bios, and product photography for Ontenna." />
         <link rel="canonical" href="https://ontenna.org/press" />
       </Helmet>

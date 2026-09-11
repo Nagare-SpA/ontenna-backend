@@ -96,7 +96,7 @@ export default function Support() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Support — Ontenna</title>
+        <title>Ontenna - Support</title>
         <meta name="description" content="Help with the Ontenna app, Ontenna PA, the wearable, and your account." />
         <link rel="canonical" href="https://ontenna.org/support" />
       </Helmet>

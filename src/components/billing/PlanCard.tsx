@@ -28,6 +28,9 @@ export function PlanCard({
   const price = billingPeriod === 'yearly' ? plan.priceYearly : plan.priceMonthly;
   const monthlyEquivalent = billingPeriod === 'yearly' ? Math.round(price / 12) : price;
   const isPopular = plan.tier === 'pro';
+  const yearlySavePct = plan.priceMonthly > 0
+    ? Math.round((1 - plan.priceYearly / (plan.priceMonthly * 12)) * 100)
+    : 0;
 
   const handleSubscribe = async () => {
     setIsLoading(true);
@@ -75,7 +78,7 @@ export function PlanCard({
           <span className="text-muted-foreground">/month</span>
           {billingPeriod === 'yearly' && price > 0 && (
             <p className="text-sm text-muted-foreground mt-1">
-              Billed {formatPrice(price)} yearly (save 17%)
+              Billed {formatPrice(price)} yearly{yearlySavePct > 0 ? ` (save ${yearlySavePct}%)` : ''}
             </p>
           )}
         </CardDescription>

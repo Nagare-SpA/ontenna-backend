@@ -18,6 +18,12 @@ export function PlansDialog({ open, onOpenChange }: PlansDialogProps) {
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const { plans, currentTier, isProcessing, trialEligible, startTrial, refreshSubscription } = useBilling();
 
+  // Yearly savings % derived from the (single) paid plan, so it stays accurate.
+  const refPlan = plans.find((p) => p.priceMonthly > 0) ?? plans[0];
+  const yearlySavePct = refPlan && refPlan.priceMonthly > 0
+    ? Math.round((1 - refPlan.priceYearly / (refPlan.priceMonthly * 12)) * 100)
+    : 0;
+
   const handleStartTrial = async () => {
     const result = await startTrial();
     if (result.success) {
@@ -133,7 +139,9 @@ export function PlansDialog({ open, onOpenChange }: PlansDialogProps) {
                   <TabsTrigger value="monthly">Monthly</TabsTrigger>
                   <TabsTrigger value="yearly">
                     Yearly
-                    <span className="ml-1.5 text-xs text-primary">Save 17%</span>
+                    {yearlySavePct > 0 && (
+                      <span className="ml-1.5 text-xs text-primary">Save {yearlySavePct}%</span>
+                    )}
                   </TabsTrigger>
                 </TabsList>
               </Tabs>

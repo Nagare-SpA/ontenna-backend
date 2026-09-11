@@ -1,0 +1,442 @@
+{
+  "content_version": "1.0.0",
+  "module": {
+    "id": "L3",
+    "number": 3,
+    "name": "Calma y Enfoque",
+    "icon": "leaf.fill",
+    "color_theme": "#1FB6A6",
+    "tagline": "Respira, baja el ritmo y vuelve a ti.",
+    "description": "Bienestar a través de la vibración. Rampas lentas que acompañan tu respiración, anclas de calma y rutinas para soltar el estrés o conciliar el sueño. No es terapia ni diagnóstico: es una guía sensorial para parar un momento.",
+    "audience": "12+",
+    "skill_focus": ["wellness", "focus"]
+  },
+
+  "experiences": [
+    {
+      "id": "L3-E1", "module_id": "L3", "order": 1,
+      "name": "Respiración guiada", "icon": "wind",
+      "short_desc": "Inhala y exhala siguiendo la vibración que sube y baja.",
+      "skill_focus": "wellness",
+      "response_mechanic": "breathe",
+      "uses_led": true,
+      "est_seconds_per_level": 180,
+      "level_count": 5
+    },
+    {
+      "id": "L3-E2", "module_id": "L3", "order": 2,
+      "name": "Meditación sensorial", "icon": "leaf.fill",
+      "short_desc": "Una vibración lenta de anclaje para estar presente.",
+      "skill_focus": "wellness",
+      "response_mechanic": "none",
+      "uses_led": true,
+      "est_seconds_per_level": 240,
+      "level_count": 4
+    },
+    {
+      "id": "L3-E3", "module_id": "L3", "order": 3,
+      "name": "Reset de estrés", "icon": "arrow.down.heart.fill",
+      "short_desc": "Un descenso suave que te ayuda a soltar la tensión.",
+      "skill_focus": "wellness",
+      "response_mechanic": "none",
+      "uses_led": true,
+      "est_seconds_per_level": 150,
+      "level_count": 4
+    },
+    {
+      "id": "L3-E4", "module_id": "L3", "order": 4,
+      "name": "Foco y atención", "icon": "scope",
+      "short_desc": "Un pulso sutil que sostiene tu atención mientras trabajas.",
+      "skill_focus": "focus",
+      "response_mechanic": "none",
+      "uses_led": true,
+      "est_seconds_per_level": 300,
+      "level_count": 4
+    },
+    {
+      "id": "L3-E5", "module_id": "L3", "order": 5,
+      "name": "Rutina para dormir", "icon": "moon.stars.fill",
+      "short_desc": "Un descenso muy gradual para acompañarte al sueño.",
+      "skill_focus": "wellness",
+      "response_mechanic": "none",
+      "uses_led": true,
+      "est_seconds_per_level": 360,
+      "level_count": 4
+    },
+    {
+      "id": "L3-E6", "module_id": "L3", "order": 6,
+      "name": "Ancla de calma", "icon": "hand.raised.fill",
+      "short_desc": "Un patrón breve para usar en el momento que lo necesites.",
+      "skill_focus": "wellness",
+      "response_mechanic": "breathe",
+      "uses_led": true,
+      "est_seconds_per_level": 60,
+      "level_count": 5
+    }
+  ],
+
+  "levels": [
+    {
+      "id": "L3-E1-lv1", "experience_id": "L3-E1", "order": 1,
+      "name": "Primer respiro", "difficulty": 1,
+      "goal": "Completa 4 ciclos de respiración 4-4 (inhala 4 s, exhala 4 s) siguiendo la rampa.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 8, "inhale_seconds": 4, "hold_seconds": 0, "exhale_seconds": 4, "cycles": 4, "total_seconds": 32 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 4000, "intensity": 0.7, "sharpness": 0.0, "gapMs": 4000} ], "f006_bytes": [40,40,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":120,"b":255,"onMs":4000,"offMs":4000} ], "f007_bytes": [0,120,255,40,40, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 15, "tracks": ["cycles_completed"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L3-E1-lv2", "experience_id": "L3-E1", "order": 2,
+      "name": "Ritmo 4-4 sostenido", "difficulty": 2,
+      "goal": "Completa 6 ciclos de respiración 4-4 con la rampa de intensidad.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 8, "inhale_seconds": 4, "hold_seconds": 0, "exhale_seconds": 4, "cycles": 6, "total_seconds": 48 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 4000, "intensity": 0.7, "sharpness": 0.0, "gapMs": 4000} ], "f006_bytes": [40,40,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":120,"b":255,"onMs":4000,"offMs":4000} ], "f007_bytes": [0,120,255,40,40, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 18, "tracks": ["cycles_completed"] },
+      "unlock_after": "L3-E1-lv1"
+    },
+    {
+      "id": "L3-E1-lv3", "experience_id": "L3-E1", "order": 3,
+      "name": "4-2-6 con pausa", "difficulty": 3,
+      "goal": "Completa 6 ciclos de 4-2-6 (inhala 4, sostén 2, exhala 6) con exhalación más larga.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 12, "inhale_seconds": 4, "hold_seconds": 2, "exhale_seconds": 6, "cycles": 6, "total_seconds": 72 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 4000, "intensity": 0.7, "sharpness": 0.0, "gapMs": 8000} ], "f006_bytes": [40,80,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":120,"b":255,"onMs":4000,"offMs":2000}, {"r":0,"g":60,"b":200,"onMs":6000,"offMs":0} ], "f007_bytes": [0,120,255,40,20, 0,60,200,60,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 20, "tracks": ["cycles_completed"] },
+      "unlock_after": "L3-E1-lv2"
+    },
+    {
+      "id": "L3-E1-lv4", "experience_id": "L3-E1", "order": 4,
+      "name": "Respiración profunda 5-7", "difficulty": 4,
+      "goal": "Completa 6 ciclos de 5-7 (inhala 5, exhala 7) con ritmo más pausado.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 12, "inhale_seconds": 5, "hold_seconds": 0, "exhale_seconds": 7, "cycles": 6, "total_seconds": 72 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 5000, "intensity": 0.65, "sharpness": 0.0, "gapMs": 7000} ], "f006_bytes": [50,70,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":110,"b":240,"onMs":5000,"offMs":7000} ], "f007_bytes": [0,110,240,50,70, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 22, "tracks": ["cycles_completed"] },
+      "unlock_after": "L3-E1-lv3"
+    },
+    {
+      "id": "L3-E1-lv5", "experience_id": "L3-E1", "order": 5,
+      "name": "Calma extendida 6-8", "difficulty": 5,
+      "goal": "Completa 8 ciclos de 6-8 (inhala 6, exhala 8), el ritmo más lento y profundo.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 14, "inhale_seconds": 6, "hold_seconds": 0, "exhale_seconds": 8, "cycles": 8, "total_seconds": 112 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 6000, "intensity": 0.6, "sharpness": 0.0, "gapMs": 8000} ], "f006_bytes": [60,80,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":100,"b":230,"onMs":6000,"offMs":8000} ], "f007_bytes": [0,100,230,60,80, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 25, "tracks": ["cycles_completed"] },
+      "unlock_after": "L3-E1-lv4"
+    },
+
+    {
+      "id": "L3-E2-lv1", "experience_id": "L3-E2", "order": 1,
+      "name": "Ancla breve", "difficulty": 1,
+      "goal": "Permanece presente 2 minutos con la vibración de anclaje lenta.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 6, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 20, "total_seconds": 120 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 1500, "intensity": 0.5, "sharpness": 0.0, "gapMs": 4500} ], "f006_bytes": [15,45,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":20,"g":140,"b":160,"onMs":1500,"offMs":4500} ], "f007_bytes": [20,140,160,15,45, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 15, "tracks": ["seconds_completed"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L3-E2-lv2", "experience_id": "L3-E2", "order": 2,
+      "name": "Anclaje de 4 minutos", "difficulty": 2,
+      "goal": "Mantén la atención en la vibración durante 4 minutos.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 6, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 40, "total_seconds": 240 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 1500, "intensity": 0.5, "sharpness": 0.0, "gapMs": 4500} ], "f006_bytes": [15,45,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":20,"g":140,"b":160,"onMs":1500,"offMs":4500} ], "f007_bytes": [20,140,160,15,45, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 18, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E2-lv1"
+    },
+    {
+      "id": "L3-E2-lv3", "experience_id": "L3-E2", "order": 3,
+      "name": "Anclaje profundo", "difficulty": 3,
+      "goal": "6 minutos con ciclo de anclaje más lento y suave.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 10, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 36, "total_seconds": 360 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 2000, "intensity": 0.45, "sharpness": 0.0, "gapMs": 8000} ], "f006_bytes": [20,80,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":15,"g":130,"b":170,"onMs":2000,"offMs":8000} ], "f007_bytes": [15,130,170,20,80, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 20, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E2-lv2"
+    },
+    {
+      "id": "L3-E2-lv4", "experience_id": "L3-E2", "order": 4,
+      "name": "Presencia extendida", "difficulty": 4,
+      "goal": "8 minutos de meditación sensorial con el anclaje más sutil.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 12, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 40, "total_seconds": 480 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 2000, "intensity": 0.4, "sharpness": 0.0, "gapMs": 10000} ], "f006_bytes": [20,100,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":10,"g":120,"b":180,"onMs":2000,"offMs":10000} ], "f007_bytes": [10,120,180,20,100, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 24, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E2-lv3"
+    },
+
+    {
+      "id": "L3-E3-lv1", "experience_id": "L3-E3", "order": 1,
+      "name": "Soltar suave", "difficulty": 1,
+      "goal": "Sigue un descenso de intensidad de 90 s y nota cómo baja la tensión.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": null, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 1, "total_seconds": 90, "fade_from": 0.75, "fade_to": 0.25 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 90000, "intensity": 0.75, "sharpness": 0.0, "gapMs": 0} ] },
+      "led_pattern": { "beats": [ {"r":40,"g":160,"b":150,"onMs":90000,"offMs":0} ], "f007_bytes": [40,160,150,255,0, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": 190,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 15, "tracks": ["seconds_completed"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L3-E3-lv2", "experience_id": "L3-E3", "order": 2,
+      "name": "Descenso medio", "difficulty": 2,
+      "goal": "Descenso de 2.5 min con caída de intensidad más marcada.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": null, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 1, "total_seconds": 150, "fade_from": 0.7, "fade_to": 0.15 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 150000, "intensity": 0.7, "sharpness": 0.0, "gapMs": 0} ] },
+      "led_pattern": { "beats": [ {"r":35,"g":150,"b":160,"onMs":150000,"offMs":0} ], "f007_bytes": [35,150,160,255,0, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": 178,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 18, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E3-lv1"
+    },
+    {
+      "id": "L3-E3-lv3", "experience_id": "L3-E3", "order": 3,
+      "name": "Descenso profundo", "difficulty": 3,
+      "goal": "Descenso de 3 min hasta una vibración apenas perceptible.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": null, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 1, "total_seconds": 180, "fade_from": 0.65, "fade_to": 0.1 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 180000, "intensity": 0.65, "sharpness": 0.0, "gapMs": 0} ] },
+      "led_pattern": { "beats": [ {"r":30,"g":140,"b":170,"onMs":180000,"offMs":0} ], "f007_bytes": [30,140,170,255,0, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": 166,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 20, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E3-lv2"
+    },
+    {
+      "id": "L3-E3-lv4", "experience_id": "L3-E3", "order": 4,
+      "name": "Reset completo", "difficulty": 4,
+      "goal": "Descenso de 4 min: el reset más largo y profundo para soltar del todo.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": null, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 1, "total_seconds": 240, "fade_from": 0.6, "fade_to": 0.05 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 240000, "intensity": 0.6, "sharpness": 0.0, "gapMs": 0} ] },
+      "led_pattern": { "beats": [ {"r":25,"g":130,"b":180,"onMs":240000,"offMs":0} ], "f007_bytes": [25,130,180,255,0, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": 153,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 24, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E3-lv3"
+    },
+
+    {
+      "id": "L3-E4-lv1", "experience_id": "L3-E4", "order": 1,
+      "name": "Pulso de enfoque corto", "difficulty": 1,
+      "goal": "Sostén la atención 5 min con un pulso suave cada 30 s que te trae al presente.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 30, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 10, "total_seconds": 300, "cue_interval_seconds": 30 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 200, "intensity": 0.55, "sharpness": 0.0, "gapMs": 29800} ], "f006_bytes": [2,255,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":30,"g":180,"b":170,"onMs":200,"offMs":29800} ], "f007_bytes": [30,180,170,2,255, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 15, "tracks": ["seconds_completed"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L3-E4-lv2", "experience_id": "L3-E4", "order": 2,
+      "name": "Enfoque de 10 min", "difficulty": 2,
+      "goal": "10 min de foco con pulso cada 45 s, más espaciado y sutil.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 45, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 13, "total_seconds": 600, "cue_interval_seconds": 45 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 180, "intensity": 0.5, "sharpness": 0.0, "gapMs": 44820} ], "f006_bytes": [2,255,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":25,"g":170,"b":175,"onMs":180,"offMs":44820} ], "f007_bytes": [25,170,175,2,255, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 18, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E4-lv1"
+    },
+    {
+      "id": "L3-E4-lv3", "experience_id": "L3-E4", "order": 3,
+      "name": "Sesión Pomodoro", "difficulty": 3,
+      "goal": "15 min de foco con pulso muy sutil cada 60 s.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 60, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 15, "total_seconds": 900, "cue_interval_seconds": 60 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 150, "intensity": 0.45, "sharpness": 0.0, "gapMs": 59850} ], "f006_bytes": [2,255,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":20,"g":160,"b":180,"onMs":150,"offMs":59850} ], "f007_bytes": [20,160,180,2,255, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 22, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E4-lv2"
+    },
+    {
+      "id": "L3-E4-lv4", "experience_id": "L3-E4", "order": 4,
+      "name": "Enfoque profundo", "difficulty": 4,
+      "goal": "25 min de foco sostenido con el pulso más sutil cada 90 s.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 90, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 16, "total_seconds": 1500, "cue_interval_seconds": 90 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 120, "intensity": 0.4, "sharpness": 0.0, "gapMs": 89880} ], "f006_bytes": [1,255,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":15,"g":150,"b":185,"onMs":120,"offMs":89880} ], "f007_bytes": [15,150,185,1,255, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 26, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E4-lv3"
+    },
+
+    {
+      "id": "L3-E5-lv1", "experience_id": "L3-E5", "order": 1,
+      "name": "Bajar revoluciones", "difficulty": 1,
+      "goal": "Descenso muy gradual de 4 min para empezar a soltar el día.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": null, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 1, "total_seconds": 240, "fade_from": 0.55, "fade_to": 0.15 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 240000, "intensity": 0.55, "sharpness": 0.0, "gapMs": 0} ] },
+      "led_pattern": { "beats": [ {"r":20,"g":80,"b":160,"onMs":240000,"offMs":0} ], "f007_bytes": [20,80,160,255,0, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": 140,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 15, "tracks": ["seconds_completed"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L3-E5-lv2", "experience_id": "L3-E5", "order": 2,
+      "name": "Hacia el sueño", "difficulty": 2,
+      "goal": "Descenso de 6 min cada vez más tenue.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": null, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 1, "total_seconds": 360, "fade_from": 0.5, "fade_to": 0.1 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 360000, "intensity": 0.5, "sharpness": 0.0, "gapMs": 0} ] },
+      "led_pattern": { "beats": [ {"r":15,"g":60,"b":150,"onMs":360000,"offMs":0} ], "f007_bytes": [15,60,150,255,0, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": 128,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 18, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E5-lv1"
+    },
+    {
+      "id": "L3-E5-lv3", "experience_id": "L3-E5", "order": 3,
+      "name": "Sueño profundo", "difficulty": 3,
+      "goal": "Descenso de 8 min hasta casi apagarse.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": null, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 1, "total_seconds": 480, "fade_from": 0.45, "fade_to": 0.05 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 480000, "intensity": 0.45, "sharpness": 0.0, "gapMs": 0} ] },
+      "led_pattern": { "beats": [ {"r":10,"g":50,"b":140,"onMs":480000,"offMs":0} ], "f007_bytes": [10,50,140,255,0, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": 115,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 22, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E5-lv2"
+    },
+    {
+      "id": "L3-E5-lv4", "experience_id": "L3-E5", "order": 4,
+      "name": "Rutina completa", "difficulty": 4,
+      "goal": "Descenso de 12 min, la rutina más larga para acompañarte al dormir.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": null, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 1, "total_seconds": 720, "fade_from": 0.4, "fade_to": 0.0 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 720000, "intensity": 0.4, "sharpness": 0.0, "gapMs": 0} ] },
+      "led_pattern": { "beats": [ {"r":8,"g":40,"b":130,"onMs":720000,"offMs":0} ], "f007_bytes": [8,40,130,255,0, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": 100,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 26, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E5-lv3"
+    },
+
+    {
+      "id": "L3-E6-lv1", "experience_id": "L3-E6", "order": 1,
+      "name": "Tres respiros", "difficulty": 1,
+      "goal": "Ancla rápida: 3 ciclos de respiración 4-4 para reencontrar la calma en el momento.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 8, "inhale_seconds": 4, "hold_seconds": 0, "exhale_seconds": 4, "cycles": 3, "total_seconds": 24, "variant": "calma" },
+      "vibration_pattern": { "pulses": [ {"durationMs": 4000, "intensity": 0.7, "sharpness": 0.0, "gapMs": 4000} ], "f006_bytes": [40,40,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":120,"b":255,"onMs":4000,"offMs":4000} ], "f007_bytes": [0,120,255,40,40, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 12, "tracks": ["cycles_completed"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L3-E6-lv2", "experience_id": "L3-E6", "order": 2,
+      "name": "Ancla de tierra", "difficulty": 2,
+      "goal": "Variante de anclaje: 30 s de vibración lenta para volver al cuerpo.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 5, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 6, "total_seconds": 30, "variant": "tierra" },
+      "vibration_pattern": { "pulses": [ {"durationMs": 1500, "intensity": 0.5, "sharpness": 0.0, "gapMs": 3500} ], "f006_bytes": [15,35,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":20,"g":140,"b":150,"onMs":1500,"offMs":3500} ], "f007_bytes": [20,140,150,15,35, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 12, "tracks": ["cycles_completed"] },
+      "unlock_after": "L3-E6-lv1"
+    },
+    {
+      "id": "L3-E6-lv3", "experience_id": "L3-E6", "order": 3,
+      "name": "Ancla de soltar", "difficulty": 2,
+      "goal": "Variante de descenso: fade de 30 s para liberar tensión al instante.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": null, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 1, "total_seconds": 30, "variant": "soltar", "fade_from": 0.7, "fade_to": 0.2 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 30000, "intensity": 0.7, "sharpness": 0.0, "gapMs": 0} ] },
+      "led_pattern": { "beats": [ {"r":40,"g":160,"b":150,"onMs":30000,"offMs":0} ], "f007_bytes": [40,160,150,255,0, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": 185,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 12, "tracks": ["seconds_completed"] },
+      "unlock_after": "L3-E6-lv2"
+    },
+    {
+      "id": "L3-E6-lv4", "experience_id": "L3-E6", "order": 4,
+      "name": "Ancla de foco", "difficulty": 3,
+      "goal": "Variante de enfoque: 3 pulsos sutiles para recentrar la atención.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 4, "inhale_seconds": null, "hold_seconds": null, "exhale_seconds": null, "cycles": 3, "total_seconds": 12, "variant": "foco", "cue_interval_seconds": 4 },
+      "vibration_pattern": { "pulses": [ {"durationMs": 200, "intensity": 0.55, "sharpness": 0.0, "gapMs": 3800} ], "f006_bytes": [2,38,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":30,"g":180,"b":170,"onMs":200,"offMs":3800} ], "f007_bytes": [30,180,170,2,38, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 12, "tracks": ["cycles_completed"] },
+      "unlock_after": "L3-E6-lv3"
+    },
+    {
+      "id": "L3-E6-lv5", "experience_id": "L3-E6", "order": 5,
+      "name": "Ancla profunda 4-6", "difficulty": 4,
+      "goal": "Variante profunda: 3 ciclos de 4-6 con exhalación larga, tu ancla personalizada.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "cycle_seconds": 10, "inhale_seconds": 4, "hold_seconds": 0, "exhale_seconds": 6, "cycles": 3, "total_seconds": 30, "variant": "profunda" },
+      "vibration_pattern": { "pulses": [ {"durationMs": 4000, "intensity": 0.65, "sharpness": 0.0, "gapMs": 6000} ], "f006_bytes": [40,60,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":110,"b":240,"onMs":4000,"offMs":6000} ], "f007_bytes": [0,110,240,40,60, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric": "completion", "pass": 1.0, "star2": null, "star3": null },
+      "scoring": { "xp": 12, "tracks": ["cycles_completed"] },
+      "unlock_after": "L3-E6-lv4"
+    }
+  ],
+
+  "haptic_patterns": [
+    {
+      "id": "L3.breath_inhale_exhale_44", "role": "breath_ramp",
+      "description": "Ciclo de respiración 4-4: rampa de subida (inhalar) y bajada (exhalar) de 4 s cada una, LED azul guía.",
+      "vibration_pattern": { "pulses": [ {"durationMs": 4000, "intensity": 0.7, "sharpness": 0.0, "gapMs": 4000} ], "f006_bytes": [40,40,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":120,"b":255,"onMs":4000,"offMs":4000} ], "f007_bytes": [0,120,255,40,40, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null, "erm_ok": true
+    },
+    {
+      "id": "L3.breath_46_long_exhale", "role": "breath_ramp",
+      "description": "Respiración 4-6 con exhalación prolongada para activar la calma; rampa larga descendente.",
+      "vibration_pattern": { "pulses": [ {"durationMs": 4000, "intensity": 0.65, "sharpness": 0.0, "gapMs": 6000} ], "f006_bytes": [40,60,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":110,"b":240,"onMs":4000,"offMs":6000} ], "f007_bytes": [0,110,240,40,60, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null, "erm_ok": true
+    },
+    {
+      "id": "L3.anchor_slow", "role": "anchor",
+      "description": "Pulso lento de anclaje (1.5 s on, gap largo) para meditación sensorial.",
+      "vibration_pattern": { "pulses": [ {"durationMs": 1500, "intensity": 0.5, "sharpness": 0.0, "gapMs": 4500} ], "f006_bytes": [15,45,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":20,"g":140,"b":160,"onMs":1500,"offMs":4500} ], "f007_bytes": [20,140,160,15,45, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null, "erm_ok": true
+    },
+    {
+      "id": "L3.stress_fade_out", "role": "fade_out",
+      "description": "Vibración continua con descenso de intensidad vía F005 (de alto a casi nulo) para soltar estrés.",
+      "vibration_pattern": { "pulses": [ {"durationMs": 120000, "intensity": 0.7, "sharpness": 0.0, "gapMs": 0} ] },
+      "led_pattern": { "beats": [ {"r":35,"g":150,"b":160,"onMs":120000,"offMs":0} ], "f007_bytes": [35,150,160,255,0, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": 178, "erm_ok": true
+    },
+    {
+      "id": "L3.focus_cue", "role": "focus_cue",
+      "description": "Pulso breve y sutil (≈180 ms) muy espaciado para recentrar la atención sin interrumpir.",
+      "vibration_pattern": { "pulses": [ {"durationMs": 180, "intensity": 0.5, "sharpness": 0.0, "gapMs": 44820} ], "f006_bytes": [2,255,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":25,"g":170,"b":175,"onMs":180,"offMs":44820} ], "f007_bytes": [25,170,175,2,255, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null, "erm_ok": true
+    },
+    {
+      "id": "L3.sleep_descent", "role": "fade_out",
+      "description": "Descenso muy gradual y tenue para conciliar el sueño; azul profundo que se apaga.",
+      "vibration_pattern": { "pulses": [ {"durationMs": 480000, "intensity": 0.45, "sharpness": 0.0, "gapMs": 0} ] },
+      "led_pattern": { "beats": [ {"r":10,"g":50,"b":140,"onMs":480000,"offMs":0} ], "f007_bytes": [10,50,140,255,0, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": 115, "erm_ok": true
+    }
+  ]
+}

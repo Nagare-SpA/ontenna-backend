@@ -89,8 +89,9 @@ export default function PlansManagement() {
       const planData = {
         name: data.name,
         tier: data.tier,
-        price_monthly: data.price_monthly,
-        price_yearly: data.price_yearly,
+        // Form holds dollars; DB stores integer cents.
+        price_monthly: Math.round((data.price_monthly || 0) * 100),
+        price_yearly: Math.round((data.price_yearly || 0) * 100),
         features: data.features,
         stripe_price_id_monthly: data.stripe_price_id_monthly || null,
         stripe_price_id_yearly: data.stripe_price_id_yearly || null,
@@ -161,8 +162,9 @@ export default function PlansManagement() {
     setFormData({
       name: plan.name,
       tier: plan.tier,
-      price_monthly: plan.price_monthly,
-      price_yearly: plan.price_yearly,
+      // DB stores cents; the form edits dollars.
+      price_monthly: plan.price_monthly / 100,
+      price_yearly: plan.price_yearly / 100,
       features: features as string[],
       stripe_price_id_monthly: plan.stripe_price_id_monthly || "",
       stripe_price_id_yearly: plan.stripe_price_id_yearly || "",
@@ -245,8 +247,8 @@ export default function PlansManagement() {
                           {plan.tier}
                         </Badge>
                       </TableCell>
-                      <TableCell>${plan.price_monthly}</TableCell>
-                      <TableCell>${plan.price_yearly}</TableCell>
+                      <TableCell>${(plan.price_monthly / 100).toFixed(2)}</TableCell>
+                      <TableCell>${(plan.price_yearly / 100).toFixed(2)}</TableCell>
                       <TableCell>
                         <Switch
                           checked={plan.is_active}
@@ -343,16 +345,20 @@ export default function PlansManagement() {
                   <Label>{t("admin.plans.priceMonthly")} ($)</Label>
                   <Input
                     type="number"
+                    step="0.01"
+                    min="0"
                     value={formData.price_monthly}
-                    onChange={(e) => setFormData({ ...formData, price_monthly: parseInt(e.target.value) || 0 })}
+                    onChange={(e) => setFormData({ ...formData, price_monthly: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>{t("admin.plans.priceYearly")} ($)</Label>
                   <Input
                     type="number"
+                    step="0.01"
+                    min="0"
                     value={formData.price_yearly}
-                    onChange={(e) => setFormData({ ...formData, price_yearly: parseInt(e.target.value) || 0 })}
+                    onChange={(e) => setFormData({ ...formData, price_yearly: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
               </div>

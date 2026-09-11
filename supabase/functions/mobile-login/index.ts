@@ -30,7 +30,6 @@ serve(async (req) => {
       );
     }
 
-    // Use existing Supabase auth
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -79,16 +78,11 @@ serve(async (req) => {
     // Successful auth → clear the lockout counter.
     await supabaseService.from("login_attempts").delete().eq("email", emailKey);
 
-    // Check if email is verified using existing profile
-    const { data: profile, error: profileError } = await supabaseService
-      .from("profiles")
-      .select("is_verified")
-      .eq("id", authData.user.id)
-      .single();
-
-    // FAIL-CLOSED: a missing profile row or a read error must NOT grant access.
-    // Only an explicitly verified profile passes the gate.
-    if (profileError || !profile || !profile.is_verified) {
+    // Auth's email_confirmed_at is the source of truth for verification (the
+    // web login uses the same signal). The profiles.is_verified flag can lag
+    // behind when the email is confirmed by admin/reset paths, so don't gate on
+    // it — that was blocking valid users from the app while the web let them in.
+    if (!authData.user.email_confirmed_at) {
       return new Response(
         JSON.stringify({
           ok: false,
@@ -97,6 +91,13 @@ serve(async (req) => {
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Best-effort: keep the profile flag in sync so it stops diverging.
+    await supabaseService
+      .from("profiles")
+      .update({ is_verified: true, verification_status: "verified" })
+      .eq("id", authData.user.id)
+      .eq("is_verified", false);
 
     // Return mobile-friendly response
     return new Response(

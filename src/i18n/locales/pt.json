@@ -23,7 +23,22 @@
     "subscription": "Assinatura",
     "settings": "Configurações",
     "logout": "Sair",
-    "admin": "Admin"
+    "admin": "Admin",
+    "device": "Dispositivo",
+    "app": "App",
+    "teachers": "Professores",
+    "schools": "Escolas",
+    "story": "História",
+    "support": "Suporte",
+    "account": "Conta",
+    "signIn": "Entrar",
+    "signUp": "Criar conta",
+    "close": "Fechar",
+    "menu": "Menu",
+    "language": "Idioma",
+    "school": "Escola",
+    "forTeachers": "Para professores",
+    "forStudents": "Para alunos"
   },
   "landing": {
     "title": "Bem-vindo ao Ontenna",
@@ -197,7 +212,21 @@
     "logoutSuccess": "Desconectado",
     "logoutMessage": "Você saiu com sucesso.",
     "deleteAccount": "Excluir Conta",
-    "dangerZone": "Zona de Perigo"
+    "dangerZone": "Zona de Perigo",
+    "delete": {
+      "title": "Excluir conta",
+      "description": "Exclua permanentemente sua conta e todos os seus dados. Esta ação não pode ser desfeita.",
+      "button": "Excluir minha conta",
+      "confirmTitle": "Esta ação não pode ser desfeita",
+      "confirmBody": "Seu perfil, sua assinatura e todos os seus dados serão excluídos permanentemente. Uma assinatura ativa será cancelada.",
+      "typeEmail": "Digite seu e-mail para confirmar:",
+      "confirmButton": "Excluir definitivamente",
+      "deleting": "Excluindo…",
+      "doneTitle": "Conta excluída",
+      "doneBody": "Sua conta e todos os seus dados foram removidos permanentemente.",
+      "failed": "Não foi possível excluir sua conta.",
+      "noSession": "Sua sessão expirou. Faça login novamente."
+    }
   },
   "admin": {
     "title": "Super Administrador",
@@ -228,5 +257,149 @@
     "unauthorizedMessage": "Você não tem permissão para acessar esta página.",
     "serverError": "Erro do servidor",
     "serverErrorMessage": "Algo deu errado. Por favor, tente mais tarde."
+  },
+  "footer": {
+    "product": "Produto",
+    "device": "Dispositivo",
+    "app": "App Ontenna (iPhone)",
+    "teachersApp": "Ontenna PA (iPad)",
+    "download": "Baixar",
+    "reserve": "Reservar",
+    "education": "Educação",
+    "schools": "Escolas",
+    "learn": "Linguagem háptica",
+    "science": "Ciência e acessibilidade",
+    "company": "Empresa",
+    "story": "Nossa história",
+    "about": "Sobre a Nagare Japan",
+    "community": "Comunidade",
+    "press": "Imprensa",
+    "support": "Suporte",
+    "supportCenter": "Central de ajuda",
+    "contact": "Contato",
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "accessibility": "Declaração de acessibilidade",
+    "manifesto": "Feito com a comunidade surda. Tóquio · No mundo todo.",
+    "officeJapan": "Japão",
+    "officeChile": "Chile",
+    "copyright": "© 2026 Nagare Japan Inc."
+  },
+  "home": {
+    "meta": {
+      "title": "Ontenna - Som, feito para sentir.",
+      "description": "Ontenna é um dispositivo háptico vestível que traduz os sons do mundo em vibração e luz. Um dispositivo, dois apps e uma linguagem háptica feitos para pessoas surdas e com perda auditiva."
+    },
+    "hero": {
+      "titleLead": "Som,",
+      "titleAccent": "feito para sentir.",
+      "subtitle": "Ontenna é um vestível que traduz os sons do mundo em vibração e luz. Um dispositivo, dois apps e uma linguagem háptica para quem ouve com o corpo.",
+      "cta1": "Entrar na lista de espera",
+      "cta2": "Baixar o app",
+      "note": "Os apps Ontenna exigem o dispositivo háptico Ontenna. Vendido separadamente.",
+      "flow": "Áudio entra · vibração sai · luz sai"
+    },
+    "steps": {
+      "eyebrow": "O que é Ontenna",
+      "title": "Três passos. Um sentido.",
+      "s1Title": "Vista-o.",
+      "s1Body": "Prenda o Ontenna no cabelo, na orelha, na gola ou na roupa. Quase não pesa.",
+      "s2Title": "Sinta-o.",
+      "s2Body": "Vibração e luz traduzem o som ao seu redor em tempo real, no seu corpo.",
+      "s3Title": "Aprenda-o.",
+      "s3Body": "Um app dedicado à linguagem háptica do Ontenna — sinta ritmo, atenção, música."
+    },
+    "device": {
+      "eyebrow": "O dispositivo",
+      "title": "Hardware em primeiro lugar, por design.",
+      "body": "O app Ontenna não funciona sem o vestível conectado. É uma decisão de identidade deliberada. O corpo é a tela.",
+      "cta": "Reserve o seu"
+    },
+    "ecosystem": {
+      "eyebrow": "Ecossistema",
+      "title": "Um vestível, dois apps.",
+      "iphoneTag": "Para todos",
+      "iphoneTitle": "App Ontenna · iPhone",
+      "iphoneBody": "Um Ontenna pareado ao seu iPhone. Alertas, Symphony, Esportes, Transcrição ao vivo e Treino.",
+      "ipadTag": "Para professores e artistas",
+      "ipadTitle": "Ontenna PA · iPad",
+      "ipadBody": "Um iPad orquestra até 20 Ontennas pelo Ontenna Gateway, em salas de aula e shows ao vivo."
+    },
+    "sounds": {
+      "eyebrow": "50+ sons · ~10 categorias",
+      "title": "Ouvindo 24/7, do seu jeito.",
+      "body": "Os Alertas funcionam com o microfone do próprio Ontenna — nunca o do seu iPhone — reconhecendo mais de 50 sons em cerca de 10 categorias. Cada um dispara seu próprio padrão de vibração e cor.",
+      "cat": {
+        "emergency": {
+          "label": "Emergência",
+          "items": [
+            "Fogo",
+            "Fumaça",
+            "CO",
+            "Segurança",
+            "Vidro quebrando"
+          ]
+        },
+        "health": {
+          "label": "Saúde e cuidados",
+          "items": [
+            "Choro de bebê",
+            "Gritos",
+            "Engasgo",
+            "Ronco",
+            "Tosse"
+          ]
+        },
+        "home": {
+          "label": "Casa",
+          "items": [
+            "Campainha",
+            "Batida na porta",
+            "Porta batendo",
+            "Água",
+            "Vaso sanitário"
+          ]
+        },
+        "traffic": {
+          "label": "Trânsito",
+          "items": [
+            "Buzina",
+            "Ambulância",
+            "Polícia",
+            "Bombeiros",
+            "Trem"
+          ]
+        },
+        "animals": {
+          "label": "Animais e outros",
+          "items": [
+            "Cachorro",
+            "Gato",
+            "Pássaro",
+            "Voz",
+            "Música"
+          ]
+        }
+      }
+    },
+    "symphony": {
+      "eyebrow": "Symphony",
+      "title": "Sinta a música, um instrumento por vez.",
+      "body": "O Symphony separa uma música em faixas — bateria, baixo, vocais, piano, guitarra — cada uma com sua própria vibração, sincronizada com Spotify ou Apple Music. Oito modos, e com o modo Suit até 7 Ontennas espalham a música por todo o seu corpo."
+    },
+    "manifesto": {
+      "eyebrow": "Manifesto",
+      "body": "Criamos hardware para os sentidos que as pessoas já têm. O Ontenna é universal por design, criado com a comunidade surda, e feito para colocar o mundo de volta dentro do seu corpo."
+    },
+    "slider": {
+      "worn": "Prenda-o. Sinta o seu mundo.",
+      "device": "Ontenna Pro — clipe, controles, vibração e luz.",
+      "together": "O som, compartilhado."
+    }
+  },
+  "press": {
+    "eyebrow": "Imprensa e reconhecimento",
+    "title": "Destaque no mundo todo.",
+    "intro": "Uma década de cobertura e prêmios — da imprensa de tecnologia global às maiores honras de design do Japão. Toque em qualquer logo para ler a matéria."
   }
 }

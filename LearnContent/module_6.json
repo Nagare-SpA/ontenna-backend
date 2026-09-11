@@ -1,0 +1,469 @@
+{
+  "content_version": "1.0.0",
+  "module": {
+    "id": "L6",
+    "number": 6,
+    "name": "Lenguaje Háptico",
+    "icon": "dot.radiowaves.left.and.right",
+    "color_theme": "#00B894",
+    "tagline": "Habla en clave. Solo tu Ontenna entiende.",
+    "description": "Convierte la vibración en un idioma secreto. Aprende morse jugando, asocia señales a significados, envía y recibe mensajes con golpes, e inventa tu propio código. Comunicación que se siente.",
+    "audience": "12+",
+    "skill_focus": ["communication", "memory", "perception"]
+  },
+
+  "experiences": [
+    {
+      "id": "L6-E1", "module_id": "L6", "order": 1,
+      "name": "Aprende morse jugando", "icon": "character.bubble",
+      "short_desc": "Siente una letra en morse y reconócela.",
+      "skill_focus": "communication",
+      "response_mechanic": "decode",
+      "uses_led": true,
+      "est_seconds_per_level": 150,
+      "level_count": 6
+    },
+    {
+      "id": "L6-E2", "module_id": "L6", "order": 2,
+      "name": "Señales y significados", "icon": "exclamationmark.bubble",
+      "short_desc": "Asocia patrones cortos a lo que quieren decir.",
+      "skill_focus": "communication",
+      "response_mechanic": "choose",
+      "uses_led": true,
+      "est_seconds_per_level": 130,
+      "level_count": 5
+    },
+    {
+      "id": "L6-E3", "module_id": "L6", "order": 3,
+      "name": "Envía un mensaje", "icon": "paperplane.fill",
+      "short_desc": "Construye una palabra en morse golpe a golpe.",
+      "skill_focus": "communication",
+      "response_mechanic": "compose",
+      "uses_led": true,
+      "est_seconds_per_level": 170,
+      "level_count": 5
+    },
+    {
+      "id": "L6-E4", "module_id": "L6", "order": 4,
+      "name": "Recibe un mensaje", "icon": "tray.and.arrow.down.fill",
+      "short_desc": "Siente una palabra y descífrala.",
+      "skill_focus": "perception",
+      "response_mechanic": "decode",
+      "uses_led": false,
+      "est_seconds_per_level": 180,
+      "level_count": 5
+    },
+    {
+      "id": "L6-E5", "module_id": "L6", "order": 5,
+      "name": "Tu código secreto", "icon": "lock.shield.fill",
+      "short_desc": "Inventa tus patrones y recuérdalos.",
+      "skill_focus": "memory",
+      "response_mechanic": "freeplay",
+      "uses_led": true,
+      "est_seconds_per_level": 160,
+      "level_count": 4
+    },
+    {
+      "id": "L6-E6", "module_id": "L6", "order": 6,
+      "name": "Retos de comunicación", "icon": "flame.fill",
+      "short_desc": "Mezcla todo. Más rápido, más largo, racha.",
+      "skill_focus": "communication",
+      "response_mechanic": "decode",
+      "uses_led": true,
+      "est_seconds_per_level": 150,
+      "level_count": 6
+    }
+  ],
+
+  "levels": [
+    {
+      "id": "L6-E1-lv1", "experience_id": "L6-E1", "order": 1,
+      "name": "E y T", "difficulty": 1,
+      "goal": "Reconoce E (·) y T (—). Solo 2 letras.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": 1, "options": 2, "span": null, "alphabet_size": 2, "word_len": 1, "speed": "lenta" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.85,"sharpness":0,"gapMs":200} ], "f006_bytes": [1,0,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":184,"b":148,"onMs":100,"offMs":200} ], "f007_bytes": [0,184,148,1,2, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":1.0 },
+      "scoring": { "xp": 15, "tracks":["accuracy","reaction_ms"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L6-E1-lv2", "experience_id": "L6-E1", "order": 2,
+      "name": "Suma A e I", "difficulty": 2,
+      "goal": "Reconoce E, T, A (·—) e I (··). 4 letras.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": 2, "options": 4, "span": null, "alphabet_size": 4, "word_len": 1, "speed": "lenta" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.85,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [1,1,3,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":184,"b":148,"onMs":100,"offMs":100}, {"r":0,"g":120,"b":255,"onMs":300,"offMs":300} ], "f007_bytes": [0,184,148,1,1, 0,120,255,3,3, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":1.0 },
+      "scoring": { "xp": 20, "tracks":["accuracy","reaction_ms"] },
+      "unlock_after": "L6-E1-lv1"
+    },
+    {
+      "id": "L6-E1-lv3", "experience_id": "L6-E1", "order": 3,
+      "name": "M, N y S", "difficulty": 3,
+      "goal": "Añade M (——), N (—·) y S (···). 7 letras.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": 3, "options": 5, "span": null, "alphabet_size": 7, "word_len": 1, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.85,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.85,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.85,"sharpness":0,"gapMs":300} ], "f006_bytes": [1,1,1,1,1,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":184,"b":148,"onMs":100,"offMs":100} ], "f007_bytes": [0,184,148,1,1, 0,184,148,1,1, 0,184,148,1,3] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":0.95 },
+      "scoring": { "xp": 25, "tracks":["accuracy","reaction_ms"] },
+      "unlock_after": "L6-E1-lv2"
+    },
+    {
+      "id": "L6-E1-lv4", "experience_id": "L6-E1", "order": 4,
+      "name": "O, R y K", "difficulty": 4,
+      "goal": "Suma O (———), R (·—·), K (—·—). 10 letras.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": 3, "options": 6, "span": null, "alphabet_size": 10, "word_len": 1, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [3,1,3,1,3,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":120,"b":255,"onMs":300,"offMs":100} ], "f007_bytes": [0,120,255,3,1, 0,120,255,3,1, 0,120,255,3,3] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":0.95 },
+      "scoring": { "xp": 30, "tracks":["accuracy","reaction_ms"] },
+      "unlock_after": "L6-E1-lv3"
+    },
+    {
+      "id": "L6-E1-lv5", "experience_id": "L6-E1", "order": 5,
+      "name": "Letras rápidas", "difficulty": 5,
+      "goal": "Mismas letras, ritmo más vivo. 12 letras, menos pista visual.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": 4, "options": 6, "span": null, "alphabet_size": 12, "word_len": 1, "speed": "rapida" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [1,1,3,1,1,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":184,"b":148,"onMs":100,"offMs":100} ], "f007_bytes": [0,184,148,1,1, 0,120,255,3,1, 0,184,148,1,3] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.75, "star2":0.88, "star3":0.96 },
+      "scoring": { "xp": 35, "tracks":["accuracy","reaction_ms"] },
+      "unlock_after": "L6-E1-lv4"
+    },
+    {
+      "id": "L6-E1-lv6", "experience_id": "L6-E1", "order": 6,
+      "name": "Alfabeto a ciegas", "difficulty": 6,
+      "goal": "Cualquier letra, sin LED. Solo háptica.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": 4, "options": 8, "span": null, "alphabet_size": 26, "word_len": 1, "speed": "rapida" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [3,1,1,1,3,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":300} ], "f007_bytes": [0,0,0,0,3, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.75, "star2":0.9, "star3":1.0 },
+      "scoring": { "xp": 45, "tracks":["accuracy","reaction_ms"] },
+      "unlock_after": "L6-E1-lv5"
+    },
+
+    {
+      "id": "L6-E2-lv1", "experience_id": "L6-E2", "order": 1,
+      "name": "Sí y No", "difficulty": 1,
+      "goal": "Un golpe largo = SÍ. Dos cortos = NO. Elige.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": 1, "options": 2, "span": null, "alphabet_size": 2, "word_len": 1, "speed": "lenta" },
+      "vibration_pattern": { "pulses": [ {"durationMs":500,"intensity":0.9,"sharpness":0,"gapMs":400} ], "f006_bytes": [5,4,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":230,"b":118,"onMs":500,"offMs":400} ], "f007_bytes": [0,230,118,5,4, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":1.0 },
+      "scoring": { "xp": 15, "tracks":["accuracy"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L6-E2-lv2", "experience_id": "L6-E2", "order": 2,
+      "name": "Espera y Ven", "difficulty": 2,
+      "goal": "Añade ESPERA (pulso largo lento) y VEN (tres cortos rápidos).",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": 3, "options": 4, "span": null, "alphabet_size": 4, "word_len": 1, "speed": "lenta" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":400} ], "f006_bytes": [1,1,1,1,1,4,0,0] },
+      "led_pattern": { "beats": [ {"r":255,"g":200,"b":0,"onMs":100,"offMs":100} ], "f007_bytes": [255,200,0,1,1, 255,200,0,1,1, 255,200,0,1,4] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":0.95 },
+      "scoring": { "xp": 20, "tracks":["accuracy"] },
+      "unlock_after": "L6-E2-lv1"
+    },
+    {
+      "id": "L6-E2-lv3", "experience_id": "L6-E2", "order": 3,
+      "name": "Alerta y Listo", "difficulty": 3,
+      "goal": "Suma ALERTA (largo-corto-largo) y LISTO (dos largos). 6 señales.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": 3, "options": 5, "span": null, "alphabet_size": 6, "word_len": 1, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":0.95,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.95,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.95,"sharpness":0,"gapMs":400} ], "f006_bytes": [3,1,1,1,3,4,0,0] },
+      "led_pattern": { "beats": [ {"r":255,"g":80,"b":40,"onMs":300,"offMs":100} ], "f007_bytes": [255,80,40,3,1, 255,80,40,1,1, 255,80,40,3,4] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":0.95 },
+      "scoring": { "xp": 25, "tracks":["accuracy"] },
+      "unlock_after": "L6-E2-lv2"
+    },
+    {
+      "id": "L6-E2-lv4", "experience_id": "L6-E2", "order": 4,
+      "name": "Vocabulario completo", "difficulty": 4,
+      "goal": "Las 8 señales mezcladas. Ritmo medio.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": 3, "options": 6, "span": null, "alphabet_size": 8, "word_len": 1, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":400} ], "f006_bytes": [1,1,3,1,1,4,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":184,"b":148,"onMs":100,"offMs":100} ], "f007_bytes": [0,184,148,1,1, 0,120,255,3,1, 0,184,148,1,4] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.75, "star2":0.88, "star3":0.96 },
+      "scoring": { "xp": 30, "tracks":["accuracy"] },
+      "unlock_after": "L6-E2-lv3"
+    },
+    {
+      "id": "L6-E2-lv5", "experience_id": "L6-E2", "order": 5,
+      "name": "Reacción rápida", "difficulty": 5,
+      "goal": "8 señales, sin LED, respuesta contrarreloj.",
+      "params": { "tempo_bpm": null, "success_window_ms": 1500, "beats": null, "sequence_len": 3, "options": 8, "span": null, "alphabet_size": 8, "word_len": 1, "speed": "rapida" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":0.95,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.95,"sharpness":0,"gapMs":400} ], "f006_bytes": [3,1,3,4,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":300} ], "f007_bytes": [0,0,0,0,3, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.75, "star2":0.9, "star3":1.0 },
+      "scoring": { "xp": 40, "tracks":["accuracy","reaction_ms"] },
+      "unlock_after": "L6-E2-lv4"
+    },
+
+    {
+      "id": "L6-E3-lv1", "experience_id": "L6-E3", "order": 1,
+      "name": "Escribe SOS", "difficulty": 1,
+      "goal": "Compón S-O-S golpe a golpe (···———···).",
+      "params": { "tempo_bpm": null, "success_window_ms": 600, "beats": null, "sequence_len": 9, "options": null, "span": null, "alphabet_size": 2, "word_len": 3, "speed": "lenta" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100} ], "f006_bytes": [1,1,1,1,1,3,0,0] },
+      "led_pattern": { "beats": [ {"r":255,"g":80,"b":40,"onMs":100,"offMs":100} ], "f007_bytes": [255,80,40,1,1, 255,80,40,1,1, 255,80,40,1,3] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":1.0 },
+      "scoring": { "xp": 20, "tracks":["accuracy","timing_ms"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L6-E3-lv2", "experience_id": "L6-E3", "order": 2,
+      "name": "Tu inicial", "difficulty": 2,
+      "goal": "Compón una sola letra a tu elección con guía.",
+      "params": { "tempo_bpm": null, "success_window_ms": 600, "beats": null, "sequence_len": 4, "options": null, "span": null, "alphabet_size": 26, "word_len": 1, "speed": "lenta" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [1,1,3,3,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":184,"b":148,"onMs":100,"offMs":100} ], "f007_bytes": [0,184,148,1,1, 0,120,255,3,3, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":1.0 },
+      "scoring": { "xp": 25, "tracks":["accuracy","timing_ms"] },
+      "unlock_after": "L6-E3-lv1"
+    },
+    {
+      "id": "L6-E3-lv3", "experience_id": "L6-E3", "order": 3,
+      "name": "Palabra de 3", "difficulty": 3,
+      "goal": "Compón una palabra de 3 letras con guía parcial.",
+      "params": { "tempo_bpm": null, "success_window_ms": 500, "beats": null, "sequence_len": 10, "options": null, "span": null, "alphabet_size": 26, "word_len": 3, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [3,1,1,1,1,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":184,"b":148,"onMs":100,"offMs":100} ], "f007_bytes": [0,120,255,3,1, 0,184,148,1,1, 0,184,148,1,3] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.72, "star2":0.86, "star3":0.96 },
+      "scoring": { "xp": 30, "tracks":["accuracy","timing_ms"] },
+      "unlock_after": "L6-E3-lv2"
+    },
+    {
+      "id": "L6-E3-lv4", "experience_id": "L6-E3", "order": 4,
+      "name": "Palabra de 4 sin guía", "difficulty": 4,
+      "goal": "Compón una palabra de 4 letras de memoria.",
+      "params": { "tempo_bpm": null, "success_window_ms": 450, "beats": null, "sequence_len": 14, "options": null, "span": null, "alphabet_size": 26, "word_len": 4, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [1,1,3,1,1,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":300} ], "f007_bytes": [0,0,0,0,3, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.72, "star2":0.88, "star3":0.97 },
+      "scoring": { "xp": 40, "tracks":["accuracy","timing_ms"] },
+      "unlock_after": "L6-E3-lv3"
+    },
+    {
+      "id": "L6-E3-lv5", "experience_id": "L6-E3", "order": 5,
+      "name": "Mensaje contrarreloj", "difficulty": 5,
+      "goal": "Compón una palabra de 5 letras dentro del tiempo.",
+      "params": { "tempo_bpm": null, "success_window_ms": 400, "beats": null, "sequence_len": 18, "options": null, "span": null, "alphabet_size": 26, "word_len": 5, "speed": "rapida" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":0.95,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.95,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.95,"sharpness":0,"gapMs":300} ], "f006_bytes": [3,1,1,1,3,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":300} ], "f007_bytes": [0,0,0,0,3, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.75, "star2":0.9, "star3":1.0 },
+      "scoring": { "xp": 50, "tracks":["accuracy","timing_ms"] },
+      "unlock_after": "L6-E3-lv4"
+    },
+
+    {
+      "id": "L6-E4-lv1", "experience_id": "L6-E4", "order": 1,
+      "name": "Palabra de 2", "difficulty": 1,
+      "goal": "Siente una palabra de 2 letras y escríbela.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": 4, "span": null, "alphabet_size": 8, "word_len": 2, "speed": "lenta" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.85,"sharpness":0,"gapMs":300}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":700} ], "f006_bytes": [1,3,3,7,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":100} ], "f007_bytes": [0,0,0,0,1, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":1.0 },
+      "scoring": { "xp": 20, "tracks":["accuracy"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L6-E4-lv2", "experience_id": "L6-E4", "order": 2,
+      "name": "Palabra de 3", "difficulty": 2,
+      "goal": "Descifra una palabra de 3 letras.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": 4, "span": null, "alphabet_size": 12, "word_len": 3, "speed": "lenta" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":300}, {"durationMs":100,"intensity":0.85,"sharpness":0,"gapMs":700} ], "f006_bytes": [3,3,1,7,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":100} ], "f007_bytes": [0,0,0,0,1, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":0.95 },
+      "scoring": { "xp": 28, "tracks":["accuracy"] },
+      "unlock_after": "L6-E4-lv1"
+    },
+    {
+      "id": "L6-E4-lv3", "experience_id": "L6-E4", "order": 3,
+      "name": "Palabra de 4", "difficulty": 3,
+      "goal": "Descifra una palabra de 4 letras a ritmo medio.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": 4, "span": null, "alphabet_size": 18, "word_len": 4, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":300}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":700} ], "f006_bytes": [1,1,3,3,1,7,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":100} ], "f007_bytes": [0,0,0,0,1, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.72, "star2":0.86, "star3":0.96 },
+      "scoring": { "xp": 35, "tracks":["accuracy"] },
+      "unlock_after": "L6-E4-lv2"
+    },
+    {
+      "id": "L6-E4-lv4", "experience_id": "L6-E4", "order": 4,
+      "name": "Palabra de 5", "difficulty": 4,
+      "goal": "Descifra una palabra de 5 letras. Ritmo más vivo.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": 6, "span": null, "alphabet_size": 26, "word_len": 5, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":700} ], "f006_bytes": [3,1,1,1,3,7,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":100} ], "f007_bytes": [0,0,0,0,1, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.72, "star2":0.88, "star3":0.97 },
+      "scoring": { "xp": 45, "tracks":["accuracy"] },
+      "unlock_after": "L6-E4-lv3"
+    },
+    {
+      "id": "L6-E4-lv5", "experience_id": "L6-E4", "order": 5,
+      "name": "Frase corta", "difficulty": 5,
+      "goal": "Descifra dos palabras cortas seguidas, a velocidad.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": 6, "span": null, "alphabet_size": 26, "word_len": 8, "speed": "rapida" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.95,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.95,"sharpness":0,"gapMs":300}, {"durationMs":300,"intensity":0.95,"sharpness":0,"gapMs":700} ], "f006_bytes": [1,1,3,3,3,7,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":100} ], "f007_bytes": [0,0,0,0,1, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.75, "star2":0.9, "star3":1.0 },
+      "scoring": { "xp": 55, "tracks":["accuracy"] },
+      "unlock_after": "L6-E4-lv4"
+    },
+
+    {
+      "id": "L6-E5-lv1", "experience_id": "L6-E5", "order": 1,
+      "name": "Inventa 2 señales", "difficulty": 1,
+      "goal": "Crea 2 patrones y dales significado.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": null, "span": null, "alphabet_size": 2, "word_len": null, "speed": "lenta" },
+      "vibration_pattern": { "pulses": [ {"durationMs":200,"intensity":0.85,"sharpness":0,"gapMs":300} ], "f006_bytes": [2,3,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":230,"b":118,"onMs":200,"offMs":300} ], "f007_bytes": [0,230,118,2,3, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"completion", "pass":1.0, "star2":1.0, "star3":1.0 },
+      "scoring": { "xp": 20, "tracks":["completion"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L6-E5-lv2", "experience_id": "L6-E5", "order": 2,
+      "name": "Recuerda tus 2", "difficulty": 2,
+      "goal": "Siente tus patrones y di qué significan. 3 rondas.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": 3, "span": null, "alphabet_size": 2, "word_len": null, "speed": "lenta" },
+      "vibration_pattern": { "pulses": [ {"durationMs":200,"intensity":0.85,"sharpness":0,"gapMs":300} ], "f006_bytes": [2,3,0,0,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":230,"b":118,"onMs":200,"offMs":300} ], "f007_bytes": [0,230,118,2,3, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":1.0 },
+      "scoring": { "xp": 25, "tracks":["accuracy"] },
+      "unlock_after": "L6-E5-lv1"
+    },
+    {
+      "id": "L6-E5-lv3", "experience_id": "L6-E5", "order": 3,
+      "name": "Amplía a 4", "difficulty": 3,
+      "goal": "Inventa 2 patrones más y recuérdalos todos.",
+      "params": { "tempo_bpm": null, "success_window_ms": null, "beats": null, "sequence_len": null, "options": 4, "span": null, "alphabet_size": 4, "word_len": null, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [1,1,3,3,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":184,"b":148,"onMs":100,"offMs":100} ], "f007_bytes": [0,184,148,1,1, 0,120,255,3,3, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.72, "star2":0.86, "star3":0.96 },
+      "scoring": { "xp": 35, "tracks":["accuracy"] },
+      "unlock_after": "L6-E5-lv2"
+    },
+    {
+      "id": "L6-E5-lv4", "experience_id": "L6-E5", "order": 4,
+      "name": "Memoria a prueba", "difficulty": 4,
+      "goal": "Recuerda tus 4 patrones tras una pausa. Sin LED.",
+      "params": { "tempo_bpm": null, "success_window_ms": 2000, "beats": null, "sequence_len": null, "options": 4, "span": null, "alphabet_size": 4, "word_len": null, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [3,1,1,3,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":300} ], "f007_bytes": [0,0,0,0,3, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.75, "star2":0.9, "star3":1.0 },
+      "scoring": { "xp": 45, "tracks":["accuracy"] },
+      "unlock_after": "L6-E5-lv3"
+    },
+
+    {
+      "id": "L6-E6-lv1", "experience_id": "L6-E6", "order": 1,
+      "name": "Calentamiento", "difficulty": 1,
+      "goal": "Mezcla letras y señales fáciles. Construye racha de 5.",
+      "params": { "tempo_bpm": null, "success_window_ms": 2500, "beats": null, "sequence_len": null, "options": 4, "span": null, "alphabet_size": 6, "word_len": 1, "speed": "lenta" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.85,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [1,1,3,3,0,0,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":184,"b":148,"onMs":100,"offMs":100} ], "f007_bytes": [0,184,148,1,1, 0,120,255,3,3, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.7, "star2":0.85, "star3":1.0 },
+      "scoring": { "xp": 25, "tracks":["accuracy","streak"] },
+      "unlock_after": null
+    },
+    {
+      "id": "L6-E6-lv2", "experience_id": "L6-E6", "order": 2,
+      "name": "Sube el ritmo", "difficulty": 2,
+      "goal": "Más opciones, menos tiempo. Racha de 8.",
+      "params": { "tempo_bpm": null, "success_window_ms": 2000, "beats": null, "sequence_len": null, "options": 6, "span": null, "alphabet_size": 10, "word_len": 1, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [3,1,1,1,1,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":184,"b":148,"onMs":100,"offMs":100} ], "f007_bytes": [0,120,255,3,1, 0,184,148,1,1, 0,184,148,1,3] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.72, "star2":0.86, "star3":0.96 },
+      "scoring": { "xp": 35, "tracks":["accuracy","streak","reaction_ms"] },
+      "unlock_after": "L6-E6-lv1"
+    },
+    {
+      "id": "L6-E6-lv3", "experience_id": "L6-E6", "order": 3,
+      "name": "Palabras al vuelo", "difficulty": 3,
+      "goal": "Descifra palabras de 3 a velocidad media. Racha de 10.",
+      "params": { "tempo_bpm": null, "success_window_ms": 1800, "beats": null, "sequence_len": null, "options": 6, "span": null, "alphabet_size": 18, "word_len": 3, "speed": "media" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":300}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":300} ], "f006_bytes": [1,1,3,3,3,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":184,"b":148,"onMs":100,"offMs":100} ], "f007_bytes": [0,184,148,1,1, 0,120,255,3,3, 0,120,255,3,3] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.74, "star2":0.88, "star3":0.97 },
+      "scoring": { "xp": 45, "tracks":["accuracy","streak","reaction_ms"] },
+      "unlock_after": "L6-E6-lv2"
+    },
+    {
+      "id": "L6-E6-lv4", "experience_id": "L6-E6", "order": 4,
+      "name": "Sin pista visual", "difficulty": 4,
+      "goal": "Todo sin LED, palabras de 4, rápido. Racha de 12.",
+      "params": { "tempo_bpm": null, "success_window_ms": 1500, "beats": null, "sequence_len": null, "options": 8, "span": null, "alphabet_size": 26, "word_len": 4, "speed": "rapida" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":0.95,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.95,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.95,"sharpness":0,"gapMs":300} ], "f006_bytes": [3,1,1,1,3,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":300} ], "f007_bytes": [0,0,0,0,3, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.74, "star2":0.9, "star3":0.98 },
+      "scoring": { "xp": 55, "tracks":["accuracy","streak","reaction_ms"] },
+      "unlock_after": "L6-E6-lv3"
+    },
+    {
+      "id": "L6-E6-lv5", "experience_id": "L6-E6", "order": 5,
+      "name": "Velocidad máxima", "difficulty": 5,
+      "goal": "Letras y señales relámpago. Racha de 15.",
+      "params": { "tempo_bpm": null, "success_window_ms": 1200, "beats": null, "sequence_len": null, "options": 8, "span": null, "alphabet_size": 26, "word_len": 2, "speed": "rapida" },
+      "vibration_pattern": { "pulses": [ {"durationMs":100,"intensity":0.95,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.95,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.95,"sharpness":0,"gapMs":300} ], "f006_bytes": [1,1,3,1,1,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":300} ], "f007_bytes": [0,0,0,0,3, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.76, "star2":0.91, "star3":0.99 },
+      "scoring": { "xp": 65, "tracks":["accuracy","streak","reaction_ms"] },
+      "unlock_after": "L6-E6-lv4"
+    },
+    {
+      "id": "L6-E6-lv6", "experience_id": "L6-E6", "order": 6,
+      "name": "Maestro del código", "difficulty": 6,
+      "goal": "Frase corta a máxima velocidad, sin fallos. Racha de 20.",
+      "params": { "tempo_bpm": null, "success_window_ms": 1000, "beats": null, "sequence_len": null, "options": 8, "span": null, "alphabet_size": 26, "word_len": 8, "speed": "rapida" },
+      "vibration_pattern": { "pulses": [ {"durationMs":300,"intensity":1.0,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":1.0,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":1.0,"sharpness":0,"gapMs":300} ], "f006_bytes": [3,1,1,1,3,3,0,0] },
+      "led_pattern": { "beats": [ {"r":0,"g":0,"b":0,"onMs":0,"offMs":300} ], "f007_bytes": [0,0,0,0,3, 0,0,0,0,0, 0,0,0,0,0] },
+      "f005_level": null,
+      "success_criteria": { "metric":"accuracy", "pass":0.8, "star2":0.92, "star3":1.0 },
+      "scoring": { "xp": 80, "tracks":["accuracy","streak","reaction_ms"] },
+      "unlock_after": "L6-E6-lv5"
+    }
+  ],
+
+  "haptic_patterns": [
+    { "id":"L6.morse_dot", "role":"morse_dot", "description":"Punto morse: pulso corto de 100 ms.", "vibration_pattern": { "pulses":[ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100} ], "f006_bytes":[1,1,0,0,0,0,0,0] }, "led_pattern": { "beats":[ {"r":0,"g":184,"b":148,"onMs":100,"offMs":100} ], "f007_bytes":[0,184,148,1,1, 0,0,0,0,0, 0,0,0,0,0] }, "f005_level": null, "erm_ok": true },
+    { "id":"L6.morse_dash", "role":"morse_dash", "description":"Raya morse: pulso largo de 300 ms.", "vibration_pattern": { "pulses":[ {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100} ], "f006_bytes":[3,1,0,0,0,0,0,0] }, "led_pattern": { "beats":[ {"r":0,"g":120,"b":255,"onMs":300,"offMs":100} ], "f007_bytes":[0,120,255,3,1, 0,0,0,0,0, 0,0,0,0,0] }, "f005_level": null, "erm_ok": true },
+    { "id":"L6.letter_gap", "role":"gap", "description":"Separación entre letras: 300 ms de silencio.", "vibration_pattern": { "pulses":[ {"durationMs":0,"intensity":0,"sharpness":0,"gapMs":300} ], "f006_bytes":[0,3,0,0,0,0,0,0] }, "led_pattern": { "beats":[ {"r":0,"g":0,"b":0,"onMs":0,"offMs":300} ], "f007_bytes":[0,0,0,0,3, 0,0,0,0,0, 0,0,0,0,0] }, "f005_level": null, "erm_ok": true },
+    { "id":"L6.word_gap", "role":"gap", "description":"Separación entre palabras: 700 ms de silencio.", "vibration_pattern": { "pulses":[ {"durationMs":0,"intensity":0,"sharpness":0,"gapMs":700} ], "f006_bytes":[0,7,0,0,0,0,0,0] }, "led_pattern": { "beats":[ {"r":0,"g":0,"b":0,"onMs":0,"offMs":700} ], "f007_bytes":[0,0,0,0,7, 0,0,0,0,0, 0,0,0,0,0] }, "f005_level": null, "erm_ok": true },
+    { "id":"L6.signal_yes", "role":"signal", "description":"SÍ: un golpe largo firme (500 ms).", "vibration_pattern": { "pulses":[ {"durationMs":500,"intensity":0.9,"sharpness":0,"gapMs":400} ], "f006_bytes":[5,4,0,0,0,0,0,0] }, "led_pattern": { "beats":[ {"r":0,"g":230,"b":118,"onMs":500,"offMs":400} ], "f007_bytes":[0,230,118,5,4, 0,0,0,0,0, 0,0,0,0,0] }, "f005_level": null, "erm_ok": true },
+    { "id":"L6.signal_no", "role":"signal", "description":"NO: dos golpes cortos (100 ms ×2).", "vibration_pattern": { "pulses":[ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":400} ], "f006_bytes":[1,1,1,4,0,0,0,0] }, "led_pattern": { "beats":[ {"r":255,"g":80,"b":40,"onMs":100,"offMs":100} ], "f007_bytes":[255,80,40,1,1, 255,80,40,1,4, 0,0,0,0,0] }, "f005_level": null, "erm_ok": true },
+    { "id":"L6.signal_wait", "role":"signal", "description":"ESPERA: largo lento (400 ms) con LED ámbar.", "vibration_pattern": { "pulses":[ {"durationMs":400,"intensity":0.85,"sharpness":0,"gapMs":600} ], "f006_bytes":[4,6,0,0,0,0,0,0] }, "led_pattern": { "beats":[ {"r":255,"g":200,"b":0,"onMs":400,"offMs":600} ], "f007_bytes":[255,200,0,4,6, 0,0,0,0,0, 0,0,0,0,0] }, "f005_level": null, "erm_ok": true },
+    { "id":"L6.signal_come", "role":"signal", "description":"VEN: tres cortos rápidos (100 ms ×3).", "vibration_pattern": { "pulses":[ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":400} ], "f006_bytes":[1,1,1,1,1,4,0,0] }, "led_pattern": { "beats":[ {"r":0,"g":230,"b":118,"onMs":100,"offMs":100} ], "f007_bytes":[0,230,118,1,1, 0,230,118,1,1, 0,230,118,1,4] }, "f005_level": null, "erm_ok": true },
+    { "id":"L6.morse_sos", "role":"phrase", "description":"SOS encadenado: ···———··· (corto×3, largo×3, corto×3).", "vibration_pattern": { "pulses":[ {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":300}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":300,"intensity":0.9,"sharpness":0,"gapMs":300}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":100}, {"durationMs":100,"intensity":0.9,"sharpness":0,"gapMs":700} ] }, "led_pattern": { "beats":[ {"r":255,"g":80,"b":40,"onMs":100,"offMs":100} ], "f007_bytes":[255,80,40,1,1, 255,80,40,1,1, 255,80,40,1,3] }, "f005_level": null, "erm_ok": true }
+  ]
+}

@@ -21,7 +21,7 @@ export default function UserInfo() {
   return (
     <SiteShell>
       <Helmet>
-        <title>{valid ? `Found Ontenna · ${code}` : "Ontenna"}</title>
+        <title>{valid ? `Ontenna - Found ${code}` : "Ontenna"}</title>
         <meta name="description" content="This Ontenna device belongs to a registered user. Help return it to its owner." />
         <meta name="robots" content="noindex" />
       </Helmet>

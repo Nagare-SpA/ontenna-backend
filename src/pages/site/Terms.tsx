@@ -6,7 +6,7 @@ export default function Terms() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Terms — Ontenna</title>
+        <title>Ontenna - Terms</title>
         <meta name="description" content="Terms of use for Ontenna products and ontenna.org." />
         <link rel="canonical" href="https://ontenna.org/terms" />
       </Helmet>

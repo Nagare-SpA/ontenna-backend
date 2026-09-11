@@ -33,7 +33,7 @@ export default function Contact() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Contact — Ontenna</title>
+        <title>Ontenna - Contact</title>
         <meta name="description" content="General, press, schools, investors. We'll get back to you within two business days." />
         <link rel="canonical" href="https://ontenna.org/contact" />
       </Helmet>

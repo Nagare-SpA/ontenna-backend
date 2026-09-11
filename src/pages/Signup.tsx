@@ -23,6 +23,9 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Guard against double submission (was a source of false "account exists" errors).
+    if (isLoading) return;
+
     if (password !== confirmPassword) {
       toast({
         title: t("common.error"),
@@ -32,10 +35,10 @@ export default function Signup() {
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       toast({
         title: t("common.error"),
-        description: t("auth.signup.passwordTooShort"),
+        description: t("auth.signup.passwordTooShort", "Password must be at least 8 characters."),
         variant: "destructive",
       });
       return;
@@ -44,52 +47,69 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      // Single server-side signup: mobile-signup creates the user via the Admin
-      // API (email_confirm:true, no Supabase confirmation email) and sends the
-      // Resend verification code. This avoids the duplicate, rate-limited
-      // Supabase email that broke bulk onboarding.
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-      const response = await fetch(`${supabaseUrl}/functions/v1/mobile-signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", apikey: supabaseKey },
-        body: JSON.stringify({
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          password,
-        }),
-      });
-      const data = await response.json();
+      // Single idempotent server call: creates the account (enforcing the
+      // password policy + HIBP) and sends the verification code in one step.
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/web-signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            first_name: firstName,
+            last_name: lastName,
+          }),
+        }
+      );
+      const data = await res.json();
 
-      if (!response.ok || !data.ok) {
-        const code = data?.error?.code;
-        const description =
-          code === "email_exists"
-            ? t("auth.errors.emailExists", "This email is already registered.")
-            : response.status === 429
-            ? t("auth.errors.rateLimited", "Too many attempts. Please wait a minute and try again.")
-            : data?.error?.message || t("auth.errors.signupFailed");
-        toast({ title: t("auth.errors.signupFailed"), description, variant: "destructive" });
-        setIsLoading(false);
+      if (!res.ok || !data.ok) {
+        if (data.code === "already_exists") {
+          toast({
+            title: t("auth.signup.emailExistsTitle", "This email already has an account"),
+            description: t("auth.signup.emailExistsBody", "Try signing in instead. Redirecting you to log in…"),
+          });
+          navigate("/login", { state: { email } });
+          return;
+        }
+        if (data.code === "weak_password") {
+          toast({
+            title: t("common.error"),
+            description: data.message || t("auth.signup.passwordTooShort", "Please choose a stronger password."),
+            variant: "destructive",
+          });
+          return;
+        }
+        toast({
+          title: t("auth.errors.signupFailed"),
+          description: data.message || "Sign up failed",
+          variant: "destructive",
+        });
         return;
       }
 
-      // Store data for the verification page (password is used for auto-login there).
+      // Success — store data for the verification page (incl. password for auto-login).
       sessionStorage.setItem("pendingVerificationEmail", email);
       sessionStorage.setItem("pendingVerificationUserId", data.user_id);
       sessionStorage.setItem("pendingVerificationPassword", password);
 
       toast({
-        title: t("auth.signup.success"),
-        description: t("auth.signup.successMessage"),
+        title: data.code_sent ? t("auth.signup.success", "Account created") : t("common.error"),
+        description: data.code_sent
+          ? t("auth.signup.successMessage", "We sent a verification code to your email.")
+          : t("auth.verify.sendError", "We couldn't send the code — you can resend it on the next screen."),
+        variant: data.code_sent ? undefined : "destructive",
       });
+
       navigate("/verify");
     } catch (err) {
-      console.error("Signup error:", err);
       toast({
-        title: t("common.error"),
-        description: t("auth.errors.signupFailed"),
+        title: t("auth.errors.signupFailed"),
+        description: err instanceof Error ? err.message : "Unexpected error",
         variant: "destructive",
       });
     } finally {
@@ -153,6 +173,16 @@ export default function Signup() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                {password.length > 0 && (
+                  <ul className="space-y-1 pt-1 text-xs">
+                    <li className={password.length >= 8 ? "text-green-600" : "text-muted-foreground"}>
+                      {password.length >= 8 ? "✓" : "•"} {t("auth.signup.req8chars", "At least 8 characters")}
+                    </li>
+                    <li className="text-muted-foreground">
+                      • {t("auth.signup.reqBreach", "Common, leaked passwords are not allowed")}
+                    </li>
+                  </ul>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">{t("auth.signup.confirmPassword")}</Label>

@@ -9,7 +9,7 @@ export default function AppPage() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Ontenna app — iPhone</title>
+        <title>Ontenna - App for iPhone</title>
         <meta
           name="description"
           content="The free Ontenna iPhone app pairs with your Ontenna device: Alerts, Symphony, Sports, live Transcription, and Train — sound and music turned into vibration and light."

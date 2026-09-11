@@ -26,6 +26,27 @@ export default function Login() {
     const { error } = await signIn(email, password);
 
     if (error) {
+      // Account exists but the email isn't verified yet → send a fresh code and
+      // route to the verification screen instead of a dead-end error.
+      if (/not confirmed|email.*confirm|confirm.*email/i.test(error.message)) {
+        try {
+          await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-verification-code`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+            body: JSON.stringify({ email }),
+          });
+        } catch { /* non-blocking */ }
+        sessionStorage.setItem("pendingVerificationEmail", email);
+        sessionStorage.setItem("pendingVerificationPassword", password);
+        sessionStorage.removeItem("pendingVerificationUserId");
+        toast({
+          title: t("auth.verify.needed", "Verify your email"),
+          description: t("auth.verify.neededMsg", "We sent a code to your email to finish setting up your account."),
+        });
+        navigate("/verify");
+        setIsLoading(false);
+        return;
+      }
       toast({
         title: t("auth.errors.loginFailed"),
         description: error.message,

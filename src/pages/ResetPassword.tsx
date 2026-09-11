@@ -56,6 +56,22 @@ export default function ResetPassword() {
       return;
     }
 
+    // Completing a recovery proves the person owns this email — confirm it so
+    // login never dead-ends into the verification-code screen afterwards.
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/confirm-email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
+      }
+    } catch { /* non-blocking: password is already updated */ }
+
     setIsSuccess(true);
     setIsLoading(false);
   };

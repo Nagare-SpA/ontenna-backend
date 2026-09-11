@@ -36,10 +36,10 @@ export default function Verify() {
       navigate("/dashboard");
     }
     // If no user and no pending verification data, redirect to login
-    if (!user && !pendingUserId) {
+    if (!user && !pendingUserId && !pendingEmail) {
       navigate("/login");
     }
-  }, [user, isVerified, pendingUserId, navigate]);
+  }, [user, isVerified, pendingUserId, pendingEmail, navigate]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -54,7 +54,7 @@ export default function Verify() {
       return;
     }
 
-    if (!currentUserId) {
+    if (!currentUserId && !displayEmail) {
       toast({ title: t("common.error"), description: t("auth.verify.noUser"), variant: "destructive" });
       return;
     }
@@ -72,7 +72,8 @@ export default function Verify() {
             "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnJqdm51ZXBma2VmZnNxeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMzAwNDEsImV4cCI6MjA4MzYwNjA0MX0.6wEnk2OSRaCxHLQ-iUabA2_n-klE2HTl5niMwiptLnA",
           },
           body: JSON.stringify({
-            userId: currentUserId,
+            userId: currentUserId || undefined,
+            email: displayEmail,
             code,
           }),
         }
@@ -124,7 +125,7 @@ export default function Verify() {
   };
 
   const handleResend = async () => {
-    if (!currentUserId || !displayEmail) {
+    if (!currentUserId && !displayEmail) {
       toast({ title: t("auth.verify.resendFailed"), description: t("auth.verify.noUser"), variant: "destructive" });
       return;
     }
@@ -141,7 +142,7 @@ export default function Verify() {
             "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnJqdm51ZXBma2VmZnNxeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMzAwNDEsImV4cCI6MjA4MzYwNjA0MX0.6wEnk2OSRaCxHLQ-iUabA2_n-klE2HTl5niMwiptLnA",
           },
           body: JSON.stringify({
-            userId: currentUserId,
+            userId: currentUserId || undefined,
             email: displayEmail,
           }),
         }

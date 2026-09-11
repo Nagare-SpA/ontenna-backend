@@ -33,7 +33,7 @@ export default function Reserve() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Reserve your Ontenna</title>
+        <title>Ontenna - Reserve</title>
         <meta name="description" content="Join the waitlist for the Ontenna haptic device." />
         <link rel="canonical" href="https://ontenna.org/reserve" />
       </Helmet>

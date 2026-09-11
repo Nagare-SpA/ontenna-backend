@@ -10,27 +10,16 @@ const corsHeaders = {
 };
 
 interface SendCodeRequest {
-  userId: string;
+  userId?: string;
   email: string;
   firstName?: string;
 }
 
 function generateCode(): string {
-  // Cryptographically-secure 6-digit code (Math.random is not suitable for
-  // auth secrets). Rejection-sample to avoid modulo bias.
-  const max = 1000000;
-  const limit = Math.floor(0xffffffff / max) * max;
-  const buf = new Uint32Array(1);
-  let n = 0;
-  do {
-    crypto.getRandomValues(buf);
-    n = buf[0];
-  } while (n >= limit);
-  return (n % max).toString().padStart(6, "0");
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Anti-abuse cooldown (seconds) between code sends per user. Blocks
-// email-bomb / Resend-quota-exhaustion via the public, unauthenticated endpoint.
+// Cooldown between code requests per user (anti-abuse / anti-spam).
 const RESEND_COOLDOWN_SECONDS = 45;
 
 const handler = async (req: Request): Promise<Response> => {
@@ -45,12 +34,24 @@ const handler = async (req: Request): Promise<Response> => {
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
-    const { userId, email, firstName }: SendCodeRequest = await req.json();
+    let { userId, email, firstName }: SendCodeRequest = await req.json();
 
-    if (!userId || !email) {
+    if (!email) {
       return new Response(
-        JSON.stringify({ error: "Missing userId or email" }),
+        JSON.stringify({ error: "Missing email" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Allow resolving the user by email (e.g. login-time re-verification).
+    if (!userId) {
+      const { data: prof } = await supabaseAdmin.from("profiles").select("id").eq("email", email).maybeSingle();
+      userId = prof?.id;
+    }
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ error: "user_not_found" }),
+        { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -84,13 +85,15 @@ const handler = async (req: Request): Promise<Response> => {
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     // Store code in database
-    const { error: insertError } = await supabaseAdmin
+    const { data: inserted, error: insertError } = await supabaseAdmin
       .from("verification_codes")
       .insert({
         user_id: userId,
         code,
         expires_at: expiresAt.toISOString(),
-      });
+      })
+      .select("id")
+      .single();
 
     if (insertError) {
       console.error("Error inserting verification code:", insertError);
@@ -100,8 +103,16 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    if (!Deno.env.get("RESEND_API_KEY")) {
+      console.error("RESEND_API_KEY is not configured");
+      return new Response(
+        JSON.stringify({ error: "email_not_configured" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     // Send email
-    const emailResponse = await resend.emails.send({
+    const { data: emailData, error: emailError } = await resend.emails.send({
       from: "Ontenna <no-reply@ontenna.org>",
       to: [email],
       subject: "🔐 Your Ontenna Verification Code",
@@ -120,7 +131,7 @@ const handler = async (req: Request): Promise<Response> => {
                   <!-- Header -->
                   <tr>
                     <td style="padding: 40px 40px 24px; text-align: center;">
-                      <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 16px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
+                      <div style="width: 64px; height: 64px; background-color: #6366f1; background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 16px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
                         <span style="font-size: 28px;">🔐</span>
                       </div>
                       <h1 style="margin: 0; font-size: 24px; font-weight: 700; color: #1e293b;">Verify Your Email</h1>
@@ -133,7 +144,7 @@ const handler = async (req: Request): Promise<Response> => {
                         Hi${firstName ? ` <strong>${firstName}</strong>` : ""}! Enter this code to complete your verification:
                       </p>
                       <!-- Code Box -->
-                      <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px; border: 2px solid #6366f1;">
+                      <div style="background-color: #1e293b; background-image: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px; border: 2px solid #6366f1;">
                         <span style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #ffffff; font-family: 'Courier New', monospace;">${code}</span>
                       </div>
                       <p style="margin: 0; font-size: 14px; line-height: 20px; color: #94a3b8; text-align: center;">
@@ -161,26 +172,34 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    // Inspect the Resend result: a failed send must NOT report success, or the
-    // user is stranded with no code. Log only the message id (never the full
-    // object — it carries PII).
-    if (emailResponse.error || !emailResponse.data?.id) {
-      console.error("Resend send failed:", emailResponse.error?.message ?? "no message id returned");
+    // The Resend SDK does NOT throw on API errors — it returns { error }.
+    // Treat that as a hard failure so we never report success without sending.
+    if (emailError) {
+      console.error("Resend send failed:", emailError);
       return new Response(
-        JSON.stringify({ error: "Failed to send verification code" }),
+        JSON.stringify({ error: "email_send_failed", detail: emailError.message ?? String(emailError) }),
         { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
-    console.log("Verification email sent:", emailResponse.data.id);
+
+    console.log("Email sent successfully. Resend id:", emailData?.id);
+
+    // Audit: mark that the email actually went out (best-effort).
+    if (inserted?.id) {
+      await supabaseAdmin
+        .from("verification_codes")
+        .update({ email_sent: true, resend_id: emailData?.id ?? null })
+        .eq("id", inserted.id);
+    }
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ success: true, id: emailData?.id }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in send-verification-code function:", error);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({ error: error.message }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }

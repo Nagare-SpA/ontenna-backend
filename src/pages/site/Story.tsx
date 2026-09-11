@@ -7,7 +7,7 @@ export default function Story() {
   return (
     <SiteShell>
       <Helmet>
-        <title>Our story — Ontenna</title>
+        <title>Ontenna - Our story</title>
         <meta name="description" content="Ontenna is built in Tokyo by Nagare Japan Inc., at the intersection of haptics, audio engineering, and accessibility." />
         <link rel="canonical" href="https://ontenna.org/story" />
       </Helmet>

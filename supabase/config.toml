@@ -38,6 +38,15 @@ pass = "env(SUPABASE_AUTH_SMTP_PASS)"
 admin_email = "no-reply@ontenna.org"
 sender_name = "Ontenna"
 
+[functions.delete-account]
+verify_jwt = false
+
+[functions.mobile-reset-password]
+verify_jwt = false
+
+[functions.firmware-check]
+verify_jwt = false
+
 [functions.send-verification-code]
 verify_jwt = false
 
@@ -51,6 +60,15 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.start-trial]
+verify_jwt = false
+
+[functions.web-signup]
+verify_jwt = false
+
+[functions.learn-publish]
+verify_jwt = false
+
+[functions.learn-ingest]
 verify_jwt = false
 
 [functions.stripe-portal]

@@ -19,6 +19,8 @@ import ResetPassword from "./pages/ResetPassword";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UsersManagement from "./pages/admin/UsersManagement";
 import PlansManagement from "./pages/admin/PlansManagement";
+import LearnManagement from "./pages/admin/LearnManagement";
+import FirmwareManagement from "./pages/admin/FirmwareManagement";
 
 import Home from "./pages/site/Home";
 import About from "./pages/site/About";
@@ -34,6 +36,7 @@ import Reserve from "./pages/site/Reserve";
 import Schools from "./pages/site/Schools";
 import Science from "./pages/site/Science";
 import Story from "./pages/site/Story";
+import Students from "./pages/site/Students";
 import Symphony from "./pages/site/Symphony";
 import Support from "./pages/site/Support";
 import Teachers from "./pages/site/Teachers";
@@ -102,6 +105,7 @@ const App = () => (
               <Route path="/symphony" element={<Symphony />} />
               <Route path="/support" element={<Support />} />
               <Route path="/teachers" element={<Teachers />} />
+              <Route path="/students" element={<Students />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/accessibility-statement" element={<AccessibilityStatement />} />
               <Route path="/userinfo" element={<UserInfo />} />
@@ -124,6 +128,8 @@ const App = () => (
               <Route path="/admin" element={<ProtectedRoute><AdminRoute><AdminDashboard /></AdminRoute></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute><AdminRoute><UsersManagement /></AdminRoute></ProtectedRoute>} />
               <Route path="/admin/plans" element={<ProtectedRoute><AdminRoute><PlansManagement /></AdminRoute></ProtectedRoute>} />
+              <Route path="/admin/learn" element={<ProtectedRoute><AdminRoute><LearnManagement /></AdminRoute></ProtectedRoute>} />
+              <Route path="/admin/firmware" element={<ProtectedRoute><AdminRoute><FirmwareManagement /></AdminRoute></ProtectedRoute>} />
               <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
