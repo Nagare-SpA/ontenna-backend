@@ -120,6 +120,11 @@ serve(async (req) => {
           supabase_user_id: user.id,
           plan_id: planId,
           billing_period: billingPeriod
+        },
+        // Also stamp the subscription so customer.subscription.* webhooks can
+        // resolve the user even if checkout.session.completed is missed.
+        subscription_data: {
+          metadata: { supabase_user_id: user.id, plan_id: planId, billing_period: billingPeriod }
         }
       });
 
@@ -141,6 +146,9 @@ serve(async (req) => {
           supabase_user_id: user.id,
           plan_id: planId,
           billing_period: billingPeriod
+        },
+        subscription_data: {
+          metadata: { supabase_user_id: user.id, plan_id: planId, billing_period: billingPeriod }
         }
       });
 

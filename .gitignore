@@ -26,3 +26,8 @@ dist-ssr
 
 # Local preview config
 .claude/
+
+# Secrets — never commit
+.env
+.env.local
+supabase/.temp/
