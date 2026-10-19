@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 // Compiles the full Learn content package from the learn_* tables and
 // publishes a versioned learn_content_versions row, AFTER re-validating
@@ -13,10 +13,15 @@ const corsHeaders = {
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-function validate(id: string, vp: any, issues: string[], warnings: string[]) {
+// Formas que valida el publicador. Solo anotaciones: el chequeo real sigue
+// siendo en runtime, más abajo, sobre lo que devuelven las tablas learn_*.
+type Pulse = { durationMs?: number; gapMs?: number; sharpness?: number; intensity?: number };
+type VibrationPattern = { pulses?: Pulse[] };
+
+function validate(id: string, vp: VibrationPattern | null | undefined, issues: string[], warnings: string[]) {
   const pulses = vp?.pulses;
   if (!Array.isArray(pulses) || pulses.length === 0) { issues.push(`${id}: pulses must be non-empty`); return; }
-  pulses.forEach((p: any, i: number) => {
+  pulses.forEach((p: Pulse, i: number) => {
     const n = i + 1, dur = p?.durationMs, gap = p?.gapMs ?? 0, sharp = p?.sharpness ?? 0;
     if (typeof dur !== "number") return issues.push(`${id} pulse ${n}: durationMs required`);
     if (dur > 0 && dur < 80) issues.push(`${id} pulse ${n}: durationMs ${dur}ms < 80ms`); // 0 = intentional rest/gap
@@ -26,8 +31,8 @@ function validate(id: string, vp: any, issues: string[], warnings: string[]) {
     if (typeof p?.intensity !== "number" || p.intensity < 0 || p.intensity > 1) issues.push(`${id} pulse ${n}: intensity ∉ [0,1]`);
     if (sharp < 0 || sharp > 1) issues.push(`${id} pulse ${n}: sharpness ∉ [0,1]`);
   });
-  const near100 = (v: number) => Math.abs(v - Math.round(v / 100) * 100) <= 20;
-  if (!(pulses.length <= 4 && pulses.every((p: any) => near100(p.durationMs) && near100(p.gapMs ?? 0))))
+  const near100 = (v: number | undefined) => v !== undefined && Math.abs(v - Math.round(v / 100) * 100) <= 20;
+  if (!(pulses.length <= 4 && pulses.every((p: Pulse) => near100(p.durationMs) && near100(p.gapMs ?? 0))))
     warnings.push(`${id}: not F006-autonomous (will use F005)`);
 }
 
@@ -37,7 +42,7 @@ async function sha256Hex(s: string): Promise<string> {
 }
 
 // Authorize via publish secret (CI) OR a super_admin JWT (admin dashboard).
-async function authorize(req: Request, supabase: any): Promise<boolean> {
+async function authorize(req: Request, supabase: SupabaseClient): Promise<boolean> {
   const secret = Deno.env.get("LEARN_PUBLISH_SECRET");
   if (secret && req.headers.get("x-publish-secret") === secret) return true;
   const auth = req.headers.get("Authorization");
@@ -91,9 +96,15 @@ serve(async (req) => {
     if (issues.length) return json({ ok: false, error: "validation_failed", counts, issues, warnings: warnings.length }, 422);
     if (dryRun) return json({ ok: true, dryRun: true, contentVersion, counts, warnings: warnings.length });
 
-    const payload = { content_version: contentVersion, channel, generatedAt: new Date().toISOString(), modules };
+    const payload: {
+      content_version: string;
+      channel: string;
+      generatedAt: string;
+      modules: typeof modules;
+      checksum?: string;
+    } = { content_version: contentVersion, channel, generatedAt: new Date().toISOString(), modules };
     const checksum = await sha256Hex(JSON.stringify(modules));
-    (payload as any).checksum = checksum;
+    payload.checksum = checksum;
 
     await supabase.from("learn_content_versions").update({ is_current: false }).eq("channel", channel);
     const { error } = await supabase.from("learn_content_versions").upsert({

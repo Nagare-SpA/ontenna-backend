@@ -46,7 +46,9 @@ serve(async (req) => {
       );
     }
 
-    const { action, subscriptionId } = await req.json();
+    // `subscriptionId` del body se ignora a propósito: la suscripción se
+    // resuelve siempre contra la tabla, unas líneas más abajo.
+    const { action } = await req.json();
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
     // Get user's subscription
