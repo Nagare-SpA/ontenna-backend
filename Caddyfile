@@ -22,4 +22,11 @@
 	@shell not path /assets/*
 	header @assets Cache-Control "public, max-age=31536000, immutable"
 	header @shell Cache-Control "no-cache"
+
+	# Vercel sent HSTS on its own; Caddy does not, since TLS terminates at
+	# Railway's edge. Browsers already hold a 2-year pin for ontenna.org, so
+	# dropping the header would be a silent downgrade. Value copied from the
+	# Vercel response verbatim — no includeSubDomains, which would newly force
+	# HTTPS on every subdomain.
+	header Strict-Transport-Security "max-age=63072000"
 }
