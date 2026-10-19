@@ -24,5 +24,11 @@ dist-ssr
 *.sw?
 .vercel
 
-# Local preview config
-.claude/
+# Claude Code: reglas versionadas, estado local ignorado
+.claude/*
+!.claude/rules/
+.claude/settings.local.json
+.claude/task-status.json
+
+# Estado local por worktree (nunca compartido entre worktrees)
+SPEC.md
