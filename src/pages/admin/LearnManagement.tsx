@@ -15,71 +15,23 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from "@/hooks/use-toast";
 import { ChevronRight, Pencil, Rocket, ShieldCheck, Upload, RotateCcw, Plus } from "lucide-react";
 import { errorMessage } from "@/lib/errors";
+import { Database } from "@/integrations/supabase/types";
+
+type LearnModule = Database["public"]["Tables"]["learn_modules"]["Row"];
+type LearnExperience = Database["public"]["Tables"]["learn_experiences"]["Row"];
+type LearnLevel = Database["public"]["Tables"]["learn_levels"]["Row"];
 
 /**
- * Filas de las tablas `learn_*` (ver
- * `supabase/migrations/20260607160000_learn_content_v2.sql`, que es la
- * autoritativa: dropea y recrea las de la migración anterior). Se declaran acá
- * porque todavía no están en `src/integrations/supabase/types.ts`: ese archivo
- * se regenera desde el esquema y quedó atrás. Cuando se regenere, reemplazar
- * estos tipos por `Database["public"]["Tables"]["learn_*"]["Row"]` y sacar el
- * cast de abajo.
+ * El cliente tipado resuelve la forma del payload desde el nombre literal de la
+ * tabla, así que `update()` / `insert()` no aceptan un nombre en una variable:
+ * hay que ramificar por tabla. Estos alias nombran el payload de cada una.
  */
-type LearnModule = {
-  id: string;
-  number: number | null;
-  name: string;
-  icon: string | null;
-  color_theme: string | null;
-  tagline: string | null;
-  description: string | null;
-  audience: string | null;
-  skill_focus: unknown;
-  content_version: string | null;
-  is_active: boolean;
-};
-
-type LearnExperience = {
-  id: string;
-  module_id: string;
-  order: number;
-  name: string;
-  icon: string | null;
-  short_desc: string | null;
-  skill_focus: string | null;
-  response_mechanic: string | null;
-  uses_led: boolean;
-  est_seconds_per_level: number | null;
-  level_count: number | null;
-  is_active: boolean;
-};
-
-type LearnLevel = {
-  id: string;
-  experience_id: string;
-  order: number;
-  name: string | null;
-  difficulty: number | null;
-  goal: string | null;
-  params: unknown;
-  vibration_pattern: unknown;
-  led_pattern: unknown;
-  f005_level: number | null;
-  success_criteria: unknown;
-  scoring: unknown;
-  unlock_after: string | null;
-  is_active: boolean;
-};
-
-type LearnContentVersion = {
-  id: string;
-  content_version: string;
-  channel: string;
-  is_current: boolean;
-  published_at: string;
-  checksum: string | null;
-  notes: string | null;
-};
+type LearnModuleUpdate = Database["public"]["Tables"]["learn_modules"]["Update"];
+type LearnExperienceUpdate = Database["public"]["Tables"]["learn_experiences"]["Update"];
+type LearnLevelUpdate = Database["public"]["Tables"]["learn_levels"]["Update"];
+type LearnModuleInsert = Database["public"]["Tables"]["learn_modules"]["Insert"];
+type LearnExperienceInsert = Database["public"]["Tables"]["learn_experiences"]["Insert"];
+type LearnLevelInsert = Database["public"]["Tables"]["learn_levels"]["Insert"];
 
 /** Campos JSON de `learn_levels` que se editan como texto en un textarea. */
 const JSON_FIELDS = ["vibration_pattern", "led_pattern", "params", "success_criteria", "scoring"] as const;
@@ -135,13 +87,6 @@ type FnResult = {
 
 type ToastFn = (opts: { title: string; description?: string; variant?: "default" | "destructive" }) => unknown;
 
-// TODO(types): las tablas `learn_*` faltan en los tipos generados de Supabase,
-// así que el query builder no las conoce y hay que aflojar el cliente acá. El
-// tipado de las filas se recupera abajo vía `LearnModule` y compañía. Se
-// resuelve regenerando `src/integrations/supabase/types.ts` contra el esquema.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = supabase as any;
-
 // ---- Edge function helper (uses the super_admin's JWT) ----
 async function callFn(name: string, body: unknown): Promise<FnResult> {
   const { data: { session } } = await supabase.auth.getSession();
@@ -183,11 +128,14 @@ export default function LearnManagement() {
   const [moduleId, setModuleId] = useState<string | null>(null);
   const [experienceId, setExperienceId] = useState<string | null>(null);
 
-  const modules = useQuery<LearnModule[]>({ queryKey: ["learn_modules"], queryFn: async () => (await db.from("learn_modules").select("*").order("number")).data || [] });
-  const experiences = useQuery<LearnExperience[]>({ queryKey: ["learn_experiences"], queryFn: async () => (await db.from("learn_experiences").select("*").order("order")).data || [] });
-  const levels = useQuery<LearnLevel[]>({ queryKey: ["learn_levels"], queryFn: async () => (await db.from("learn_levels").select("*").order("order")).data || [] });
-  const patterns = useQuery({ queryKey: ["learn_patterns"], queryFn: async () => (await db.from("learn_haptic_patterns").select("id")).data || [] });
-  const versions = useQuery<LearnContentVersion[]>({ queryKey: ["learn_versions"], queryFn: async () => (await db.from("learn_content_versions").select("id,content_version,channel,is_current,published_at,checksum,notes").order("published_at", { ascending: false })).data || [] });
+  const modules = useQuery<LearnModule[]>({ queryKey: ["learn_modules"], queryFn: async () => (await supabase.from("learn_modules").select("*").order("number")).data || [] });
+  const experiences = useQuery<LearnExperience[]>({ queryKey: ["learn_experiences"], queryFn: async () => (await supabase.from("learn_experiences").select("*").order("order")).data || [] });
+  const levels = useQuery<LearnLevel[]>({ queryKey: ["learn_levels"], queryFn: async () => (await supabase.from("learn_levels").select("*").order("order")).data || [] });
+  const patterns = useQuery({ queryKey: ["learn_patterns"], queryFn: async () => (await supabase.from("learn_haptic_patterns").select("id")).data || [] });
+  // Sin genérico: el select omite `payload` (el paquete compilado entero, que
+  // esta lista no usa), así que el tipo de la fila lo infiere el cliente
+  // tipado desde la lista de columnas en vez de declararse aparte.
+  const versions = useQuery({ queryKey: ["learn_versions"], queryFn: async () => (await supabase.from("learn_content_versions").select("id,content_version,channel,is_current,published_at,checksum,notes").order("published_at", { ascending: false })).data || [] });
 
   const refetchAll = () => ["learn_modules", "learn_experiences", "learn_levels", "learn_versions"].forEach((k) => qc.invalidateQueries({ queryKey: [k] }));
 
@@ -323,8 +271,8 @@ export default function LearnManagement() {
                   <TableCell className="text-right">
                     {!v.is_current && (
                       <Button variant="outline" size="sm" onClick={async () => {
-                        await db.from("learn_content_versions").update({ is_current: false }).eq("channel", v.channel);
-                        const { error } = await db.from("learn_content_versions").update({ is_current: true }).eq("id", v.id);
+                        await supabase.from("learn_content_versions").update({ is_current: false }).eq("channel", v.channel);
+                        const { error } = await supabase.from("learn_content_versions").update({ is_current: true }).eq("id", v.id);
                         if (error) toast({ title: "Rollback failed", description: error.message, variant: "destructive" });
                         else { toast({ title: `Rolled back to ${v.content_version}` }); refetchAll(); }
                       }}><RotateCcw className="h-4 w-4 mr-1" />Make current</Button>
@@ -456,8 +404,15 @@ function EditRow({ type, row, onDone, toast }: {
       } catch (err) { toast({ title: "Invalid JSON", description: errorMessage(err), variant: "destructive" }); return; }
     }
     setBusy(true);
-    const table = type === "module" ? "learn_modules" : type === "experience" ? "learn_experiences" : "learn_levels";
-    const { error } = await db.from(table).update(patch).eq("id", row.id);
+    // `patch` se arma arriba campo por campo desde `LearnFormState`, que es la
+    // unión laxa de las tres tablas (y admite texto crudo de los textarea); el
+    // cast lo estrecha al payload de la tabla que toca.
+    const { error } =
+      type === "module"
+        ? await supabase.from("learn_modules").update(patch as LearnModuleUpdate).eq("id", row.id)
+        : type === "experience"
+          ? await supabase.from("learn_experiences").update(patch as LearnExperienceUpdate).eq("id", row.id)
+          : await supabase.from("learn_levels").update(patch as LearnLevelUpdate).eq("id", row.id);
     setBusy(false);
     if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
     else { toast({ title: "Saved", description: "Republish to ship the change." }); setOpen(false); onDone(); }
@@ -550,8 +505,14 @@ function NewButton({ type, ctx, onDone, toast }: {
       row.unlock_after = row.unlock_after || null;
     }
     setBusy(true);
-    const table = type === "module" ? "learn_modules" : type === "experience" ? "learn_experiences" : "learn_levels";
-    const { error } = await db.from(table).insert(row);
+    // Mismo motivo que en `save()`: `row` sale de `LearnFormState`, así que se
+    // estrecha al payload de la tabla concreta en cada rama.
+    const { error } =
+      type === "module"
+        ? await supabase.from("learn_modules").insert(row as LearnModuleInsert)
+        : type === "experience"
+          ? await supabase.from("learn_experiences").insert(row as LearnExperienceInsert)
+          : await supabase.from("learn_levels").insert(row as LearnLevelInsert);
     setBusy(false);
     if (error) return toast({ title: "Create failed", description: error.message, variant: "destructive" });
     toast({ title: `${type} created`, description: "Republish to ship the change." });

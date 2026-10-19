@@ -13,41 +13,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Cpu, Upload, Rocket, EyeOff, Trash2, ShieldAlert } from "lucide-react";
 import { errorMessage } from "@/lib/errors";
+import { Database } from "@/integrations/supabase/types";
 
 const HARDWARE_MODEL = "ontenna";
 const BUCKET = "firmware";
 
-/**
- * Fila de `public.firmware_releases` (ver
- * `supabase/migrations/20260616120000_firmware_ota.sql`). Se declara acá porque
- * la tabla todavía no está en `src/integrations/supabase/types.ts`: ese archivo
- * se regenera desde el esquema y quedó atrás. Cuando se regenere, reemplazar
- * este tipo por `Database["public"]["Tables"]["firmware_releases"]["Row"]` y
- * sacar el cast de abajo.
- */
-type FirmwareRelease = {
-  id: string;
-  hardware_model: string;
-  version: string;
-  version_code: number;
-  file_path: string;
-  file_size: number;
-  sha256: string | null;
-  release_notes: Record<string, string>;
-  mandatory: boolean;
-  min_app_version: string | null;
-  is_published: boolean;
-  created_by: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-// TODO(types): `firmware_releases` falta en los tipos generados de Supabase, así
-// que el query builder no la conoce y hay que aflojar el cliente acá. El tipado
-// de las filas se recupera abajo vía `FirmwareRelease`. Se resuelve regenerando
-// `src/integrations/supabase/types.ts` contra el esquema.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = supabase as any;
+type FirmwareRelease = Database["public"]["Tables"]["firmware_releases"]["Row"];
 
 async function sha256Hex(file: File): Promise<string> {
   const buf = await file.arrayBuffer();
@@ -80,7 +51,7 @@ export default function FirmwareManagement() {
   const releases = useQuery<FirmwareRelease[]>({
     queryKey: ["firmware_releases"],
     queryFn: async () =>
-      (await db.from("firmware_releases").select("*").eq("hardware_model", HARDWARE_MODEL).order("version_code", { ascending: false })).data || [],
+      (await supabase.from("firmware_releases").select("*").eq("hardware_model", HARDWARE_MODEL).order("version_code", { ascending: false })).data || [],
   });
 
   const suggestedCode = useMemo(() => {
@@ -121,7 +92,7 @@ export default function FirmwareManagement() {
       if (notesEn.trim()) notes.en = notesEn.trim();
       if (notesEs.trim()) notes.es = notesEs.trim();
 
-      const { error: insErr } = await db.from("firmware_releases").insert({
+      const { error: insErr } = await supabase.from("firmware_releases").insert({
         hardware_model: HARDWARE_MODEL,
         version: version.trim(),
         version_code: code,
@@ -148,7 +119,7 @@ export default function FirmwareManagement() {
 
   const setPublished = useMutation({
     mutationFn: async ({ id, value }: { id: string; value: boolean }) => {
-      const { error } = await db.from("firmware_releases").update({ is_published: value }).eq("id", id);
+      const { error } = await supabase.from("firmware_releases").update({ is_published: value }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: (_d, v) => { toast({ title: v.value ? "Published" : "Unpublished" }); refetch(); },
@@ -158,7 +129,7 @@ export default function FirmwareManagement() {
   const remove = useMutation({
     mutationFn: async (r: FirmwareRelease) => {
       await supabase.storage.from(BUCKET).remove([r.file_path]);
-      const { error } = await db.from("firmware_releases").delete().eq("id", r.id);
+      const { error } = await supabase.from("firmware_releases").delete().eq("id", r.id);
       if (error) throw error;
     },
     onSuccess: () => { toast({ title: "Release deleted" }); refetch(); },
