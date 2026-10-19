@@ -1,4 +1,5 @@
 import "@/i18n";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -45,6 +46,29 @@ import AccessibilityStatement from "./pages/site/AccessibilityStatement";
 
 const queryClient = new QueryClient();
 
+/**
+ * Password-recovery links redirect to the SITE ROOT, not to `/reset-password`:
+ * the live GoTrue allowlist strips the `/reset-password` path and falls back to
+ * the Site URL (`https://www.ontenna.org`). So the recovery token lands on `/`
+ * (the marketing home) where there is no reset form, and the user is stuck.
+ *
+ * This guard detects the recovery hash (`#...&type=recovery`) on ANY page and
+ * forwards to `/reset-password`, preserving the token so the reset form can pick
+ * up the recovery session. Rendered before <AuthProvider> so it runs while the
+ * hash is still intact (Supabase clears it once it processes the session).
+ */
+function RecoveryRedirect() {
+  useEffect(() => {
+    const fromUrl = window.location.hash + window.location.search;
+    if (fromUrl.includes("type=recovery") && window.location.pathname !== "/reset-password") {
+      window.location.replace(
+        `/reset-password${window.location.search}${window.location.hash}`,
+      );
+    }
+  }, []);
+  return null;
+}
+
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { roles, isLoading } = useAuth();
   const isSuperAdmin = roles.some((r) => r.role === "super_admin");
@@ -60,6 +84,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <RecoveryRedirect />
           <AuthProvider>
             <Routes>
               {/* Marketing site */}

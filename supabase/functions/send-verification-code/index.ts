@@ -19,6 +19,9 @@ function generateCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+// Cooldown between code requests per user (anti-abuse / anti-spam).
+const RESEND_COOLDOWN_SECONDS = 45;
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -50,6 +53,24 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({ error: "user_not_found" }),
         { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
+    }
+
+    // Cooldown: refuse if a code was already issued to this user very recently.
+    const { data: recent } = await supabaseAdmin
+      .from("verification_codes")
+      .select("created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (recent?.created_at) {
+      const ageSeconds = (Date.now() - new Date(recent.created_at).getTime()) / 1000;
+      if (ageSeconds < RESEND_COOLDOWN_SECONDS) {
+        return new Response(
+          JSON.stringify({ error: "Please wait before requesting another code", retry_after: Math.ceil(RESEND_COOLDOWN_SECONDS - ageSeconds) }),
+          { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
     }
 
     // Invalidate any existing unused codes for this user

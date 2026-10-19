@@ -47,39 +47,48 @@ serve(async (req) => {
       );
     }
 
-    // Use existing verification logic - check for valid code
-    const { data: verificationCode, error: codeError } = await supabase
+    // Brute-force protection: a 6-digit code has only 10^6 combinations, so we
+    // track guesses against the user's active code and invalidate it after
+    // MAX_ATTEMPTS wrong tries. We look up the active code by USER (not by the
+    // guessed value) so failed guesses can be counted.
+    const MAX_ATTEMPTS = 5;
+    const { data: activeCode } = await supabase
       .from("verification_codes")
       .select("*")
       .eq("user_id", profile.id)
-      .eq("code", code)
       .eq("used", false)
       .gt("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (codeError || !verificationCode) {
-      // Check if code exists but is expired
-      const { data: expiredCode } = await supabase
+    if (!activeCode) {
+      return new Response(
+        JSON.stringify({ ok: false, error: { code: "expired_code", message: "Verification code expired or not found. Request a new one." } }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if ((activeCode.attempts ?? 0) >= MAX_ATTEMPTS) {
+      await supabase.from("verification_codes").update({ used: true }).eq("id", activeCode.id);
+      return new Response(
+        JSON.stringify({ ok: false, error: { code: "too_many_attempts", message: "Too many attempts. Request a new code." } }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (activeCode.code !== String(code)) {
+      await supabase
         .from("verification_codes")
-        .select("*")
-        .eq("user_id", profile.id)
-        .eq("code", code)
-        .single();
-
-      if (expiredCode) {
-        return new Response(
-          JSON.stringify({ ok: false, error: { code: "expired_code", message: "Verification code has expired" } }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
+        .update({ attempts: (activeCode.attempts ?? 0) + 1 })
+        .eq("id", activeCode.id);
       return new Response(
         JSON.stringify({ ok: false, error: { code: "invalid_code", message: "Invalid verification code" } }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    const verificationCode = activeCode;
 
     // Mark code as used
     await supabase

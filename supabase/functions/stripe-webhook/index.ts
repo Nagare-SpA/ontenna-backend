@@ -29,25 +29,47 @@ serve(async (req) => {
     const body = await req.text();
     const signature = req.headers.get("stripe-signature");
 
-    let event: Stripe.Event;
+    // Signature verification is MANDATORY. Never trust an unverified payload as
+    // a real Stripe event — an unsigned fallback lets anyone forge "payment
+    // succeeded". If the secret or signature is missing, refuse to process.
+    if (!webhookSecret) {
+      console.error("[Stripe Webhook] Missing STRIPE_WEBHOOK_SECRET — refusing to process");
+      return new Response("Webhook not configured", { status: 500 });
+    }
+    if (!signature) {
+      console.error("[Stripe Webhook] Missing stripe-signature header");
+      return new Response("Missing signature", { status: 400 });
+    }
 
-    // Verify webhook signature if secret is configured
-    if (webhookSecret && signature) {
-      try {
-        // Use constructEventAsync for Deno compatibility
-        event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : "Unknown error";
-        console.error("[Stripe Webhook] Signature verification failed:", message);
-        return new Response(`Webhook signature verification failed`, { status: 400 });
-      }
-    } else {
-      // Parse without verification (for development)
-      console.warn("[Stripe Webhook] No webhook secret configured, skipping signature verification");
-      event = JSON.parse(body);
+    let event: Stripe.Event;
+    try {
+      // Use constructEventAsync for Deno compatibility
+      event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      console.error("[Stripe Webhook] Signature verification failed:", message);
+      return new Response(`Webhook signature verification failed`, { status: 400 });
     }
 
     console.log("[Stripe Webhook] Received event:", event.type);
+
+    // Idempotency guard: Stripe retries deliveries, so skip events we already
+    // recorded. Best-effort here; a UNIQUE(stripe_event_id) constraint on
+    // billing_events (see migration) makes this race-proof.
+    {
+      const { data: seen } = await supabase
+        .from("billing_events")
+        .select("id")
+        .eq("stripe_event_id", event.id)
+        .maybeSingle();
+      if (seen) {
+        console.log("[Stripe Webhook] Duplicate event, skipping:", event.id);
+        return new Response(JSON.stringify({ received: true, duplicate: true }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     // Helper to get plan by Stripe price ID
     const getPlanByPriceId = async (priceId: string) => {

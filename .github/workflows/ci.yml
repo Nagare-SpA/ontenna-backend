@@ -1,0 +1,54 @@
+name: CI
+
+# Runs on every PR and push to main. Never touches production: the frontend and
+# edge functions are type-checked, and (optionally) the smoke test runs against a
+# STAGING project via repo secrets. See docs/TESTING_STRATEGY.md.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  frontend:
+    name: Frontend lint & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit -p tsconfig.app.json
+
+  edge-functions:
+    name: Edge functions typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - name: Type-check all edge functions
+        run: |
+          for f in supabase/functions/*/index.ts; do
+            echo "check $f"
+            deno check --no-lock "$f" || exit 1
+          done
+
+  smoke:
+    name: Smoke test (staging)
+    runs-on: ubuntu-latest
+    # Only runs if the staging secrets are configured; never points at prod.
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run smoke test against staging
+        if: ${{ env.STAGING_SUPABASE_URL != '' }}
+        env:
+          SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          ANON_KEY: ${{ secrets.STAGING_ANON_KEY }}
+          SERVICE_KEY: ${{ secrets.STAGING_SERVICE_KEY }}
+        run: ./scripts/smoke.sh
