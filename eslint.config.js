@@ -9,7 +9,15 @@ export default tseslint.config(
   // linter. Este ESLint es el del frontend y no entiende los pragmas
   // `// deno-lint-ignore`, por lo que los reportaba como errores propios. El CI
   // type-checkea esas funciones con `deno check` (job `edge-functions`).
-  { ignores: ["dist", "supabase/functions/**"] },
+  //
+  // `.claude/worktrees/<nombre>/` son worktrees de Claude Code: viven DENTRO de
+  // la raíz del repo y contienen una copia completa de `src/`. Sin esta
+  // exclusión, `eslint .` desde la raíz lintea una copia extra del código por
+  // cada worktree abierto, y el conteo sale inflado y distinto en cada corrida
+  // según qué rama tenga cada uno. El CI no lo nota —`actions/checkout` da un
+  // árbol limpio— pero cualquiera que lintee en local sí. `.gitignore` ya tiene
+  // `.claude/*`, pero ESLint no lee `.gitignore` para esto.
+  { ignores: ["dist", ".claude/**", "supabase/functions/**"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
