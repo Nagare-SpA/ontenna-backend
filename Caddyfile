@@ -14,8 +14,12 @@
 	try_files {path} /index.html
 	file_server
 
-	# Hashed build assets are immutable; the HTML shell must never be cached.
+	# Hashed build assets are immutable; everything else (the HTML shell above
+	# all) must never be cached. The two matchers are disjoint on purpose: a
+	# bare catch-all `header Cache-Control` would also overwrite the assets'
+	# value, since every matching header directive runs and the last one wins.
 	@assets path /assets/*
+	@shell not path /assets/*
 	header @assets Cache-Control "public, max-age=31536000, immutable"
-	header Cache-Control "no-cache"
+	header @shell Cache-Control "no-cache"
 }
