@@ -50,17 +50,17 @@ serve(async (req) => {
     console.log("[Stripe Webhook] Received event:", event.type);
 
     // Helper to get plan by Stripe price ID
-    async function getPlanByPriceId(priceId: string) {
+    const getPlanByPriceId = async (priceId: string) => {
       const { data } = await supabase
         .from("plans")
         .select("id")
         .or(`stripe_price_id_monthly.eq.${priceId},stripe_price_id_yearly.eq.${priceId}`)
         .maybeSingle();
       return data;
-    }
+    };
 
     // Helper to map Stripe status to our status
-    function mapStripeStatus(status: string): string {
+    const mapStripeStatus = (status: string): string => {
       const statusMap: Record<string, string> = {
         active: "active",
         past_due: "past_due",
@@ -72,7 +72,7 @@ serve(async (req) => {
         unpaid: "unpaid"
       };
       return statusMap[status] || "active";
-    }
+    };
 
     switch (event.type) {
       case "checkout.session.completed": {

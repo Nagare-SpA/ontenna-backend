@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 // Idempotent ingestor for a single LearnContent/module_<N>.json.
 // Validates every vibration_pattern against ERM limits, then upserts the
@@ -13,10 +13,15 @@ const corsHeaders = {
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-function validate(id: string, vp: any, issues: string[]) {
+// Formas que valida el ingestor. Solo anotaciones: el chequeo real sigue
+// siendo en runtime, más abajo, sobre JSON no confiable.
+type Pulse = { durationMs?: number; gapMs?: number; sharpness?: number; intensity?: number };
+type VibrationPattern = { pulses?: Pulse[] };
+
+function validate(id: string, vp: VibrationPattern | null | undefined, issues: string[]) {
   const pulses = vp?.pulses;
   if (!Array.isArray(pulses) || pulses.length === 0) { issues.push(`${id}: pulses must be non-empty`); return; }
-  pulses.forEach((p: any, i: number) => {
+  pulses.forEach((p: Pulse, i: number) => {
     const n = i + 1, dur = p?.durationMs, gap = p?.gapMs ?? 0, sharp = p?.sharpness ?? 0;
     if (typeof dur !== "number") issues.push(`${id} pulse ${n}: durationMs required`);
     else if (dur > 0 && dur < 80) issues.push(`${id} pulse ${n}: durationMs ${dur}ms < 80ms`); // 0 = intentional rest/gap
@@ -28,7 +33,7 @@ function validate(id: string, vp: any, issues: string[]) {
 }
 
 // Authorize via publish secret (CI) OR a super_admin JWT (admin dashboard).
-async function authorize(req: Request, supabase: any): Promise<boolean> {
+async function authorize(req: Request, supabase: SupabaseClient): Promise<boolean> {
   const secret = Deno.env.get("LEARN_PUBLISH_SECRET");
   if (secret && req.headers.get("x-publish-secret") === secret) return true;
   const auth = req.headers.get("Authorization");
@@ -59,7 +64,7 @@ serve(async (req) => {
     if (issues.length) return json({ ok: false, error: "validation_failed", module: m.id, issues }, 422);
 
     // Upserts (idempotent by id).
-    const up = async (table: string, rows: any[]) => {
+    const up = async (table: string, rows: Record<string, unknown>[]) => {
       if (!rows.length) return;
       const { error } = await supabase.from(table).upsert(rows, { onConflict: "id" });
       if (error) throw new Error(`${table}: ${error.message}`);
@@ -70,19 +75,19 @@ serve(async (req) => {
       tagline: m.tagline, description: m.description, audience: m.audience,
       skill_focus: m.skill_focus ?? [], content_version: cv, is_active: true,
     }]);
-    await up("learn_experiences", experiences.map((e: any) => ({
+    await up("learn_experiences", experiences.map((e: Record<string, unknown>) => ({
       id: e.id, module_id: e.module_id ?? m.id, order: e.order, name: e.name, icon: e.icon,
       short_desc: e.short_desc, skill_focus: e.skill_focus, response_mechanic: e.response_mechanic,
       uses_led: !!e.uses_led, est_seconds_per_level: e.est_seconds_per_level, level_count: e.level_count,
       is_active: true,
     })));
-    await up("learn_levels", levels.map((l: any) => ({
+    await up("learn_levels", levels.map((l: Record<string, unknown>) => ({
       id: l.id, experience_id: l.experience_id, order: l.order, name: l.name, difficulty: l.difficulty,
       goal: l.goal, params: l.params ?? {}, vibration_pattern: l.vibration_pattern, led_pattern: l.led_pattern ?? null,
       f005_level: l.f005_level ?? null, success_criteria: l.success_criteria ?? {}, scoring: l.scoring ?? {},
       unlock_after: l.unlock_after ?? null, is_active: true,
     })));
-    await up("learn_haptic_patterns", patterns.map((p: any) => ({
+    await up("learn_haptic_patterns", patterns.map((p: Record<string, unknown>) => ({
       id: p.id, module_id: m.id, role: p.role, description: p.description,
       vibration_pattern: p.vibration_pattern ?? null, led_pattern: p.led_pattern ?? null,
       f005_level: p.f005_level ?? null, erm_ok: p.erm_ok ?? null,

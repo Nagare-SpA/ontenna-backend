@@ -175,10 +175,11 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ success: true, id: emailData?.id }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in send-verification-code function:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: message }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
