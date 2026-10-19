@@ -96,15 +96,40 @@ supabase db reset                              # ¿aplican todas las migraciones
 
 ---
 
-## 7. CI sugerido (GitHub Actions — `.github/workflows/ci.yml`)
-En cada PR, sin tocar prod:
-1. `npm ci` → `npm run lint` → `tsc --noEmit`.
-2. `deno check` de las funciones.
-3. `supabase start` (o branch) → `supabase db reset` → `./scripts/smoke.sh` contra el stack local/branch.
-4. Bloquear el merge si algo falla.
+## 7. CI (GitHub Actions — `.github/workflows/ci.yml`)
 
-Deploy a prod: solo desde `main`, tras verde, y con `supabase db push` + `functions deploy` en un
-job manual/aprobado.
+Lo que corre hoy en cada PR y en cada push a `main`, sin tocar prod:
+
+1. `npm ci` → `npm run lint` → `tsc --noEmit -p tsconfig.app.json`.
+2. `deno check` de las 25 edge functions.
+
+**El smoke no está en CI, y es a propósito.** Hubo un job `smoke` ("Smoke test
+(staging)") que reportaba verde sin ejecutar nada: su único paso estaba guardado
+con `if: env.STAGING_SUPABASE_URL != ''`, pero el `env:` de un paso no está en
+alcance para el `if:` de ese mismo paso, así que la condición comparaba `'' != ''`
+→ falso y el paso se saltaba **en todas las corridas**. Un paso saltado no es una
+falla, así que el job salía success: un check verde que no verificaba nada.
+
+No se arregla la condición y listo, porque **no existe proyecto de staging** (§1:
+`ycfrjvnuepfkeffsqxgm` es producción y es el único), por lo que los secrets
+`STAGING_*` no están configurados en el repo. Apuntar `scripts/smoke.sh` al único
+proyecto sería correr signup → verify → login → DELETE contra producción en cada PR.
+
+Para reactivarlo hacen falta, en este orden:
+
+1. Un destino real: proyecto de staging dedicado o branch de Supabase (§2), **o**
+   un stack efímero en el runner (`supabase start` → `supabase db reset`), que es
+   la opción preferible porque no necesita secrets compartidos ni alcanza prod.
+2. Gatillar en el **job**, nunca en el paso. `secrets` no es un contexto
+   disponible en ningún `if:`; `vars` sí lo es a nivel de job. La receta completa
+   está comentada al final de `.github/workflows/ci.yml`.
+3. Bloquear el merge si algo falla.
+
+Un job saltado por su propio `if:` se reporta como *skipped*, no como *success*:
+ausencia honesta en vez de cobertura falsa.
+
+Deploy a prod: solo desde `main`, tras verde, y con `supabase db push` +
+`functions deploy` en un job manual/aprobado.
 
 ---
 
