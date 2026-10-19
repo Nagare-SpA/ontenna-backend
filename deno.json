@@ -1,0 +1,32 @@
+{
+  // Configuración de Deno para `supabase/functions/` — el único código Deno del
+  // repo. `src/` es frontend y lo lintea ESLint (ver eslint.config.js, que
+  // excluye `supabase/functions/**` por este mismo motivo: otro runtime, otro
+  // linter).
+  //
+  // Por qué este archivo existe, y no solo como gusto: SIN un deno.json, Deno
+  // 2.8 no aplica el set `recommended` que la documentación describe como
+  // default, sino uno más amplio que incluye las reglas con tag `workspace`.
+  // Eso hacía aparecer 57 `no-import-prefix` (una por cada import `https://`
+  // de las 25 funciones) que no son deuda nuestra sino la ausencia de este
+  // archivo. Declarar el set explícitamente fija el contrato de lint y lo
+  // vuelve independiente de la versión de Deno que corra: `deno lint` da el
+  // mismo resultado en local y en CI, hoy y tras el próximo bump.
+  //
+  // `no-import-prefix` exige declarar toda dependencia en un import map y
+  // usar especificadores desnudos (`@std/http`), por lo que `npm:`/`jsr:`
+  // tampoco la satisfacen. Migrar los imports es una tarea propia con su
+  // validación de deploy —cambia la resolución de módulos de 23 endpoints
+  // públicos sin staging ni rollback—, no un arreglo de lint.
+  //
+  // `include` acota el lint a las edge functions: así `deno lint` a secas
+  // desde la raíz hace lo mismo que el CI, y no recorre `.claude/worktrees/`
+  // (copias completas del repo que inflarían el conteo, el mismo problema que
+  // eslint.config.js resolvió con `ignores`).
+  "lint": {
+    "include": ["supabase/functions"],
+    "rules": {
+      "tags": ["recommended"]
+    }
+  }
+}
