@@ -12,11 +12,41 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Cpu, Upload, Rocket, EyeOff, Trash2, ShieldAlert } from "lucide-react";
+import { errorMessage } from "@/lib/errors";
 
 const HARDWARE_MODEL = "ontenna";
 const BUCKET = "firmware";
 
-// firmware_releases isn't in the generated types; use a loose client.
+/**
+ * Fila de `public.firmware_releases` (ver
+ * `supabase/migrations/20260616120000_firmware_ota.sql`). Se declara acá porque
+ * la tabla todavía no está en `src/integrations/supabase/types.ts`: ese archivo
+ * se regenera desde el esquema y quedó atrás. Cuando se regenere, reemplazar
+ * este tipo por `Database["public"]["Tables"]["firmware_releases"]["Row"]` y
+ * sacar el cast de abajo.
+ */
+type FirmwareRelease = {
+  id: string;
+  hardware_model: string;
+  version: string;
+  version_code: number;
+  file_path: string;
+  file_size: number;
+  sha256: string | null;
+  release_notes: Record<string, string>;
+  mandatory: boolean;
+  min_app_version: string | null;
+  is_published: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+// TODO(types): `firmware_releases` falta en los tipos generados de Supabase, así
+// que el query builder no la conoce y hay que aflojar el cliente acá. El tipado
+// de las filas se recupera abajo vía `FirmwareRelease`. Se resuelve regenerando
+// `src/integrations/supabase/types.ts` contra el esquema.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as any;
 
 async function sha256Hex(file: File): Promise<string> {
@@ -47,14 +77,14 @@ export default function FirmwareManagement() {
   const [notesEs, setNotesEs] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  const releases = useQuery({
+  const releases = useQuery<FirmwareRelease[]>({
     queryKey: ["firmware_releases"],
     queryFn: async () =>
       (await db.from("firmware_releases").select("*").eq("hardware_model", HARDWARE_MODEL).order("version_code", { ascending: false })).data || [],
   });
 
   const suggestedCode = useMemo(() => {
-    const max = (releases.data || []).reduce((m: number, r: any) => Math.max(m, r.version_code), 0);
+    const max = (releases.data || []).reduce((m, r) => Math.max(m, r.version_code), 0);
     return max + 1;
   }, [releases.data]);
 
@@ -71,7 +101,7 @@ export default function FirmwareManagement() {
     if (!version.trim()) return toast({ title: "Version label is required", variant: "destructive" });
     const code = parseInt(versionCode, 10);
     if (!Number.isInteger(code) || code <= 0) return toast({ title: "Version code must be a positive integer", variant: "destructive" });
-    if ((releases.data || []).some((r: any) => r.version_code === code))
+    if ((releases.data || []).some((r) => r.version_code === code))
       return toast({ title: `Version code ${code} already exists`, variant: "destructive" });
 
     setUploading(true);
@@ -109,8 +139,8 @@ export default function FirmwareManagement() {
       toast({ title: `Firmware ${version} uploaded`, description: "Review it, then publish to roll out." });
       resetForm();
       refetch();
-    } catch (e: any) {
-      toast({ title: "Upload failed", description: e?.message ?? String(e), variant: "destructive" });
+    } catch (e) {
+      toast({ title: "Upload failed", description: errorMessage(e), variant: "destructive" });
     } finally {
       setUploading(false);
     }
@@ -122,21 +152,21 @@ export default function FirmwareManagement() {
       if (error) throw error;
     },
     onSuccess: (_d, v) => { toast({ title: v.value ? "Published" : "Unpublished" }); refetch(); },
-    onError: (e: any) => toast({ title: "Update failed", description: e?.message, variant: "destructive" }),
+    onError: (e) => toast({ title: "Update failed", description: errorMessage(e), variant: "destructive" }),
   });
 
   const remove = useMutation({
-    mutationFn: async (r: any) => {
+    mutationFn: async (r: FirmwareRelease) => {
       await supabase.storage.from(BUCKET).remove([r.file_path]);
       const { error } = await db.from("firmware_releases").delete().eq("id", r.id);
       if (error) throw error;
     },
     onSuccess: () => { toast({ title: "Release deleted" }); refetch(); },
-    onError: (e: any) => toast({ title: "Delete failed", description: e?.message, variant: "destructive" }),
+    onError: (e) => toast({ title: "Delete failed", description: errorMessage(e), variant: "destructive" }),
   });
 
   const rows = releases.data || [];
-  const live = rows.find((r: any) => r.is_published); // highest published = current
+  const live = rows.find((r) => r.is_published); // highest published = current
 
   return (
     <AdminLayout>
@@ -233,7 +263,7 @@ export default function FirmwareManagement() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {rows.map((r: any) => (
+                  {rows.map((r) => (
                     <TableRow key={r.id}>
                       <TableCell className="font-medium">{r.version}</TableCell>
                       <TableCell>{r.version_code}</TableCell>
