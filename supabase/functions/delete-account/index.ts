@@ -43,21 +43,6 @@ function unsafeDecodeSub(token: string): string | null {
   }
 }
 
-async function cancelStripeSubscription(subscriptionId: string) {
-  const key = Deno.env.get("STRIPE_SECRET_KEY");
-  if (!key) return;
-  try {
-    const res = await fetch(`https://api.stripe.com/v1/subscriptions/${subscriptionId}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${key}` },
-    });
-    if (!res.ok) console.error("[delete-account] Stripe cancel failed:", await res.text());
-    else console.log("[delete-account] Stripe subscription canceled:", subscriptionId);
-  } catch (e) {
-    console.error("[delete-account] Stripe cancel error:", e);
-  }
-}
-
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Only POST allowed" }, 405);
@@ -93,16 +78,6 @@ serve(async (req) => {
 
     const userId = user.id;
     console.log("[delete-account] deleting user:", userId);
-
-    // Cancel an active Stripe subscription before dropping the row.
-    const { data: sub } = await supabase
-      .from("subscriptions")
-      .select("stripe_subscription_id, status")
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (sub?.stripe_subscription_id && !["canceled", "incomplete_expired"].includes(sub.status)) {
-      await cancelStripeSubscription(sub.stripe_subscription_id);
-    }
 
     // Purge every table carrying this user's data.
     for (const { table, column } of USER_TABLES) {

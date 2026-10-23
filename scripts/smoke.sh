@@ -88,12 +88,6 @@ if [ -n "$TOK" ]; then
                                               || fail "mobile-subscription missing is_entitled"
 fi
 
-# 6) Security guard: unsigned Stripe webhook must be rejected
-WH=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$SUPABASE_URL/functions/v1/stripe-webhook" \
-  -H "apikey: $ANON_KEY" -H "Content-Type: application/json" \
-  -d '{"type":"checkout.session.completed","id":"evt_smoke","data":{"object":{}}}')
-[ "$WH" = "400" ] && pass "unsigned webhook rejected (400)" || fail "unsigned webhook returned $WH (expected 400)"
-
 echo
 if [ "$FAILURES" -eq 0 ]; then
   echo "== ALL CHECKS PASSED =="

@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import Stripe from "https://esm.sh/stripe@14.21.0";
 
 // Restrict CORS to known first-party origins for this admin, browser-invoked function.
 const ALLOWED_ORIGINS = new Set([
@@ -81,26 +80,7 @@ serve(async (req) => {
 
     console.log("[Delete User] Deleting user:", userId);
 
-    // 1. Cancel + delete the Stripe customer so billing stops and PII is erased
-    //    at the processor (GDPR). Best-effort: log but don't block deletion.
-    try {
-      const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-      const { data: sub } = await supabase
-        .from("subscriptions")
-        .select("stripe_customer_id, stripe_subscription_id")
-        .eq("user_id", userId)
-        .not("stripe_customer_id", "is", null)
-        .maybeSingle();
-      if (stripeKey && sub?.stripe_customer_id) {
-        const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
-        await stripe.customers.del(sub.stripe_customer_id); // also cancels its subscriptions
-        console.log("[Delete User] Stripe customer deleted:", sub.stripe_customer_id);
-      }
-    } catch (stripeErr) {
-      console.error("[Delete User] Stripe cleanup failed (continuing):", stripeErr instanceof Error ? stripeErr.message : stripeErr);
-    }
-
-    // 2. Delete all public-schema data in a single transaction (RPC).
+    // 1. Delete all public-schema data in a single transaction (RPC).
     const { error: rpcError } = await supabase.rpc("delete_user_data", { target: userId });
     if (rpcError) {
       console.error("[Delete User] delete_user_data RPC failed:", rpcError);
@@ -110,7 +90,7 @@ serve(async (req) => {
       );
     }
 
-    // 3. Finally delete from auth.users (requires service role)
+    // 2. Finally delete from auth.users (requires service role)
     const { error: deleteAuthError } = await supabase.auth.admin.deleteUser(userId);
 
     if (deleteAuthError) {

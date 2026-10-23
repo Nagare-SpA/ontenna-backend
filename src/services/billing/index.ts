@@ -2,21 +2,16 @@
 
 import { billingConfig } from './config';
 import { MockPaymentProvider } from './MockPaymentProvider';
-import { StripePaymentProvider } from './StripePaymentProvider';
 import type { PaymentProvider } from './types';
 
 // Export types
 export * from './types';
 export { billingConfig } from './config';
 
-// Create and export the payment provider singleton
+// Create and export the payment provider singleton.
+// Stripe was removed; MockPaymentProvider is the only implementation left.
+// See ./config.ts for why, and for how to plug a real provider back in.
 function createPaymentProvider(): PaymentProvider {
-  if (billingConfig.provider === 'stripe') {
-    console.log('[Billing] Initializing StripePaymentProvider');
-    return new StripePaymentProvider();
-  }
-  
-  console.log('[Billing] Initializing MockPaymentProvider');
   return new MockPaymentProvider();
 }
 

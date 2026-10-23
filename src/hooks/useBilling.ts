@@ -73,7 +73,7 @@ export function useBilling() {
       
       if (result.success) {
         if (result.sessionUrl) {
-          // Stripe mode - redirect to checkout
+          // Hosted-checkout provider: redirect to its session URL
           window.location.href = result.sessionUrl;
         } else {
           // Mock mode - instant success
@@ -230,7 +230,7 @@ export function useBilling() {
           // Internal route (mock mode)
           window.location.href = result.url;
         } else {
-          // External URL (Stripe portal)
+          // External URL (hosted provider portal)
           window.location.href = result.url;
         }
       }

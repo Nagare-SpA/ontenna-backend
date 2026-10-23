@@ -105,7 +105,7 @@ export function PlanCard({
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Connecting to Stripe...
+              Processing…
             </>
           ) : isCurrentPlan ? (
             'Current Plan'

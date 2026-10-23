@@ -1,51 +1,32 @@
 // Billing configuration
+//
+// Stripe was removed from the project (2026-09-29): it was scaffolded by the
+// Lovable template on day one and never processed a single payment — zero
+// customers, zero subscriptions, zero webhook events. Access is granted
+// manually today (see `subscriptions.free_until` /
+// `personal_accounts.granted_free_until`), which is a separate mechanism and
+// is untouched.
+//
+// The PaymentProvider abstraction is kept on purpose so a real provider
+// (Stripe again, or Apple IAP) can be plugged back in without reworking the UI.
 
-export type PaymentProviderType = 'mock' | 'stripe';
+export type PaymentProviderType = 'mock';
 
 interface BillingConfig {
   provider: PaymentProviderType;
-  stripePublishableKey?: string;
   mockModeEnabled: boolean;
 }
 
-// Get payment provider from environment
-function getPaymentProvider(): PaymentProviderType {
-  const envProvider = import.meta.env.VITE_PAYMENT_PROVIDER as string | undefined;
-  
-  if (envProvider === 'mock') {
-    return 'mock';
-  }
-  
-  // Default to Stripe mode (real payments)
-  return 'stripe';
-}
-
-// Check if Stripe keys are available
-function hasStripeKeys(): boolean {
-  // Publishable key is optional in our flow because we redirect to Stripe Checkout via a session URL.
-  // (The secret key is stored server-side in Supabase Edge Functions.)
-  const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
-  return !!publishableKey;
-}
-
 export function getBillingConfig(): BillingConfig {
-  const provider = getPaymentProvider();
-  const mockModeEnabled = provider === 'mock';
-
-  // Log billing mode
-  if (mockModeEnabled) {
-    console.log('[Billing] Using MockPaymentProvider');
-  } else {
-    if (!hasStripeKeys()) {
-      console.warn('[Billing] Stripe mode enabled (no publishable key set; this is OK for Checkout redirect flow)');
-    }
-    console.log('[Billing] Using StripePaymentProvider');
-  }
+  // No real payment provider is configured. MockPaymentProvider writes straight
+  // to `subscriptions`, so it is only ever usable by a super_admin — RLS blocks
+  // a normal user from writing that table. `MockBillingBadge` surfaces this in
+  // the UI so nobody mistakes it for real billing.
+  console.log('[Billing] No payment provider configured; using MockPaymentProvider');
 
   return {
-    provider,
-    stripePublishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined,
-    mockModeEnabled,
+    provider: 'mock',
+    mockModeEnabled: true,
   };
 }
 
