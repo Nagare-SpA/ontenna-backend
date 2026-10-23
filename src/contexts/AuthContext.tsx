@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { toError } from "@/lib/errors";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 type UserRole = Database["public"]["Tables"]["user_roles"]["Row"];
@@ -231,8 +232,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       return { error: null };
-    } catch (error: any) {
-      return { error };
+    } catch (error) {
+      return { error: toError(error) };
     }
   };
 
@@ -267,8 +268,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await refreshProfile();
 
       return { error: null };
-    } catch (error: any) {
-      return { error };
+    } catch (error) {
+      return { error: toError(error) };
     }
   };
 

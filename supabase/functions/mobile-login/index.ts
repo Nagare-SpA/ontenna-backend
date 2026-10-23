@@ -30,10 +30,28 @@ serve(async (req) => {
       );
     }
 
-    // Use existing Supabase auth
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabaseService = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+
+    // Brute-force / credential-stuffing lockout (per email). This endpoint is
+    // public (verify_jwt=false), so it must self-limit.
+    const LOCK_MAX = 8;
+    const LOCK_WINDOW_MS = 15 * 60 * 1000;
+    const emailKey = String(email).toLowerCase();
+    const { data: la } = await supabaseService
+      .from("login_attempts")
+      .select("attempts, window_start")
+      .eq("email", emailKey)
+      .maybeSingle();
+    const inWindow = la ? (Date.now() - new Date(la.window_start).getTime()) < LOCK_WINDOW_MS : false;
+    if (la && inWindow && la.attempts >= LOCK_MAX) {
+      return new Response(
+        JSON.stringify({ ok: false, error: { code: "too_many_attempts", message: "Too many login attempts. Please try again later." } }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // Sign in using existing auth system
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
@@ -42,11 +60,23 @@ serve(async (req) => {
     });
 
     if (authError) {
+      // Record the failed attempt (reset the counter if the window elapsed).
+      const nextAttempts = la && inWindow ? la.attempts + 1 : 1;
+      await supabaseService.from("login_attempts").upsert({
+        email: emailKey,
+        attempts: nextAttempts,
+        window_start: la && inWindow ? la.window_start : new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+      // Uniform error (do not distinguish bad password from unknown user).
       return new Response(
-        JSON.stringify({ ok: false, error: { code: "invalid_credentials", message: authError.message } }),
+        JSON.stringify({ ok: false, error: { code: "invalid_credentials", message: "Invalid email or password" } }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Successful auth → clear the lockout counter.
+    await supabaseService.from("login_attempts").delete().eq("email", emailKey);
 
     // Auth's email_confirmed_at is the source of truth for verification (the
     // web login uses the same signal). The profiles.is_verified flag can lag
@@ -63,7 +93,6 @@ serve(async (req) => {
     }
 
     // Best-effort: keep the profile flag in sync so it stops diverging.
-    const supabaseService = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     await supabaseService
       .from("profiles")
       .update({ is_verified: true, verification_status: "verified" })

@@ -14,12 +14,81 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { ChevronRight, Pencil, Rocket, ShieldCheck, Upload, RotateCcw, Plus } from "lucide-react";
+import { errorMessage } from "@/lib/errors";
+import { Database } from "@/integrations/supabase/types";
 
-// learn_* tables aren't in the generated types; use a loose client for them.
-const db = supabase as any;
+type LearnModule = Database["public"]["Tables"]["learn_modules"]["Row"];
+type LearnExperience = Database["public"]["Tables"]["learn_experiences"]["Row"];
+type LearnLevel = Database["public"]["Tables"]["learn_levels"]["Row"];
+
+/**
+ * El cliente tipado resuelve la forma del payload desde el nombre literal de la
+ * tabla, así que `update()` / `insert()` no aceptan un nombre en una variable:
+ * hay que ramificar por tabla. Estos alias nombran el payload de cada una.
+ */
+type LearnModuleUpdate = Database["public"]["Tables"]["learn_modules"]["Update"];
+type LearnExperienceUpdate = Database["public"]["Tables"]["learn_experiences"]["Update"];
+type LearnLevelUpdate = Database["public"]["Tables"]["learn_levels"]["Update"];
+type LearnModuleInsert = Database["public"]["Tables"]["learn_modules"]["Insert"];
+type LearnExperienceInsert = Database["public"]["Tables"]["learn_experiences"]["Insert"];
+type LearnLevelInsert = Database["public"]["Tables"]["learn_levels"]["Insert"];
+
+/** Campos JSON de `learn_levels` que se editan como texto en un textarea. */
+const JSON_FIELDS = ["vibration_pattern", "led_pattern", "params", "success_criteria", "scoring"] as const;
+type JsonField = (typeof JSON_FIELDS)[number];
+
+/**
+ * Estado de los formularios de alta y edición. Un mismo componente edita filas
+ * de las tres tablas, así que el estado es la unión de sus campos (todos
+ * opcionales) más los overlays `__<campo>_raw`: el texto crudo que el usuario
+ * tipeó en un textarea de JSON y que todavía no se parseó.
+ */
+type LearnFormState = {
+  id?: string;
+  number?: number | null;
+  name?: string | null;
+  icon?: string | null;
+  color_theme?: string | null;
+  tagline?: string | null;
+  description?: string | null;
+  audience?: string | null;
+  skill_focus?: unknown;
+  content_version?: string | null;
+  module_id?: string;
+  experience_id?: string;
+  order?: number | string;
+  short_desc?: string | null;
+  response_mechanic?: string | null;
+  uses_led?: boolean;
+  est_seconds_per_level?: number | null;
+  level_count?: number | null;
+  difficulty?: number | string | null;
+  goal?: string | null;
+  params?: unknown;
+  vibration_pattern?: unknown;
+  led_pattern?: unknown;
+  f005_level?: number | string | null;
+  success_criteria?: unknown;
+  scoring?: unknown;
+  unlock_after?: string | null;
+  is_active?: boolean;
+} & { [raw: `__${string}_raw`]: unknown };
+
+/** Respuesta de las edge functions `learn-publish` / `learn-ingest`. */
+type FnResult = {
+  ok?: boolean;
+  error?: string;
+  issues?: string[];
+  warnings?: number;
+  counts?: { levels?: number };
+  content_version?: string;
+  module?: string;
+};
+
+type ToastFn = (opts: { title: string; description?: string; variant?: "default" | "destructive" }) => unknown;
 
 // ---- Edge function helper (uses the super_admin's JWT) ----
-async function callFn(name: string, body: unknown) {
+async function callFn(name: string, body: unknown): Promise<FnResult> {
   const { data: { session } } = await supabase.auth.getSession();
   const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${name}`, {
     method: "POST",
@@ -34,11 +103,14 @@ async function callFn(name: string, body: unknown) {
 }
 
 // ---- Client-side ERM validation (mirrors the server) ----
-function validatePattern(vp: any): string[] {
+type HapticPulse = { durationMs?: unknown; intensity?: unknown; sharpness?: number; gapMs?: number };
+
+function validatePattern(vp: unknown): string[] {
   const out: string[] = [];
-  const pulses = vp?.pulses;
+  const pulses = (vp as { pulses?: unknown } | null | undefined)?.pulses;
   if (!Array.isArray(pulses) || pulses.length === 0) return ["pulses must be a non-empty array"];
-  pulses.forEach((p: any, i: number) => {
+  pulses.forEach((raw, i) => {
+    const p = (raw ?? {}) as HapticPulse;
     const n = i + 1, dur = p?.durationMs, gap = p?.gapMs ?? 0, sharp = p?.sharpness ?? 0;
     if (typeof dur !== "number") out.push(`pulse ${n}: durationMs required`);
     else if (dur > 0 && dur < 80) out.push(`pulse ${n}: durationMs ${dur}ms < 80ms`);
@@ -56,19 +128,22 @@ export default function LearnManagement() {
   const [moduleId, setModuleId] = useState<string | null>(null);
   const [experienceId, setExperienceId] = useState<string | null>(null);
 
-  const modules = useQuery({ queryKey: ["learn_modules"], queryFn: async () => (await db.from("learn_modules").select("*").order("number")).data || [] });
-  const experiences = useQuery({ queryKey: ["learn_experiences"], queryFn: async () => (await db.from("learn_experiences").select("*").order("order")).data || [] });
-  const levels = useQuery({ queryKey: ["learn_levels"], queryFn: async () => (await db.from("learn_levels").select("*").order("order")).data || [] });
-  const patterns = useQuery({ queryKey: ["learn_patterns"], queryFn: async () => (await db.from("learn_haptic_patterns").select("id")).data || [] });
-  const versions = useQuery({ queryKey: ["learn_versions"], queryFn: async () => (await db.from("learn_content_versions").select("id,content_version,channel,is_current,published_at,checksum,notes").order("published_at", { ascending: false })).data || [] });
+  const modules = useQuery<LearnModule[]>({ queryKey: ["learn_modules"], queryFn: async () => (await supabase.from("learn_modules").select("*").order("number")).data || [] });
+  const experiences = useQuery<LearnExperience[]>({ queryKey: ["learn_experiences"], queryFn: async () => (await supabase.from("learn_experiences").select("*").order("order")).data || [] });
+  const levels = useQuery<LearnLevel[]>({ queryKey: ["learn_levels"], queryFn: async () => (await supabase.from("learn_levels").select("*").order("order")).data || [] });
+  const patterns = useQuery({ queryKey: ["learn_patterns"], queryFn: async () => (await supabase.from("learn_haptic_patterns").select("id")).data || [] });
+  // Sin genérico: el select omite `payload` (el paquete compilado entero, que
+  // esta lista no usa), así que el tipo de la fila lo infiere el cliente
+  // tipado desde la lista de columnas en vez de declararse aparte.
+  const versions = useQuery({ queryKey: ["learn_versions"], queryFn: async () => (await supabase.from("learn_content_versions").select("id,content_version,channel,is_current,published_at,checksum,notes").order("published_at", { ascending: false })).data || [] });
 
   const refetchAll = () => ["learn_modules", "learn_experiences", "learn_levels", "learn_versions"].forEach((k) => qc.invalidateQueries({ queryKey: [k] }));
 
-  const curVersion = (versions.data || []).find((v: any) => v.is_current);
-  const modExps = (experiences.data || []).filter((e: any) => e.module_id === moduleId);
-  const expLevels = (levels.data || []).filter((l: any) => l.experience_id === experienceId);
-  const activeModule = (modules.data || []).find((m: any) => m.id === moduleId);
-  const activeExperience = (experiences.data || []).find((e: any) => e.id === experienceId);
+  const curVersion = (versions.data || []).find((v) => v.is_current);
+  const modExps = (experiences.data || []).filter((e) => e.module_id === moduleId);
+  const expLevels = (levels.data || []).filter((l) => l.experience_id === experienceId);
+  const activeModule = (modules.data || []).find((m) => m.id === moduleId);
+  const activeExperience = (experiences.data || []).find((e) => e.id === experienceId);
 
   return (
     <AdminLayout>
@@ -119,13 +194,13 @@ export default function LearnManagement() {
 
             {!moduleId && (
               <div className="mb-3 flex justify-end">
-                <NewButton type="module" ctx={{ nextNumber: (modules.data || []).reduce((mx: number, m: any) => Math.max(mx, m.number || 0), 0) + 1, contentVersion: curVersion?.content_version || "1.0.0" }} onDone={refetchAll} toast={toast} />
+                <NewButton type="module" ctx={{ nextNumber: (modules.data || []).reduce((mx, m) => Math.max(mx, m.number || 0), 0) + 1, contentVersion: curVersion?.content_version || "1.0.0" }} onDone={refetchAll} toast={toast} />
               </div>
             )}
             {!moduleId && (
               <Card><CardContent className="pt-6"><Table>
                 <TableHeader><TableRow><TableHead>#</TableHead><TableHead>Module</TableHead><TableHead>Color</TableHead><TableHead>Version</TableHead><TableHead>Active</TableHead><TableHead className="text-right">Edit</TableHead></TableRow></TableHeader>
-                <TableBody>{(modules.data || []).map((m: any) => (
+                <TableBody>{(modules.data || []).map((m) => (
                   <TableRow key={m.id} className="cursor-pointer" onClick={() => setModuleId(m.id)}>
                     <TableCell>{m.number}</TableCell>
                     <TableCell className="font-medium">{m.icon} {m.name}<div className="text-xs text-muted-foreground">{m.tagline}</div></TableCell>
@@ -146,13 +221,13 @@ export default function LearnManagement() {
             {moduleId && !experienceId && (
               <Card><CardContent className="pt-6"><Table>
                 <TableHeader><TableRow><TableHead>Order</TableHead><TableHead>Experience</TableHead><TableHead>Mechanic</TableHead><TableHead>LED</TableHead><TableHead>Levels</TableHead><TableHead>Active</TableHead><TableHead className="text-right">Edit</TableHead></TableRow></TableHeader>
-                <TableBody>{modExps.map((e: any) => (
+                <TableBody>{modExps.map((e) => (
                   <TableRow key={e.id} className="cursor-pointer" onClick={() => setExperienceId(e.id)}>
                     <TableCell>{e.order}</TableCell>
                     <TableCell className="font-medium">{e.icon} {e.name}<div className="text-xs text-muted-foreground">{e.short_desc}</div></TableCell>
                     <TableCell><Badge variant="secondary">{e.response_mechanic}</Badge></TableCell>
                     <TableCell>{e.uses_led ? "✓" : "—"}</TableCell>
-                    <TableCell>{(levels.data || []).filter((l: any) => l.experience_id === e.id).length}</TableCell>
+                    <TableCell>{(levels.data || []).filter((l) => l.experience_id === e.id).length}</TableCell>
                     <TableCell><Badge variant={e.is_active ? "default" : "outline"}>{e.is_active ? "active" : "off"}</Badge></TableCell>
                     <TableCell className="text-right"><EditRow type="experience" row={e} onDone={refetchAll} toast={toast} /></TableCell>
                   </TableRow>
@@ -168,7 +243,7 @@ export default function LearnManagement() {
             {experienceId && (
               <Card><CardContent className="pt-6"><Table>
                 <TableHeader><TableRow><TableHead>Order</TableHead><TableHead>Level</TableHead><TableHead>Diff</TableHead><TableHead>Goal</TableHead><TableHead>Active</TableHead><TableHead className="text-right">Edit</TableHead></TableRow></TableHeader>
-                <TableBody>{expLevels.map((l: any) => (
+                <TableBody>{expLevels.map((l) => (
                   <TableRow key={l.id}>
                     <TableCell>{l.order}</TableCell>
                     <TableCell className="font-medium">{l.name}<div className="text-xs text-muted-foreground">{l.id}</div></TableCell>
@@ -186,7 +261,7 @@ export default function LearnManagement() {
           <TabsContent value="versions">
             <Card><CardContent className="pt-6"><Table>
               <TableHeader><TableRow><TableHead>Version</TableHead><TableHead>Channel</TableHead><TableHead>Published</TableHead><TableHead>Checksum</TableHead><TableHead>Current</TableHead><TableHead className="text-right">Action</TableHead></TableRow></TableHeader>
-              <TableBody>{(versions.data || []).map((v: any) => (
+              <TableBody>{(versions.data || []).map((v) => (
                 <TableRow key={v.id}>
                   <TableCell className="font-medium">{v.content_version}</TableCell>
                   <TableCell>{v.channel}</TableCell>
@@ -196,8 +271,8 @@ export default function LearnManagement() {
                   <TableCell className="text-right">
                     {!v.is_current && (
                       <Button variant="outline" size="sm" onClick={async () => {
-                        await db.from("learn_content_versions").update({ is_current: false }).eq("channel", v.channel);
-                        const { error } = await db.from("learn_content_versions").update({ is_current: true }).eq("id", v.id);
+                        await supabase.from("learn_content_versions").update({ is_current: false }).eq("channel", v.channel);
+                        const { error } = await supabase.from("learn_content_versions").update({ is_current: true }).eq("id", v.id);
                         if (error) toast({ title: "Rollback failed", description: error.message, variant: "destructive" });
                         else { toast({ title: `Rolled back to ${v.content_version}` }); refetchAll(); }
                       }}><RotateCcw className="h-4 w-4 mr-1" />Make current</Button>
@@ -219,7 +294,11 @@ export default function LearnManagement() {
 }
 
 // ===== Publish controls =====
-function PublishControls({ onDone, toast, defaultVersion }: any) {
+function PublishControls({ onDone, toast, defaultVersion }: {
+  onDone: () => void;
+  toast: ToastFn;
+  defaultVersion?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [version, setVersion] = useState(defaultVersion || "1.0.0");
   const [notes, setNotes] = useState("");
@@ -229,15 +308,15 @@ function PublishControls({ onDone, toast, defaultVersion }: any) {
     setBusy(true);
     const r = await callFn("learn-publish", { dryRun: true });
     setBusy(false);
-    if (r.ok) toast({ title: "Validation passed", description: `${r.counts.levels} levels OK · ${r.warnings} F006/8Hz warnings` });
+    if (r.ok) toast({ title: "Validation passed", description: `${r.counts?.levels} levels OK · ${r.warnings} F006/8Hz warnings` });
     else toast({ title: "Validation failed", description: (r.issues || []).slice(0, 3).join("; "), variant: "destructive" });
   };
   const publish = async () => {
     setBusy(true);
     const r = await callFn("learn-publish", { content_version: version, notes });
     setBusy(false);
-    if (r.ok) { toast({ title: `Published ${r.content_version}`, description: `${r.counts.levels} levels · ${r.warnings} warnings` }); setOpen(false); onDone(); }
-    else toast({ title: "Publish failed", description: (r.issues || [r.error]).slice(0, 3).join("; "), variant: "destructive" });
+    if (r.ok) { toast({ title: `Published ${r.content_version}`, description: `${r.counts?.levels} levels · ${r.warnings} warnings` }); setOpen(false); onDone(); }
+    else toast({ title: "Publish failed", description: (r.issues || [r.error ?? "unknown error"]).slice(0, 3).join("; "), variant: "destructive" });
   };
 
   return (
@@ -259,17 +338,17 @@ function PublishControls({ onDone, toast, defaultVersion }: any) {
 }
 
 // ===== Ingest panel =====
-function IngestPanel({ onDone, toast }: any) {
+function IngestPanel({ onDone, toast }: { onDone: () => void; toast: ToastFn }) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const ingest = async () => {
-    let parsed: any;
-    try { parsed = JSON.parse(text); } catch (e) { return toast({ title: "Invalid JSON", variant: "destructive" }); }
+    let parsed: unknown;
+    try { parsed = JSON.parse(text); } catch { return toast({ title: "Invalid JSON", variant: "destructive" }); }
     setBusy(true);
     const r = await callFn("learn-ingest", parsed);
     setBusy(false);
-    if (r.ok) { toast({ title: `Ingested ${r.module}`, description: `${r.counts.levels} levels — remember to Publish` }); setText(""); onDone(); }
-    else toast({ title: "Ingest failed", description: (r.issues || [r.error]).slice(0, 3).join("; "), variant: "destructive" });
+    if (r.ok) { toast({ title: `Ingested ${r.module}`, description: `${r.counts?.levels} levels — remember to Publish` }); setText(""); onDone(); }
+    else toast({ title: "Ingest failed", description: (r.issues || [r.error ?? "unknown error"]).slice(0, 3).join("; "), variant: "destructive" });
   };
   return (
     <Card><CardHeader><CardTitle>Ingest a module JSON</CardTitle></CardHeader>
@@ -283,29 +362,34 @@ function IngestPanel({ onDone, toast }: any) {
 }
 
 // ===== Inline edit dialog for module / experience / level =====
-function EditRow({ type, row, onDone, toast }: any) {
+function EditRow({ type, row, onDone, toast }: {
+  type: "module" | "experience" | "level";
+  row: LearnModule | LearnExperience | LearnLevel;
+  onDone: () => void;
+  toast: ToastFn;
+}) {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<any>(row);
+  const [form, setForm] = useState<LearnFormState>(row);
   const [busy, setBusy] = useState(false);
 
   const openDialog = (e: React.MouseEvent) => { e.stopPropagation(); setForm(row); setOpen(true); };
 
   // Parse helper for JSON textareas (level only).
-  const jsonField = (key: string) => JSON.stringify(form[key] ?? (key === "led_pattern" ? null : {}), null, 2);
-  const setJsonField = (key: string, val: string) => setForm((f: any) => ({ ...f, [`__${key}_raw`]: val }));
+  const jsonField = (key: JsonField) => JSON.stringify(form[key] ?? (key === "led_pattern" ? null : {}), null, 2);
+  const setJsonField = (key: JsonField, val: string) => setForm((f) => ({ ...f, [`__${key}_raw`]: val }));
 
   const save = async () => {
-    const patch: any = {};
+    const patch: Record<string, unknown> = {};
     if (type === "module") {
       Object.assign(patch, { name: form.name, icon: form.icon, color_theme: form.color_theme, tagline: form.tagline, description: form.description, audience: form.audience, is_active: form.is_active });
     } else if (type === "experience") {
       Object.assign(patch, { name: form.name, icon: form.icon, short_desc: form.short_desc, response_mechanic: form.response_mechanic, uses_led: form.uses_led, order: form.order, is_active: form.is_active });
     } else {
       // level: parse JSON fields (use raw edits if present)
-      const parse = (key: string) => {
+      const parse = (key: JsonField) => {
         const raw = form[`__${key}_raw`];
         if (raw === undefined) return form[key];
-        try { return JSON.parse(raw); } catch { throw new Error(`${key}: invalid JSON`); }
+        try { return JSON.parse(String(raw)); } catch { throw new Error(`${key}: invalid JSON`); }
       };
       try {
         const vp = parse("vibration_pattern");
@@ -317,11 +401,18 @@ function EditRow({ type, row, onDone, toast }: any) {
           params: parse("params"), vibration_pattern: vp, led_pattern: parse("led_pattern"),
           success_criteria: parse("success_criteria"), scoring: parse("scoring"), is_active: form.is_active,
         });
-      } catch (err: any) { toast({ title: "Invalid JSON", description: err.message, variant: "destructive" }); return; }
+      } catch (err) { toast({ title: "Invalid JSON", description: errorMessage(err), variant: "destructive" }); return; }
     }
     setBusy(true);
-    const table = type === "module" ? "learn_modules" : type === "experience" ? "learn_experiences" : "learn_levels";
-    const { error } = await db.from(table).update(patch).eq("id", row.id);
+    // `patch` se arma arriba campo por campo desde `LearnFormState`, que es la
+    // unión laxa de las tres tablas (y admite texto crudo de los textarea); el
+    // cast lo estrecha al payload de la tabla que toca.
+    const { error } =
+      type === "module"
+        ? await supabase.from("learn_modules").update(patch as LearnModuleUpdate).eq("id", row.id)
+        : type === "experience"
+          ? await supabase.from("learn_experiences").update(patch as LearnExperienceUpdate).eq("id", row.id)
+          : await supabase.from("learn_levels").update(patch as LearnLevelUpdate).eq("id", row.id);
     setBusy(false);
     if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
     else { toast({ title: "Saved", description: "Republish to ship the change." }); setOpen(false); onDone(); }
@@ -359,7 +450,7 @@ function EditRow({ type, row, onDone, toast }: any) {
                 <Field label="unlock_after"><Input value={form.unlock_after || ""} onChange={(e) => setForm({ ...form, unlock_after: e.target.value })} placeholder="null" /></Field>
                 <Field label="f005_level"><Input value={form.f005_level ?? ""} onChange={(e) => setForm({ ...form, f005_level: e.target.value })} placeholder="null" /></Field>
               </div>
-              {["vibration_pattern", "led_pattern", "params", "success_criteria", "scoring"].map((k) => (
+              {JSON_FIELDS.map((k) => (
                 <Field key={k} label={k}>
                   <Textarea rows={k === "vibration_pattern" ? 4 : 2} defaultValue={jsonField(k)} onChange={(e) => setJsonField(k, e.target.value)} className="font-mono text-xs" />
                 </Field>
@@ -379,7 +470,12 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 // ===== Create module / experience / level =====
-function NewButton({ type, ctx, onDone, toast }: any) {
+function NewButton({ type, ctx, onDone, toast }: {
+  type: "module" | "experience" | "level";
+  ctx: { nextNumber?: number; contentVersion?: string; moduleId?: string | null; experienceId?: string | null; nextOrder?: number };
+  onDone: () => void;
+  toast: ToastFn;
+}) {
   const suggestId = type === "module" ? `L${ctx.nextNumber}`
     : type === "experience" ? `${ctx.moduleId}-E${ctx.nextOrder}`
     : `${ctx.experienceId}-lv${ctx.nextOrder}`;
@@ -389,15 +485,16 @@ function NewButton({ type, ctx, onDone, toast }: any) {
     return { id: suggestId, experience_id: ctx.experienceId, order: ctx.nextOrder, name: "", difficulty: 1, goal: "", params: {}, vibration_pattern: { pulses: [{ durationMs: 120, intensity: 0.8, sharpness: 0, gapMs: 480 }] }, led_pattern: null, f005_level: null, success_criteria: { metric: "accuracy", pass: 0.7 }, scoring: { xp: 10, tracks: ["accuracy"] }, unlock_after: null, is_active: true };
   };
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<any>(blank());
+  const [form, setForm] = useState<LearnFormState>(blank());
   const [busy, setBusy] = useState(false);
 
   const create = async () => {
     const row = { ...form };
     if (type === "level") {
       try {
-        ["params", "vibration_pattern", "led_pattern", "success_criteria", "scoring"].forEach((k) => {
-          if (typeof row[`__${k}_raw`] === "string") row[k] = JSON.parse(row[`__${k}_raw`]);
+        JSON_FIELDS.forEach((k) => {
+          const raw = row[`__${k}_raw`];
+          if (typeof raw === "string") row[k] = JSON.parse(raw);
           delete row[`__${k}_raw`];
         });
       } catch { return toast({ title: "Invalid JSON in a pattern/field", variant: "destructive" }); }
@@ -408,8 +505,14 @@ function NewButton({ type, ctx, onDone, toast }: any) {
       row.unlock_after = row.unlock_after || null;
     }
     setBusy(true);
-    const table = type === "module" ? "learn_modules" : type === "experience" ? "learn_experiences" : "learn_levels";
-    const { error } = await db.from(table).insert(row);
+    // Mismo motivo que en `save()`: `row` sale de `LearnFormState`, así que se
+    // estrecha al payload de la tabla concreta en cada rama.
+    const { error } =
+      type === "module"
+        ? await supabase.from("learn_modules").insert(row as LearnModuleInsert)
+        : type === "experience"
+          ? await supabase.from("learn_experiences").insert(row as LearnExperienceInsert)
+          : await supabase.from("learn_levels").insert(row as LearnLevelInsert);
     setBusy(false);
     if (error) return toast({ title: "Create failed", description: error.message, variant: "destructive" });
     toast({ title: `${type} created`, description: "Republish to ship the change." });
@@ -451,9 +554,9 @@ function NewButton({ type, ctx, onDone, toast }: any) {
               </div>
               <Field label="Goal"><Textarea rows={2} value={form.goal} onChange={(e) => setForm({ ...form, goal: e.target.value })} /></Field>
               <Field label="unlock_after"><Input value={form.unlock_after || ""} onChange={(e) => setForm({ ...form, unlock_after: e.target.value })} placeholder="null" /></Field>
-              {["vibration_pattern", "led_pattern", "params", "success_criteria", "scoring"].map((k) => (
+              {JSON_FIELDS.map((k) => (
                 <Field key={k} label={k}>
-                  <Textarea rows={k === "vibration_pattern" ? 4 : 2} defaultValue={JSON.stringify(form[k], null, 2)} onChange={(e) => setForm((f: any) => ({ ...f, [`__${k}_raw`]: e.target.value }))} className="font-mono text-xs" />
+                  <Textarea rows={k === "vibration_pattern" ? 4 : 2} defaultValue={JSON.stringify(form[k], null, 2)} onChange={(e) => setForm((f) => ({ ...f, [`__${k}_raw`]: e.target.value }))} className="font-mono text-xs" />
                 </Field>
               ))}
             </>)}

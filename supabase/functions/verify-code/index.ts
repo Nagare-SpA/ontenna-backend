@@ -45,24 +45,46 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Find valid verification code
-    const { data: verificationCode, error: fetchError } = await supabaseAdmin
+    // Brute-force protection: look up the user's active code (not by the guessed
+    // value) so failed guesses can be counted, and invalidate after MAX_ATTEMPTS.
+    const MAX_ATTEMPTS = 5;
+    const { data: activeCode } = await supabaseAdmin
       .from("verification_codes")
       .select("*")
       .eq("user_id", userId)
-      .eq("code", code)
       .eq("used", false)
       .gte("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (fetchError || !verificationCode) {
+    if (!activeCode) {
       return new Response(
         JSON.stringify({ error: "Invalid or expired verification code" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
+
+    if ((activeCode.attempts ?? 0) >= MAX_ATTEMPTS) {
+      await supabaseAdmin.from("verification_codes").update({ used: true }).eq("id", activeCode.id);
+      return new Response(
+        JSON.stringify({ error: "Too many attempts. Request a new code." }),
+        { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (activeCode.code !== String(code)) {
+      await supabaseAdmin
+        .from("verification_codes")
+        .update({ attempts: (activeCode.attempts ?? 0) + 1 })
+        .eq("id", activeCode.id);
+      return new Response(
+        JSON.stringify({ error: "Invalid or expired verification code" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const verificationCode = activeCode;
 
     // Mark code as used
     await supabaseAdmin
@@ -102,10 +124,11 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ success: true }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in verify-code function:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: message }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }

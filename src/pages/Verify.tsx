@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Mail, RefreshCw } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { supabase } from "@/integrations/supabase/client";
+import { errorMessage } from "@/lib/errors";
 
 export default function Verify() {
   const { t } = useTranslation();
@@ -114,10 +115,10 @@ export default function Verify() {
       
       // Fallback: redirect to login if auto-login fails
       navigate("/login");
-    } catch (error: any) {
+    } catch (error) {
       toast({ 
         title: t("auth.errors.verificationFailed"), 
-        description: error.message, 
+        description: errorMessage(error), 
         variant: "destructive" 
       });
       setIsVerifying(false);
@@ -156,8 +157,8 @@ export default function Verify() {
         toast({ title: t("auth.verify.codeSent"), description: t("auth.verify.codeSentMessage") });
         setCountdown(60);
       }
-    } catch (error: any) {
-      toast({ title: t("auth.verify.resendFailed"), description: error.message, variant: "destructive" });
+    } catch (error) {
+      toast({ title: t("auth.verify.resendFailed"), description: errorMessage(error), variant: "destructive" });
     }
     
     setIsResending(false);

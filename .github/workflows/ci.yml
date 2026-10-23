@@ -1,0 +1,115 @@
+name: CI
+
+# Runs on every PR and push to main. Never touches production: the frontend and
+# edge functions are type-checked, nothing is deployed and no live project is
+# contacted. There is deliberately NO smoke-test job — see the block at the
+# bottom of this file and docs/TESTING_STRATEGY.md §7 before adding one.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  frontend:
+    name: Frontend lint & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit -p tsconfig.app.json
+
+  edge-functions:
+    name: Edge functions typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - name: Type-check all edge functions
+        run: |
+          for f in supabase/functions/*/index.ts; do
+            echo "check $f"
+            deno check --no-lock "$f" || exit 1
+          done
+
+# =============================================================================
+# Smoke test — removed on purpose. Do not re-add it as a secret-gated job.
+#
+# WHAT WAS WRONG
+# A `smoke` job ("Smoke test (staging)") used to live here with its only real
+# step guarded by:
+#
+#     if: ${{ env.STAGING_SUPABASE_URL != '' }}
+#     env:
+#       SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+#
+# A step's own `env:` block is not in scope for that same step's `if:`, so the
+# expression always evaluated '' != '' → false. The step was skipped on every
+# single run, and because a skipped step is not a failure the job still reported
+# success. Result: a permanent green "Smoke test (staging)" check on the PR page
+# that executed nothing — worse than no check, because it reads as coverage.
+# Evidence: run 39280577711 on hardening/prod-readiness — job success, step
+# "Run smoke test against staging" skipped.
+#
+# WHY NOT JUST FIX THE EXPRESSION
+#   1. There is no staging Supabase project. `ycfrjvnuepfkeffsqxgm` is
+#      production and the only project (see .claude/rules/deploy-protocol.md),
+#      so STAGING_SUPABASE_URL / STAGING_ANON_KEY / STAGING_SERVICE_KEY are not
+#      configured — `gh secret list` on this repo is empty. A job gated on
+#      secrets that do not exist can never run.
+#   2. Pointing scripts/smoke.sh at the one project would run signup → verify →
+#      login → admin DELETE against production on every PR. Not acceptable.
+#   3. `secrets` is NOT an available context in a job-level `if:` (only `github`,
+#      `needs`, `vars` and `inputs` are) nor in a step-level `if:`. So "move the
+#      check to the job" does not work either, as written.
+#
+# HOW TO REINSTATE IT CORRECTLY, once a staging target exists (TESTING_STRATEGY §2)
+#
+# Simplest: keep the non-secret URL in a repo *variable*, because `vars` IS
+# readable from a job-level `if:` — the keys stay secrets.
+#
+#     smoke:
+#       name: Smoke test (staging)
+#       runs-on: ubuntu-latest
+#       if: github.event_name == 'pull_request' && vars.STAGING_SUPABASE_URL != ''
+#       steps:
+#         - uses: actions/checkout@v4
+#         - env:
+#             SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+#             ANON_KEY: ${{ secrets.STAGING_ANON_KEY }}
+#             SERVICE_KEY: ${{ secrets.STAGING_SERVICE_KEY }}
+#           run: ./scripts/smoke.sh
+#
+# If the URL must stay secret, probe it in a prior job and gate on that output —
+# a `run:` step can interpolate secrets even though an `if:` cannot:
+#
+#     smoke-config:
+#       runs-on: ubuntu-latest
+#       outputs:
+#         enabled: ${{ steps.probe.outputs.enabled }}
+#       steps:
+#         - id: probe
+#           env:
+#             URL: ${{ secrets.STAGING_SUPABASE_URL }}
+#           run: |
+#             if [ -n "$URL" ]; then echo "enabled=true"  >> "$GITHUB_OUTPUT"
+#             else                   echo "enabled=false" >> "$GITHUB_OUTPUT"; fi
+#     smoke:
+#       needs: smoke-config
+#       if: needs.smoke-config.outputs.enabled == 'true'
+#       # ...
+#
+# Either way the gate is on the JOB, so when it is not configured GitHub reports
+# the check as "skipped" instead of "success". Honest absence, not a fake pass.
+#
+# PREFERRED over both: docs/TESTING_STRATEGY.md §7 — run the smoke against an
+# ephemeral local stack (`supabase start` → `supabase db reset` →
+# ./scripts/smoke.sh), which needs no shared secrets and cannot reach prod.
+# =============================================================================
